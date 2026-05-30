@@ -27,6 +27,47 @@ tasks:
       - python3 scripts/code-lint.py .
       - python3 scripts/quarto-lint.py .
 
+  upgrade:
+    desc: Pull latest framework files from the sibling template/ into this course
+    cmds:
+      - |
+        SELF=$(pwd)
+        TMPL="$(dirname "$SELF")/template"
+        if [ ! -d "$TMPL" ]; then
+          echo "Error: $TMPL not found. Run this task from inside a course directory (sibling of template/)."
+          exit 1
+        fi
+
+        echo "Upgrading framework from $TMPL..."
+
+        # SCSS theme — preserve course-specific overrides (e.g. book_custom.css)
+        mkdir -p .theme
+        rsync -a --delete --exclude 'book_custom.css' "$TMPL/.theme/" .theme/
+
+        # JS assets
+        mkdir -p assets/js
+        rsync -a --delete "$TMPL/assets/js/" assets/js/
+
+        # Standalone asset files (viewer, link-fix shim)
+        for f in assets/viewer.html assets/fix_links.html; do
+          [ -f "$TMPL/$f" ] && cp "$TMPL/$f" "$f" && echo "  copied $f"
+        done
+
+        # Infrastructure directories
+        for d in _extensions scripts fonts; do
+          [ -d "$TMPL/$d" ] && { mkdir -p "$d"; rsync -a --delete "$TMPL/$d/" "$d/"; }
+        done
+
+        # Taskfile — self-updating so the next upgrade also ships the latest version
+        cp "$TMPL/Taskfile.yml" Taskfile.yml
+
+        # Record synced commit
+        git -C "$TMPL" rev-parse HEAD > .template-sync
+
+        echo ""
+        echo "✓ Framework upgraded to $(cat .template-sync | cut -c1-8)"
+        echo "  Review: git diff  |  Deploy: task publish"
+
   publish:
     desc: Lint, clean, render, and publish updates by committing and pushing to origin main
     cmds:
