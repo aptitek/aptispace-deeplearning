@@ -40,7 +40,7 @@ viewof bias = Inputs.range([-300, 300], {value: 100, step: 10, label: "Clients P
 ::::
 :::: {.card-body}
 
-::::: {#plot-supermarket-network .ram-simulator-wrapper}
+::::: {#plot-supermarket-network .plot-wrapper}
 :::::
 
 ```{ojs}
@@ -49,8 +49,8 @@ import { createGraph } from "../../assets/js/graph.js"
 
 // 1. Calculs mathématiques réactifs
 Z = (trafficA * weightA) + (trafficB * weightB) + bias
-isActive = Z >= 200
-revenus = isActive ? (Z - 200) * 50 : 0
+isActive = Z >= 500
+revenus = isActive ? (Z - 500) * 50 : 0
 
 // 2. Moteur Force Graph avec les particules de flux
 renderSupermarketNetwork = {
@@ -59,7 +59,7 @@ renderSupermarketNetwork = {
     { id: "B", label: () => `Zone B\n(${window.simState?.trafficB ?? 150})`, fx: -160, fy: 60, status: "input", shape: "pill" },
     { id: "Bias", label: () => `Piétons\n(b = ${window.simState?.bias ?? 100})`, fx: 0, fy: -110, status: "bias", shape: "circle" },
     { id: "Neuron", label: () => `Magasin (Σ)\nZ = ${window.simState?.Z ?? 500}`, fx: 0, fy: 0, status: "neuron", shape: "rounded rect" },
-    { id: "Output", label: () => `Revenus\n${window.simState?.revenus ?? 0} €`, fx: 160, fy: 0, status: () => window.simState?.isActive ? "active" : "inactive", shape: "diamond", labelPosition: "bottom" }
+    { id: "Output", label: () => `Revenus\n${window.simState?.revenus ?? 0} €`, fx: 160, fy: 0, status: () => window.simState?.isActive ? "active" : "inactive", shape: "diamond" }
   ];
 
   const links = [
@@ -74,7 +74,7 @@ renderSupermarketNetwork = {
       width: () => window.simState?.isActive ? 2.5 + Math.min(6, (window.simState?.revenus ?? 0) / 2500) : 1,
       condition: () => {
         const active = window.simState?.isActive ?? true;
-        return { value: active, label: active ? "Z ≥ 200" : "Z < 200" };
+        return { value: active, label: active ? "Z ≥ 500" : "Z < 500", labelPosition: 'right'};
       }
     }
   ];

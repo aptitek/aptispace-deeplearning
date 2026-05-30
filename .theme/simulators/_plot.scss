@@ -1,0 +1,30 @@
+/* ==========================================================================
+   GENERIC PLOT & GRAPH WRAPPER
+   ========================================================================== */
+
+.plot-wrapper,
+.graph-wrapper {
+    height: 380px;
+    position: relative;
+    background: transparent;
+    border-radius: 8px;
+    width: 100%;
+    overflow: hidden; /* Prevent canvas/SVG overflow during resize */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > div {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    canvas, svg {
+        display: block !important;
+        margin: 0 auto !important;
+    }
+}

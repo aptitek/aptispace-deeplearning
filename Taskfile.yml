@@ -11,14 +11,12 @@ tasks:
   render:
     desc: Render the Quarto site
     cmds:
-      - python3 scripts/generate_chapters.py
       - echo "Rendering Quarto site..."
       - quarto render
 
   preview:
     desc: Preview the Quarto site with live reload
     cmds:
-      - python3 scripts/generate_chapters.py
       - echo "Starting Quarto preview server..."
       - quarto preview
 
@@ -71,6 +69,7 @@ tasks:
         echo "  Review: git diff  |  Deploy: task publish"
 
   publish:
+
     desc: Lint, clean, render, and publish updates by committing and pushing to origin main
     cmds:
       - |
