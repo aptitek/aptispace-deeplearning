@@ -1,0 +1,32 @@
+---
+number-sections: false
+---
+
+# 📋 Fiche Module {.unnumbered}
+
+**Titre :** Introduction au Machine Learning & Deep Learning
+**Code :** PY-ML-DL-M1 (M1-06)
+**Année :** 2024-2025
+
+## 🎯 Description Générale
+Ce module initie les étudiants aux principes de l'apprentissage automatique (Machine Learning) et de l'apprentissage profond (Deep Learning). À travers un parcours intensif de 35 heures, les étudiants explorent l'intégralité du cycle de vie des modèles prédictifs : de la collecte et la préparation des données brutes (Data Preprocessing, Feature Engineering, réduction de dimension avec PCA) à la conception, l'évaluation et l'optimisation d'algorithmes classiques et de réseaux de neurones complexes. L'enjeu est de savoir concevoir la solution la plus simple et efficace pour répondre à une problématique métier concrète.
+
+## 🎯 Objectifs Pédagogiques
+
+- [ ] **Nettoyer et préparer** des ensembles de données complexes (imputation de valeurs manquantes, gestion des outliers, encodages).
+- [ ] **Extraire et sélectionner** les variables les plus discriminantes (*Feature Engineering*, détection de corrélations, réduction de dimension avec PCA).
+- [ ] **Concevoir et entraîner** des modèles prédictifs supervisés (Régression Linéaire/Logistique, Decision Tree, Random Forest, Gradient Boosting, SVM) et non supervisés (K-Means).
+- [ ] **Forger et optimiser** des réseaux de neurones (Perceptron Multicouche, rétropropagation du gradient, choix des fonctions de coût et d'activation).
+- [ ] **Évaluer et diagnostiquer** la performance des modèles (validation croisée, matrice de confusion, courbes ROC/Lift, lutte contre le surapprentissage).
+
+## 🛠️ Spécificités & Moyens
+
+- **Public :** Mastère Développement, Data & IA - 4ème année (M1).
+- **Volume Horaire :** 35 heures (5 jours).
+- **Moyens techniques :**
+    - Stack : Python 3.x, NumPy, Pandas, Scikit-learn, TensorFlow / Keras.
+    - Environnement : Jupyter Notebook, VS Code, Git.
+- **Prérequis :** Maîtrise de Python, bases en algèbre linéaire et statistiques descriptives, usage du terminal.
+
+## 💡 Concept & Métaphore
+**La Forge Prédictive** : Dans ce cours, l'étudiant endosse le rôle d'un artisan forgeron. La donnée brute est un minerai impur qu'il doit concasser, trier et purifier (Data Preprocessing / Wrangling). Il façonne ensuite des outils simples, tranchants et robustes pour analyser son terrain (Machine Learning classique), avant de forger un moteur autonome complexe capable d'apprendre de ses propres erreurs de frappe (Deep Learning et rétropropagation) pour enfin tester sa solidité face aux conditions extrêmes (Évaluation et validation).

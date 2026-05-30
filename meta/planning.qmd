@@ -1,0 +1,58 @@
+---
+number-sections: false
+---
+
+# ⏳ Chronologie du Module {.unnumbered}
+
+::: {.info header="Note d'organisation"}
+Le module d'Introduction au Machine Learning & Deep Learning se déroule sur 5 jours consécutifs (35 heures). Chaque journée alterne des apports théoriques conceptuels le matin et des ateliers pratiques intensifs l'après-midi.
+:::
+
+## 📅 Vue d'ensemble (Gantt)
+
+```{mermaid}
+gantt
+    title Déroulement du Module ML & DL
+    dateFormat  YYYY-MM-DD
+    axisFormat %d/%m
+
+    section Séances
+    J1 - Acquisition & Preprocessing     :active, j1, 2026-06-01, 1d
+    J2 - Algorithmes de Machine Learning  :j2, 2026-06-02, 1d
+    J3 - Non Supervisé & Évaluation       :j3, 2026-06-03, 1d
+    J4 - Fondations du Deep Learning      :j4, 2026-06-04, 1d
+    J5 - Déploiement & Projet Final       :j5, 2026-06-05, 1d
+
+    section Évaluations
+    Rendu TPs (Note 1)                    :milestone, m1, 2026-06-04, 0h
+    QCM Théorique (Note 2)                :milestone, m2, 2026-06-05, 0h
+    Soutenance Projet (Note 3)            :milestone, m3, 2026-06-05, 0h
+```
+
+## 📑 Détail des Sessions
+
+### 🧹 Jour 1 : Raffiner la donnée brute (Acquisition & Preprocessing)
+
+* **09h00 - 12h30** : Formats de données, statistiques descriptives et nettoyage (outliers, NaN, corrélations).
+* **13h30 - 17h00** : Lab de preprocessing avancé et réduction de dimensions avec l'ACP (PCA).
+
+### 🛠️ Jour 2 : Façonner les outils classiques (Machine Learning Supervisé)
+
+* **09h00 - 12h30** : Théorie de la régression (linéaire, logistique) et classification (arbres de décision, SVM).
+* **13h30 - 17h00** : Lab Scikit-Learn : Implémentation de Random Forest, Gradient Boosting et comparaison d'algorithmes.
+
+### 📊 Jour 3 : Segmenter et diagnostiquer (Non Supervisé & Évaluation)
+
+* **09h00 - 12h30** : Clustering avec K-Means et classification hiérarchique. Métriques de validation (ROC, confusion matrix).
+* **13h30 - 17h00** : Lab pratique : Segmentation client et évaluation fine de la performance des modèles.
+
+### 🧠 Jour 4 : Forger les réseaux de neurones (Fondations du Deep Learning)
+
+* **09h00 - 12h30** : Histoire du perceptron, architecture PMC, fonctions d'activation, rétropropagation du gradient.
+* **13h30 - 17h00** : Lab from scratch : Écriture et entraînement d'un réseau de neurones multicouche en Python pur.
+
+### 🚀 Jour 5 : Lancer la production (Projet Final & Soutenances)
+
+* **09h00 - 11h00** : Cycle de vie du modèle, principes des APIs de prédiction et de mise en production.
+* **11h00 - 12h30** : Finalisation du projet final en équipe et préparation des supports de présentation.
+* **13h30 - 17h00** : Soutenances de projets devant le jury et démos en direct.

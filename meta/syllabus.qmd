@@ -1,0 +1,58 @@
+---
+number-sections: false
+---
+
+# 📑 Plan de Cours {.unnumbered}
+
+## 1.1. Acquisition & Preprocessing : Raffiner la donnée brute
+
+- Découverte des formats de données structurées et non structurées.
+- Nettoyage : détection et correction des valeurs aberrantes (*outliers*) et manquantes (*NaN*).
+- Analyse statistique : détection des corrélations et problème de la multicolinéarité.
+- Réduction de dimension par Analyse en Composantes Principales (PCA).
+- **Activité :** Lab pratique de traitement et de préparation de données hétérogènes.
+
+## 1.2. Algorithmes de Machine Learning : Les outils classiques
+
+- Régression linéaire (simple & multiple, Lasso).
+- Régression logistique et application pour le scoring.
+- Algorithmes de classification : Arbres de décision et Random Forest.
+- Algorithmes avancés : Gradient Boosting et Support Vector Machines (SVM).
+- **Activité :** Défi de modélisation et comparaison de modèles prédictifs.
+
+## 1.3. Apprentissage Non Supervisé & Évaluation : Segmenter et diagnostiquer
+
+- Algorithmes de clustering : Classification hiérarchique et K-Means.
+- Stratégies d'évaluation : Train / Test / Validation set.
+- Validation croisée (*cross-validation*) et techniques de bootstrap.
+- Métriques de diagnostic : Matrice de confusion, Courbes ROC et Lift.
+- **Activité :** Segmentation de clients et diagnostic des forces/faiblesses des modèles.
+
+## 1.4. Fondations du Deep Learning : Forger les réseaux de neurones
+
+- Historique et genèse du Deep Learning.
+- Architecture du Perceptron Multicouche (PMC) : couches d'entrée, cachées et de sortie.
+- Processus d'apprentissage : descente de gradient et algorithme de rétropropagation (*backpropagation*).
+- Réglages du réseau : fonctions d'activation (ReLU, Sigmoid, Softmax) et fonctions de coût (MSE, Cross-Entropy).
+- **Activité :** Implémentation complète d'un réseau de neurones multicouche *from scratch* en Python.
+
+## 1.5. Déploiement & Projet Final : La Forge en action
+
+- Cycle de vie d'un modèle et principes fondamentaux de mise en production (APIs, serving).
+- Travail collaboratif en équipe sur un projet d'entraînement de bout en bout (ML/DL).
+- Soutenances et présentations orales des résultats et démos.
+- **Activité :** Hackathon final avec pitch projet.
+
+# 🎓 Modalités d'Évaluation
+
+| Évaluation                     | Type                               | Poids | Format                             |
+| :----------------------------- | :--------------------------------- | :---- | :--------------------------------- |
+| **Note 1 : Travaux Pratiques** | Validation de compétences de code  | 30%   | Notebook Jupyter (`.ipynb`)        |
+| **Note 2 : QCM Théorique**     | Évaluation des concepts théoriques | 20%   | Questionnaire en ligne             |
+| **Note 3 : Projet Final**      | Projet de modélisation en équipe   | 50%   | Dépôt GitHub + README + Soutenance |
+
+## Exigences de Rendu
+
+- **Transparence & IA :** Section obligatoire dans le README détaillant l'usage et la critique des outils d'IA générative.
+- **Preuves d'exécution :** Notebooks entièrement exécutés avec sorties et logs lisibles.
+- **Sécurité :** Zéro tolérance pour les clés d'API ou identifiants committés en clair (pénalité directe de -5 points).

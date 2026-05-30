@@ -1,1 +1,69 @@
---
+---
+number-sections: false
+---
+
+# 📖 Glossaire du Machine Learning & Deep Learning {.unnumbered}
+
+Ce glossaire regroupe les termes techniques et concepts clés abordés tout au long du module. Il est conçu comme une référence rapide pour vos révisions et vos projets.
+
+### A
+
+- **Apprentissage Supervisé (Supervised Learning) :** Type d'apprentissage automatique où le modèle apprend à partir d'exemples étiquetés (contenant l'entrée et la sortie attendue).
+- **Apprentissage Non Supervisé (Unsupervised Learning) :** Type d'apprentissage automatique où le modèle cherche des structures ou regroupements cachés dans des données non étiquetées.
+- **Arbre de Décision (Decision Tree) :** Modèle prédictif qui segmente les données en sous-groupes selon des règles logiques successives (si/alors) pour aboutir à une décision ou une valeur estimée.
+
+### B
+
+- **Bootstrap (Bagging) :** Méthode de rééchantillonnage consistant à créer plusieurs sous-ensembles par tirage avec remplacement à partir du dataset d'origine pour entraîner différents modèles en parallèle (utilisé dans Random Forest).
+- **Backpropagation (Rétropropagation du gradient) :** Algorithme central du Deep Learning qui calcule les gradients de l'erreur par rapport à chaque poids du réseau, de la couche de sortie vers la couche d'entrée, afin d'ajuster les paramètres.
+
+### C
+
+- **Courbe ROC :** Graphique représentant la performance d'un classifieur binaire à tous les seuils de classification, en affichant le taux de vrais positifs en fonction du taux de faux positifs.
+- **Clustering :** Technique non supervisée visant à regrouper les individus d'un dataset en plusieurs groupes (clusters) homogènes selon leur similarité.
+
+### D
+
+- **Descente de Gradient (Gradient Descent) :** Algorithme d'optimisation utilisé pour minimiser la fonction de coût d'un modèle en ajustant ses poids pas à pas dans le sens inverse du gradient.
+
+### F
+
+- **Feature Engineering :** Processus de transformation, combinaison ou création de nouvelles variables explicatives (features) à partir des données brutes afin d'améliorer la performance et la pertinence d'un modèle d'apprentissage.
+- **Fonction d'Activation (Activation Function) :** Fonction mathématique introduisant une non-linéarité dans le neurone (ex: ReLU, Sigmoïde, Softmax), lui permettant de modéliser des relations complexes.
+- **Fonction de Coût (Loss Function) :** Formule calculant l'écart ou la pénalité entre la prédiction du modèle et la valeur réelle attendue.
+
+### K
+
+- **K-Means :** Algorithme de clustering non supervisé très populaire qui partitionne les données en K groupes distincts en minimisant la distance entre les points et le centroïde de leur groupe.
+
+### M
+
+- **Matrice de Confusion :** Tableau croisé mesurant la qualité d'une classification en confrontant les prédictions du modèle (vrais/faux positifs et négatifs) à la réalité observée.
+- **Multicollinéarité :** Situation où deux ou plusieurs variables explicatives d'un modèle de régression sont fortement corrélées entre elles, ce qui peut perturber l'estimation des coefficients.
+
+### O
+
+- **Overfitting (Surapprentissage) :** Phénomène où le modèle mémorise le bruit des données d'entraînement au lieu de généraliser, ce qui conduit à d'excellents résultats sur le train set mais à de mauvaises prédictions sur le test set.
+
+### P
+
+- **Perceptron Multicouche (PMC / MLP) :** Architecture de base d'un réseau de neurones artificiel profond, composée d'une couche d'entrée, d'une ou plusieurs couches cachées, et d'une couche de sortie entièrement connectées (fully connected).
+- **PCA (ACP - Analyse en Composantes Principales) :** Technique de réduction de dimension qui projette les données dans un espace de dimension inférieure tout en conservant le maximum de variance possible.
+
+### R
+
+- **Régression Linéaire :** Modèle cherchant à établir une relation linéaire entre une variable continue cible et une ou plusieurs variables explicatives.
+- **Régression Logistique :** Algorithme prédictif utilisé pour les problèmes de classification binaire, estimant la probabilité qu'un événement survienne.
+- **Régularisation (L1/L2) :** Techniques (comme Lasso ou Ridge) qui pénalisent la complexité ou la taille des coefficients d'un modèle afin d'éviter le surapprentissage.
+
+### T
+
+- **Tenseur (Tensor) :** Structure de données multidimensionnelle (généralisation des scalaires, vecteurs et matrices) qui constitue l'unité fondamentale de transport et de calcul dans les frameworks de Deep Learning.
+
+### U
+
+- **Underfitting (Sous-apprentissage) :** Phénomène où le modèle est trop simple pour capturer la structure sous-jacente des données, ce qui conduit à de mauvaises performances tant sur le train set que sur le test set.
+
+### V
+
+- **Validation Croisée (Cross-Validation) :** Technique d'évaluation consistant à diviser le jeu de données en K parties (folds), à entraîner le modèle sur K-1 parties et à le tester sur la partie restante, en répétant le processus K fois pour fiabiliser la métrique de performance.
