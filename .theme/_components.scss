@@ -1,0 +1,2007 @@
+// ==========================================
+// 7. WIDGET "FAKE IDE" (File Explorer)
+// ==========================================
+
+.ide-container {
+    @extend %card-base;
+    display: flex;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.ide-sidebar {
+    width: 100%;
+    background-color: $sol-base2;
+    padding: 10px;
+    border-right: none;
+    transition: width 0.3s ease;
+}
+
+.ide-main {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+}
+
+.ide-container.is-active {
+    height: 600px;
+
+    .ide-sidebar {
+        width: 250px;
+        border-right: 1px solid $sol-base1;
+        overflow-y: auto;
+    }
+
+    .ide-main {
+        display: flex;
+        opacity: 1;
+    }
+}
+
+.ide-header-row {
+    @extend %card-header;
+    background: transparent; // Override
+    margin-bottom: 10px;
+    padding: 0 0 8px 0;
+}
+
+.ide-title {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75em;
+}
+
+.ide-download-btn {
+    font-size: 0.75em;
+    background-color: $sol-base3;
+    color: $sol-blue !important;
+    border: 1px solid $sol-base1;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-decoration: none !important;
+    font-weight: bold;
+
+    &:hover {
+        background-color: $sol-blue;
+        color: white !important;
+    }
+}
+
+ul.file-tree-list,
+ul.file-tree-list ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.file-tree-list .folder ul {
+    padding-left: 24px;
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+    margin-left: 4px;
+}
+
+.file a,
+.folder summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    text-decoration: none;
+    color: $sol-base00;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+        display: none;
+    }
+}
+
+.folder-arrow {
+    margin-right: 5px;
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+    display: inline-block;
+}
+
+details[open]>summary>.folder-arrow {
+    transform: rotate(90deg);
+}
+
+.file a:hover {
+    color: $sol-orange !important;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.bi {
+    opacity: 0.8;
+}
+
+// ==========================================
+// 8. JUPYTERLITE CARD (Shortcode)
+// ==========================================
+
+.jupyterlite-container {
+    @extend %card-base;
+
+    iframe {
+        width: 100%;
+        height: 600px;
+        border: none;
+        display: block;
+    }
+}
+
+.jupyterlite-header {
+    @extend %card-header;
+
+    i.bi-journal-code {
+        margin-right: 6px;
+        color: $sol-orange;
+    }
+}
+
+.jupyterlite-fullscreen {
+    color: $sol-base00;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+        color: $sol-blue;
+    }
+}
+
+// ==========================================
+// 9. SEMANTIC CARDS (Alerts & Results)
+// ==========================================
+
+// Base semantic structure
+.bg-debug,
+.bg-info,
+.bg-success,
+.bg-warning,
+.bg-danger,
+.bg-primary {
+    @extend %card-base;
+    background-color: $sol-base2 !important;
+    color: $sol-base01 !important;
+    font-size: 0.9em;
+    margin-bottom: 1.5rem;
+    overflow: hidden !important;
+    position: relative;
+    border-left: none !important; // Explicitly remove to fix square overflow
+
+    // Use pseudo-element for the color strip to respect parent border-radius
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 6px;
+        z-index: 5;
+        border-radius: inherit; // Matches the 8px of the card
+    }
+
+    .card-header {
+        @extend %card-header;
+        color: $sol-base3 !important;
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+        padding-left: 1.2rem; // Give space for the bar
+    }
+
+    .card-body {
+        padding: 0.75rem 1rem 0.75rem 1.2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    table {
+        margin-bottom: 0;
+        background-color: transparent !important;
+
+        th,
+        td {
+            border-color: rgba(0, 0, 0, 0.05) !important;
+            padding: 4px 8px;
+        }
+
+        th {
+            font-size: 0.85em;
+            color: $sol-base01;
+            text-transform: none;
+        }
+    }
+}
+
+.bg-debug {
+    &::before {
+        background-color: $sol-base1 !important;
+    }
+
+    .card-header {
+        background-color: $sol-base1 !important;
+    }
+}
+
+.bg-info,
+.bg-primary {
+    &::before {
+        background-color: $sol-blue !important;
+    }
+
+    .card-header {
+        background-color: $sol-blue !important;
+    }
+}
+
+.bg-success {
+    &::before {
+        background-color: $sol-green !important;
+    }
+
+    .card-header {
+        background-color: $sol-green !important;
+    }
+}
+
+.bg-warning {
+    &::before {
+        background-color: $sol-yellow !important;
+    }
+
+    .card-header {
+        background-color: $sol-yellow !important;
+    }
+}
+
+.bg-danger {
+    &::before {
+        background-color: $sol-red !important;
+    }
+
+    .card-header {
+        background-color: $sol-red !important;
+    }
+}
+
+// ==========================================
+// 10. TIMELINE TABLES & CUSTOM STYLING
+// ==========================================
+
+.timeline.vertical,
+.timeline.horizontal,
+.timeline {
+    --tl-color-line: #{$sol-magenta} !important;
+    --tl-color-dot: #{$sol-magenta} !important;
+    --tl-color-label: #{$sol-base01} !important;
+    --tl-line-width: 4px !important;
+
+    // Rainbow gradient line
+    &::before {
+        background: linear-gradient(to bottom,
+            #{$sol-magenta}, #{$sol-red}, #{$sol-orange},
+            #{$sol-yellow}, #{$sol-green}, #{$sol-cyan},
+            #{$sol-blue}, #{$sol-violet}) !important;
+    }
+
+    // Center dots on the line by accounting for line width
+    .event::after {
+        left: calc(-30px - var(--tl-dot-size) / 2 + var(--tl-line-width) / 2) !important;
+        transition: all 0.3s ease;
+    }
+
+    // Chronological dot colors
+    .event:nth-child(1)::after {
+        border-color: #{$sol-magenta} !important;
+    }
+
+    .event:nth-child(2)::after {
+        border-color: #{$sol-red} !important;
+    }
+
+    .event:nth-child(3)::after {
+        border-color: #{$sol-orange} !important;
+    }
+
+    .event:nth-child(4)::after {
+        border-color: #{$sol-yellow} !important;
+    }
+
+    .event:nth-child(5)::after {
+        border-color: #{$sol-green} !important;
+    }
+
+    .event:nth-child(6)::after {
+        border-color: #{$sol-cyan} !important;
+    }
+
+    .event:nth-child(7)::after {
+        border-color: #{$sol-blue} !important;
+    }
+
+    .event:nth-child(8)::after {
+        border-color: #{$sol-violet} !important;
+    }
+
+    // Matching labels if needed
+    .event:nth-child(1)::before {
+        color: #{$sol-magenta} !important;
+    }
+
+    .event:nth-child(2)::before {
+        color: #{$sol-red} !important;
+    }
+
+    .event:nth-child(3)::before {
+        color: #{$sol-orange} !important;
+    }
+
+    .event:nth-child(4)::before {
+        color: #{$sol-yellow} !important;
+    }
+
+    .event:nth-child(5)::before {
+        color: #{$sol-green} !important;
+    }
+
+    .event:nth-child(6)::before {
+        color: #{$sol-cyan} !important;
+    }
+
+    .event:nth-child(7)::before {
+        color: #{$sol-blue} !important;
+    }
+
+    .event:nth-child(8)::before {
+        color: #{$sol-violet} !important;
+    }
+}
+
+.event table {
+    table-layout: fixed;
+    width: 100%;
+
+    colgroup col:first-child {
+        width: 128px !important;
+    }
+
+    colgroup col:last-child {
+        width: auto !important;
+    }
+
+    th,
+    td {
+        word-wrap: break-word;
+        vertical-align: middle;
+    }
+}
+
+// ==========================================
+// 12. ATOMS (Basic UI Elements)
+// ==========================================
+
+.atom-btn {
+    background: transparent;
+    border: 2px solid $sol-red;
+    color: $sol-red;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    span {
+        transition: transform 0.2s ease;
+    }
+
+    &:hover {
+        background: $sol-red;
+        color: $sol-base3;
+        box-shadow: 0 4px 15px rgba($sol-red, 0.3);
+        transform: translateY(-2px);
+
+        span {
+            transform: scale(1.2);
+        }
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba($sol-red, 0.2);
+    }
+
+    &.is-secondary {
+        border-color: $sol-blue;
+        color: $sol-blue;
+
+        &:hover {
+            background: $sol-blue;
+            box-shadow: 0 4px 15px rgba($sol-blue, 0.3);
+            color: $sol-base3;
+        }
+
+        &:active {
+            box-shadow: 0 2px 8px rgba($sol-blue, 0.2);
+        }
+    }
+}
+
+.atom-label {
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: $sol-base01;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+}
+
+.atom-badge {
+    color: var(--current-color, $sol-blue);
+    background: $sol-base2;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.atom-input,
+.atom-select,
+.atom-textarea {
+    width: 100%;
+    background: $sol-base3;
+    border: 2px solid $sol-base2;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: $sol-base00;
+    font-family: $font-family-base;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:focus {
+        outline: none;
+        border-color: $sol-blue;
+        box-shadow: 0 0 0 3px rgba($sol-blue, 0.1);
+        background: $sol-base3;
+    }
+
+    &::placeholder {
+        color: $sol-base1;
+        opacity: 0.6;
+    }
+}
+
+.atom-textarea {
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-family: $font-family-code;
+    font-size: 0.95rem;
+    resize: vertical;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.atom-terminal {
+    font-family: $font-family-code;
+    background: $sol-base03;
+    border: 1px solid $sol-base02;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 13px;
+    color: $sol-base0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    width: 100%;
+
+    .terminal-header {
+        background: $sol-base02;
+        padding: 8px 15px;
+        border-bottom: 1px solid $sol-base01;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .terminal-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+
+            &.is-red {
+                background: $sol-red;
+            }
+
+            &.is-yellow {
+                background: $sol-yellow;
+            }
+
+            &.is-green {
+                background: $sol-green;
+            }
+        }
+
+        .terminal-title {
+            margin-left: 10px;
+            font-weight: 800;
+            color: $sol-base1;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    }
+
+    .terminal-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        height: var(--terminal-height, 250px);
+        overflow-y: auto;
+        color: $sol-green;
+        line-height: 1.5;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+
+        &::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: $sol-base03;
+            border-radius: 0 0 8px 0;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $sol-base02;
+            border: 2px solid $sol-base03;
+            border-radius: 10px;
+
+            &:hover {
+                background: $sol-base01;
+            }
+        }
+    }
+
+    .terminal-line {
+        display: block;
+
+        &.system {
+            color: $sol-blue;
+        }
+
+        &.scan {
+            color: $sol-cyan;
+        }
+
+        &.warning {
+            color: $sol-yellow;
+        }
+
+        &.error {
+            color: $sol-red;
+        }
+
+        &.critical {
+            color: $sol-red;
+            font-weight: 800;
+        }
+
+        &.idle {
+            color: $sol-base1;
+            opacity: 0.6;
+        }
+    }
+
+    .terminal-label {
+        background: rgba($sol-base1, 0.15);
+        color: $sol-base01;
+        font-weight: 800;
+        padding: 0 6px;
+        border-radius: 4px;
+        border-bottom: 2px solid $sol-base1;
+        display: inline-block;
+
+        &.is-system {
+            color: $sol-blue;
+            border-color: $sol-blue;
+            background: rgba($sol-blue, 0.15);
+        }
+
+        &.is-warning {
+            color: $sol-yellow;
+            border-color: $sol-yellow;
+            background: rgba($sol-yellow, 0.15);
+        }
+
+        &.is-error {
+            color: $sol-red;
+            border-color: $sol-red;
+            background: rgba($sol-red, 0.15);
+        }
+
+        &.is-success {
+            color: $sol-green;
+            border-color: $sol-green;
+            background: rgba($sol-green, 0.15);
+        }
+    }
+
+    &.is-matrix {
+        .terminal-body {
+            font-size: 11px;
+            line-height: 1.1;
+            padding: 10px;
+            gap: 0;
+            display: block;
+        }
+    }
+}
+
+// ==========================================
+// 13. MOLECULES (Combinations of Atoms)
+// ==========================================
+
+.mol-slider {
+    width: 100%;
+    font-family: $font-family-base;
+    color: $sol-base01;
+
+    // Dynamic coloring based on data-state
+    &[data-state="0"] {
+        --current-color: #{$sol-blue};
+    }
+
+    &[data-state="1"] {
+        --current-color: #{$sol-green};
+    }
+
+    &[data-state="2"] {
+        --current-color: #{$sol-yellow};
+    }
+
+    &[data-state="3"] {
+        --current-color: #{$sol-red};
+    }
+
+    .slider-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .premium-slider {
+        width: 100%;
+        height: 6px;
+        border-radius: 5px;
+        cursor: pointer;
+        accent-color: var(--current-color);
+        transition: accent-color 0.3s ease;
+    }
+
+    .slider-ticks {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 12px;
+        font-size: 0.6em;
+        font-weight: bold;
+        color: $sol-base1;
+        text-transform: uppercase;
+        gap: 10px;
+
+        span {
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+            transform: rotate(-15deg);
+            transform-origin: center;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+
+            &:hover {
+                opacity: 1;
+                color: var(--current-color);
+            }
+        }
+    }
+}
+
+.mol-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    width: 100%;
+
+    &.is-horizontal {
+        flex-direction: row;
+        align-items: center;
+
+        .toggle-group {
+            width: auto;
+        }
+
+        .toggle-label {
+            margin-bottom: 0;
+            margin-right: 12px;
+        }
+    }
+
+    .toggle-group {
+        display: flex;
+        background: $sol-base2;
+        padding: 4px;
+        border-radius: 12px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        gap: 4px;
+        width: 100%;
+
+        .toggle-option {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            color: $sol-base01;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.03);
+            }
+
+            &.active {
+                background: $sol-base3;
+                color: $sol-blue;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                transform: translateY(-1px);
+
+                &[data-state="danger"] {
+                    color: $sol-red;
+                }
+
+                &[data-state="success"] {
+                    color: $sol-green;
+                }
+
+                &[data-state="warning"] {
+                    color: $sol-orange;
+                }
+
+                &[data-state="info"] {
+                    color: $sol-blue;
+                }
+            }
+        }
+    }
+}
+
+.mol-checkbox {
+    margin-bottom: 0.5rem;
+
+    .checkbox-toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        background: $sol-base3;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        text-align: left;
+
+        .checkbox-icon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: $sol-base2;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .checkbox-text {
+            font-weight: 600;
+            color: $sol-base01;
+            font-size: 0.9rem;
+        }
+
+        &:hover {
+            background: $sol-base2;
+        }
+
+        &.is-active {
+            background: rgba($sol-blue, 0.08);
+
+            .checkbox-icon {
+                background: $sol-blue;
+            }
+
+            .checkbox-text {
+                color: $sol-blue;
+            }
+        }
+    }
+}
+
+.mol-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+// ==========================================
+// 14. ORGANISMS (Functional Units)
+// ==========================================
+
+.org-card {
+    @extend %card-base;
+    background-color: $sol-base2 !important;
+    color: $sol-base01 !important;
+    font-size: 0.9em;
+    margin-bottom: 1.5rem;
+    overflow: hidden !important;
+    position: relative;
+    border-left: none !important;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 6px;
+        z-index: 5;
+        border-radius: inherit;
+    }
+
+    .card-header {
+        @extend %card-header;
+        color: $sol-base3 !important;
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+        padding-left: 1.2rem;
+    }
+
+    .card-body {
+        padding: 0.75rem 1rem 0.75rem 1.2rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    &.is-debug {
+        &::before {
+            background-color: $sol-base1 !important;
+        }
+
+        .card-header {
+            background-color: $sol-base1 !important;
+        }
+    }
+
+    &.is-info,
+    &.is-primary {
+        &::before {
+            background-color: $sol-blue !important;
+        }
+
+        .card-header {
+            background-color: $sol-blue !important;
+        }
+    }
+
+    &.is-success {
+        &::before {
+            background-color: $sol-green !important;
+        }
+
+        .card-header {
+            background-color: $sol-green !important;
+        }
+    }
+
+    &.is-warning {
+        &::before {
+            background-color: $sol-yellow !important;
+        }
+
+        .card-header {
+            background-color: $sol-yellow !important;
+        }
+    }
+
+    &.is-danger {
+        &::before {
+            background-color: $sol-red !important;
+        }
+
+        .card-header {
+            background-color: $sol-red !important;
+        }
+    }
+}
+
+.org-terminal {
+    font-family: $font-family-code;
+    background: $sol-base03;
+    border: 1px solid $sol-base02;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 13px;
+    color: $sol-base0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+
+    .terminal-header {
+        background: $sol-base02;
+        padding: 5px 15px;
+        border-bottom: 1px solid $sol-base01;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .terminal-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+
+        &.is-red {
+            background: $sol-red;
+        }
+
+        &.is-yellow {
+            background: $sol-yellow;
+        }
+
+        &.is-green {
+            background: $sol-green;
+        }
+    }
+
+    .terminal-body {
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 250px;
+    }
+}
+
+.org-monitor {
+    background: $sol-base2;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 6px;
+    margin: 10px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .monitor-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 4px 8px;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+
+        .monitor-title {
+            font-family: $font-family-base;
+            font-size: 0.9em;
+            font-weight: 800;
+            color: $sol-base01;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+    }
+
+    .monitor-grid {
+        padding: 2px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 6px;
+        overflow-y: visible;
+    }
+}
+
+.mol-stat-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 5px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--card-color, $sol-blue);
+        opacity: 0.7;
+    }
+
+    .stat-label {
+        font-family: $font-family-code;
+        font-size: 0.65em;
+        text-transform: uppercase;
+        color: $sol-base01;
+        margin-bottom: 1px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+    }
+
+    .stat-value {
+        font-size: 1.4em;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1px;
+        color: var(--card-color, $sol-blue);
+    }
+
+    .stat-comment {
+        font-size: 0.7em;
+        color: $sol-base1;
+        font-style: normal;
+        font-weight: 500;
+    }
+}
+
+.mol-versus-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    .versus-header {
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .versus-values {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+
+        .v-left,
+        .v-right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .v-left {
+            align-items: flex-start;
+        }
+
+        .v-right {
+            align-items: flex-end;
+        }
+
+        .v-val {
+            font-size: 1.8em;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .v-lbl {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+    }
+
+    .versus-bar {
+        height: 6px;
+        background: $sol-base2;
+        border-radius: 3px;
+        display: flex;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        .v-fill-a,
+        .v-fill-b {
+            height: 100%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    }
+}
+
+.mol-status-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 4px;
+        background: $sol-base1;
+        transition: background-color 0.3s ease;
+    }
+
+    .status-label {
+        font-family: $font-family-code;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+    }
+
+    .status-text {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: $sol-base1;
+        line-height: 1.2;
+    }
+
+    &.is-info {
+        &::before {
+            background: $sol-blue;
+        }
+
+        .status-text {
+            color: $sol-blue;
+        }
+    }
+
+    &.is-success {
+        &::before {
+            background: $sol-green;
+        }
+
+        .status-text {
+            color: $sol-green;
+        }
+    }
+
+    &.is-warning {
+        &::before {
+            background: $sol-yellow;
+        }
+
+        .status-text {
+            color: $sol-yellow;
+        }
+    }
+
+    &.is-danger {
+        &::before {
+            background: $sol-red;
+        }
+
+        .status-text {
+            color: $sol-red;
+        }
+    }
+}
+
+.mol-vumeter {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    .vumeter-label-cont {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: $font-family-code;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        color: $sol-base01;
+
+        .vumeter-value.is-danger {
+            color: $sol-red;
+        }
+    }
+
+    .vumeter-bar {
+        display: flex;
+        gap: 2px;
+        height: 16px;
+        width: 100%;
+
+        .vumeter-segment {
+            flex: 1;
+            background: $sol-base2;
+            border-radius: 1px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0,0,0,0.02);
+
+            &.active-green {
+                background: $sol-green;
+                box-shadow: 0 0 8px rgba($sol-green, 0.5);
+            }
+
+            &.active-yellow {
+                background: $sol-yellow;
+                box-shadow: 0 0 8px rgba($sol-yellow, 0.5);
+            }
+
+            &.active-red {
+                background: $sol-red;
+                box-shadow: 0 0 8px rgba($sol-red, 0.5);
+            }
+        }
+    }
+}
+
+.mol-history-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    min-height: 140px;
+    overflow: hidden;
+
+    .history-label {
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .history-container {
+        flex: 1;
+        width: 100%;
+        min-height: 120px;
+        position: relative;
+
+        .history-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: $sol-base01;
+            font-size: 0.8em;
+            font-style: italic;
+        }
+
+        svg {
+            overflow: hidden !important;
+        }
+    }
+}
+
+.mol-piechart-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    .pie-label {
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+    }
+
+    .pie-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pie-legend {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8em;
+            color: $sol-base01;
+
+            .legend-color {
+                width: 10px;
+                height: 10px;
+                border-radius: 2px;
+            }
+
+            .legend-name {
+                flex: 1;
+            }
+
+            .legend-value {
+                font-family: $font-family-code;
+                font-weight: bold;
+                color: $sol-base1;
+            }
+        }
+    }
+}
+
+.mol-progressbar-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    .progress-label-cont {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: $font-family-code;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 800;
+        color: $sol-base1;
+    }
+
+    .progress-track {
+        height: 10px;
+        background: $sol-base03;
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease;
+        }
+    }
+}
+
+// ==========================================
+// 14. TWEET EMBED
+// ==========================================
+
+.tweet-embed {
+    background: $sol-base3;
+    border: 1px solid rgba($sol-blue, 0.15);
+    border-radius: 15px;
+    padding: 18px;
+    margin: 20px 0;
+    max-width: 500px;
+    font-family: $font-family-base;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border-left: 5px solid $sol-blue;
+
+    .tweet-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: $sol-blue;
+        font-weight: 800;
+        font-size: 0.95em;
+
+        .twitter-icon {
+            width: 24px;
+            height: 24px;
+            filter: brightness(0) saturate(100%) invert(48%) sepia(94%) saturate(417%) hue-rotate(168deg) brightness(91%) contrast(101%); // Solarized Blue
+        }
+    }
+
+    .tweet-content {
+        font-size: 1.15em;
+        line-height: 1.45;
+        color: $sol-base00;
+        font-weight: 500;
+        margin-bottom: 10px;
+        display: block;
+
+        span {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-block;
+
+            &.highlight {
+                color: $sol-red !important;
+                font-weight: 800 !important;
+                text-shadow: 0 0 8px rgba($sol-red, 0.3);
+            }
+        }
+    }
+
+    .tweet-footer {
+        font-size: 0.8em;
+        color: $sol-base01;
+        opacity: 0.7;
+        font-weight: 500;
+    }
+}
+
+// ==========================================
+// 15. LED METER (VU STYLE)
+// ==========================================
+
+.led-meter-container {
+    background: $sol-base2;
+    border: 1px solid $sol-base1;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-family: $font-family-code;
+
+    .led-meter-label {
+        color: $sol-base01;
+        font-size: 0.75em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 800;
+
+        .status-danger {
+            color: $sol-red;
+        }
+    }
+
+    .led-bar {
+        display: flex;
+        gap: 3px;
+        height: 18px;
+        width: 100%;
+        align-items: stretch;
+
+        .led-segment {
+            flex: 1;
+            background: rgba($sol-base1, 0.4);
+            border-radius: 1px;
+
+            &.active-green {
+                background: $sol-green;
+                box-shadow: 0 0 8px rgba($sol-green, 0.5);
+            }
+
+            &.active-yellow {
+                background: $sol-yellow;
+                box-shadow: 0 0 8px rgba($sol-yellow, 0.5);
+            }
+
+            &.active-red {
+                background: $sol-red;
+                box-shadow: 0 0 8px rgba($sol-red, 0.5);
+            }
+        }
+    }
+
+    .led-stats {
+        margin-top: 10px;
+        font-size: 0.8em;
+        color: $sol-base01;
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 15px;
+    width: 100%;
+    margin-top: 15px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-item {
+        background: $sol-base2;
+        border: 1px solid $sol-base1;
+        border-radius: 10px;
+        padding: 12px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+
+        h5 {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            color: $sol-base01;
+            margin-bottom: 10px;
+            border-bottom: 1px solid $sol-base2;
+            padding-bottom: 5px;
+        }
+    }
+}
+
+// ==========================================
+// 16. CV DOCUMENT COMPONENTS
+// ==========================================
+.cv-title {
+    margin: 0;
+    color: $sol-base01;
+    font-size: 1.5em;
+    font-family: $font-family-base;
+}
+
+.cv-subtitle {
+    color: $sol-base1;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.cv-divider {
+    border: none;
+    border-bottom: 2px solid $sol-base2;
+    margin-bottom: 15px;
+}
+
+// ==========================================
+// 16. VERTICAL & RADIAL SLIDERS
+// ==========================================
+
+.mol-slider-vertical {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+    min-height: 200px;
+    padding: 15px;
+    background: $sol-base2;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
+    user-select: none;
+
+    .slider-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-align: center;
+    }
+
+    .slider-track-container {
+        flex: 1;
+        width: 40px;
+        position: relative;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .slider-fill {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--current-color, $sol-blue);
+        border-radius: 20px;
+        transition: height 0.1s ease-out, background-color 0.3s ease;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .slider-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+        margin: 0;
+        writing-mode: bt-lr;
+        /* Vertical range support */
+        appearance: slider-vertical;
+    }
+
+    .slider-value {
+        font-family: $font-family-code;
+        font-weight: 800;
+        font-size: 0.9em;
+        background: $sol-base3;
+        padding: 2px 8px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.mol-slider-radial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 130px;
+    padding: 15px;
+    background: $sol-base2;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+    .radial-container {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .radial-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+
+    .radial-track {
+        fill: none;
+        stroke: rgba(0, 0, 0, 0.05);
+        stroke-width: 8;
+    }
+
+    .radial-progress {
+        fill: none;
+        stroke: var(--current-color, $sol-yellow);
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.1s ease-out, stroke 0.3s ease;
+    }
+
+    .radial-center {
+        width: 60%;
+        height: 60%;
+        background: $sol-base3;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 2;
+    }
+
+    .radial-value {
+        font-family: $font-family-code;
+        font-weight: 800;
+        font-size: 1em;
+        color: var(--current-color, $sol-yellow);
+    }
+
+    .radial-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 5;
+    }
+}
+
+// ==========================================
+// 17. THERMOMETER SPECIALIZATION
+// ==========================================
+
+.mol-thermometer {
+    @extend .mol-slider-vertical;
+    min-width: 100px;
+
+    .slider-track-container {
+        width: 32px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 16px 16px 0 0;
+        box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+    }
+
+    .thermometer-bulb {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background: var(--current-color, $sol-blue);
+        border-radius: 50%;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 3;
+        transition: background-color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .thermometer-ticks {
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        pointer-events: none;
+        z-index: 2;
+
+        .tick {
+            height: 1.5px;
+            width: 6px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    .frost-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0);
+        backdrop-filter: blur(0px);
+        pointer-events: none;
+        z-index: 4;
+        transition: all 0.5s ease;
+        border-radius: inherit;
+    }
+
+    &.is-cold .frost-overlay {
+        background: rgba(147, 161, 161, 0.1);
+    }
+}
+
+.mol-blade-slider {
+    @extend .mol-slider-vertical;
+    min-width: 100px;
+
+    .slider-track-container {
+        width: 32px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: visible; // To allow blade overflow
+    }
+
+    .blade-segments {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column; // Best token at the top
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .slider-input {
+        transform: rotate(180deg);
+    }
+
+    .segment {
+        flex: 1;
+        background: $sol-cyan;
+        border-radius: 12px;
+        opacity: 0.2;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 5px rgba($sol-cyan, 0.1);
+
+        &.is-active {
+            opacity: 1;
+            box-shadow: 0 0 10px rgba($sol-cyan, 0.4);
+        }
+    }
+
+    .blade-handle {
+        position: absolute;
+        left: -10px;
+        right: -10px;
+        height: 4px;
+        background: $sol-red;
+        border-radius: 2px;
+        z-index: 5;
+        box-shadow: 0 0 10px rgba($sol-red, 0.6);
+        pointer-events: none;
+        transition: top 0.1s ease-out;
+
+        &::after {
+            content: "🔪";
+            position: absolute;
+            right: -18px;
+            top: -16px;
+            font-size: 1.2em;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+        }
+    }
+}
+/* Ratio Comparison Component */
+.mol-ratio-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+
+    .ratio-header {
+        font-size: 0.75em;
+        font-weight: 800;
+        color: $sol-base1;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        opacity: 0.8;
+    }
+
+    .ratio-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+
+        .r-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            
+            &.r-left { align-items: flex-start; }
+            &.r-right { align-items: flex-end; }
+
+            .r-label { 
+                font-size: 11px; 
+                color: $sol-base01; 
+                font-weight: 600;
+                margin-bottom: 2px; 
+            }
+            .r-val { 
+                font-family: $font-family-code; 
+                font-weight: 800; 
+                font-size: 1.4em; 
+                color: var(--r-color); 
+            }
+        }
+
+        .r-center {
+            flex: 0 0 auto;
+            position: relative;
+            
+            &::before {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: -40px;
+                right: -40px;
+                height: 1px;
+                background: rgba(0,0,0,0.05);
+                z-index: 1;
+            }
+
+            .r-multiplier {
+                position: relative;
+                z-index: 2;
+                background: $sol-base2;
+                color: $sol-base00;
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-weight: 900;
+                font-size: 13px;
+                border: 2px solid $sol-base3;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+                transition: all 0.3s ease;
+
+                &.is-gain {
+                    background: $sol-green;
+                    color: $sol-base3;
+                }
+            }
+        }
+    }
+
+    .ratio-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 4px 0;
+
+        .r-bar {
+            height: 6px;
+            border-radius: 3px;
+            transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            opacity: 0.8;
+            
+            &.r-bar-a { opacity: 0.4; }
+            &.r-bar-b { opacity: 1; }
+        }
+    }
+}

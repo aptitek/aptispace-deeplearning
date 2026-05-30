@@ -1,0 +1,301 @@
+
+/* ==========================================
+   GLOBAL SCROLLBAR STYLING
+   ========================================== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba($sol-base1, 0.4);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 10px;
+    
+    &:hover {
+        background: rgba($sol-base1, 0.8);
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+}
+
+// ==========================================
+// 3. LAYOUT & TYPOGRAPHY
+// ==========================================
+
+// Import fonts defined in tokens/quarto variables? 
+// No, standard CSS import is better in rules or in _tokens if allowed.
+// But _tokens is defaults.
+// Let's put the font import here or in main.
+
+// 4. TYPOGRAPHY GÉNÉRALE
+body {
+    font-family: $font-family-base;
+    font-variation-settings: 'MONO' 0, 'CASL' 0, 'slnt' 0, 'CRSV' 0.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: $sol-base01;
+    font-weight: $headings-font-weight;
+    font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+}
+
+pre,
+code,
+kbd,
+samp {
+    font-family: $font-family-code;
+    font-variation-settings: 'MONO' 1;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+// 5. GESTION DES LIENS (Corps du texte)
+main {
+    a {
+        color: $sol-blue;
+        text-decoration: none;
+        border-bottom: 1px dotted transparent;
+        transition: all 0.2s ease;
+
+        &:visited {
+            color: $sol-violet !important;
+        }
+
+        &:hover {
+            color: $sol-orange !important;
+            border-bottom-color: $sol-orange;
+        }
+    }
+}
+
+// ==========================================
+// 4. SIDEBAR NAVIGATION
+// ==========================================
+
+div.sidebar-item-container .sidebar-item-text.sidebar-link {
+    color: $sol-base01 !important;
+    font-family: $font-family-base;
+    font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+
+    &:visited {
+        color: $sol-base01 !important;
+    }
+
+    &:hover {
+        color: $sol-orange !important;
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+}
+
+div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
+    color: $sol-blue !important;
+    font-weight: 800;
+    border-left: 3px solid $sol-blue;
+    background-color: transparent;
+    padding-left: 0.8rem;
+}
+
+// Titre du menu gauche
+.sidebar-title {
+    color: $sol-base02;
+    font-weight: 900;
+}
+
+// ==========================================
+// 5. TABLE OF CONTENTS (Right Sidebar)
+// ==========================================
+
+#quarto-toc {
+
+    // Les liens inactifs de la TOC
+    .nav-link {
+        color: $sol-base01;
+        font-family: $font-family-base;
+        font-size: 0.85em;
+        font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: $sol-orange !important;
+        }
+    }
+}
+
+// L'élément ACTIF (Vert Solarized)
+.sidebar nav[role=doc-toc] ul>li>a.active,
+.sidebar nav[role=doc-toc] ul>li>ul>li>a.active {
+    color: $sol-green !important;
+    font-weight: 700;
+
+    // La petite barre verticale à gauche de l'élément actif
+    border-left: 2px solid $sol-green !important;
+    padding-left: 10px;
+    background-color: transparent;
+}
+
+// ==========================================
+// A. CORE SEMANTIC COMPONENTS (Extends)
+// ==========================================
+
+// Base Container/Card Component
+%card-base {
+    background-color: $sol-base3;
+    border: 1px solid $sol-base1;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    margin-bottom: 2rem;
+    font-family: $font-family-base;
+}
+
+// Emphasized Container (Softer, deeper shadow)
+%card-emphasized {
+    @extend %card-base;
+    background: linear-gradient(145deg, rgba($sol-base3, 1), rgba($sol-base3, 0.8));
+    border-radius: 16px;
+    border-color: rgba($sol-base1, 0.5);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+// Unified Header for Containers (IDE, Jupyter, Debug)
+%card-header {
+    background-color: $sol-base2;
+    padding: 8px 12px;
+    border-bottom: 1px solid $sol-base1;
+    color: $sol-base01;
+    font-weight: 700;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+// Flexbox Helpers
+%flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+%flex-col-center {
+    @extend %flex-center;
+    flex-direction: column;
+}
+
+// Base Visualization Canvas
+%viz-canvas {
+    position: relative;
+    background: transparent;
+    overflow: hidden;
+}
+
+// ==========================================
+// 11. GENERAL UTILITY CLASSES
+// ==========================================
+
+.text-emphasis-center {
+    text-align: center !important;
+    margin: 2rem 0 !important;
+    font-style: italic;
+    color: $sol-base01; 
+    font-size: 1.05em;
+}
+
+// Custom Zoom Link System
+.zoom {
+    display: inline-block;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.85em;
+    font-weight: 700;
+    border: 1.5px solid $sol-blue;
+    border-radius: 6px;
+    color: $sol-blue !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+    margin: 1rem 0;
+    background-color: transparent;
+    font-family: $font-family-base;
+
+    &:hover {
+        background-color: $sol-blue;
+        color: $sol-base3 !important;
+        box-shadow: 0 4px 12px rgba($sol-blue, 0.2);
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.ratio-16x9 {
+    @extend %viz-canvas;
+    padding-bottom: 56.25%;
+    height: 0;
+    width: 100%;
+    border-radius: 8px;
+
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+}
+
+.comparison-container {
+    @extend %card-base;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: $sol-base3; // Consistent with theme
+
+    .comparison-item {
+        flex: 1;
+        text-align: center;
+        h4 { margin: 0 0 1.2rem 0; }
+    }
+}
+
+.flex-centered-col {
+    @extend %flex-col-center;
+}
+
+.text-sol-yellow { color: $sol-yellow !important; }
+.text-sol-orange { color: $sol-orange !important; }
+.text-sol-red    { color: $sol-red !important; }
+.text-sol-magenta{ color: $sol-magenta !important; }
+.text-sol-violet { color: $sol-violet !important; }
+.text-sol-blue   { color: $sol-blue !important; }
+.text-sol-cyan   { color: $sol-cyan !important; }
+.text-sol-green  { color: $sol-green !important; }
+.text-sol-base03 { color: $sol-base03 !important; }
+.text-sol-base02 { color: $sol-base02 !important; }
+.text-sol-base01 { color: $sol-base01 !important; }
+.text-sol-base00 { color: $sol-base00 !important; }
+.text-sol-base0  { color: $sol-base0 !important; }
+.text-sol-base1  { color: $sol-base1 !important; }
+.text-sol-base2  { color: $sol-base2 !important; }
+.text-sol-base3  { color: $sol-base3 !important; }
+
+.bg-sol-red-subtle { background-color: rgba($sol-red, 0.2) !important; }
+.bg-sol-blue-subtle { background-color: rgba($sol-blue, 0.2) !important; }
+.bg-sol-green-subtle { background-color: rgba($sol-green, 0.1) !important; }
+
+

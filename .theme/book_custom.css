@@ -1,0 +1,14 @@
+/* Masquer la numérotation des "Parts" dans la barre latérale pour un rendu plus épuré */
+.sidebar .part-number {
+    display: none;
+}
+
+/* S'assurer que le titre de la Part reste bien visible et stylisé */
+.sidebar .part-title {
+    font-weight: bold;
+    margin-top: 1.5em;
+    color: var(--bs-primary);
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.05em;
+}
