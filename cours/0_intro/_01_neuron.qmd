@@ -1,0 +1,121 @@
+## Le Neurone "Supermarché" (Combinaison Linéaire & ReLU)
+
+::: {.card}
+:::: {.card-header}
+🎛️ Paramètres
+::::
+:::: {.card-body}
+
+```{ojs}
+//| echo: false
+viewof trafficA = Inputs.range([0, 500], {value: 300, step: 10, label: "Trafic Zone A (x₁)"})
+viewof weightA = Inputs.range([0, 3], {value: 1.5, step: 0.1, label: "Route A (w₁)"})
+
+```
+
+---
+
+```{ojs}
+//| echo: false
+viewof trafficB = Inputs.range([0, 500], {value: 150, step: 10, label: "Trafic Zone B (x₂)"})
+viewof weightB = Inputs.range([0, 3], {value: 0.5, step: 0.1, label: "Route B (w₂)"})
+
+```
+
+---
+
+```{ojs}
+//| echo: false
+viewof bias = Inputs.range([-300, 300], {value: 100, step: 10, label: "Clients Piétons (b)"})
+
+```
+
+::::
+
+:::
+
+::: {.card}
+:::: {.card-header}
+🕸️ Flux de Données [Réseau & Activation]{.badge .bg-success .float-end}
+::::
+:::: {.card-body}
+
+::::: {#plot-supermarket-network .ram-simulator-wrapper}
+:::::
+
+```{ojs}
+//| echo: false
+import { createGraph } from "../../assets/js/graph.js"
+
+// 1. Calculs mathématiques réactifs
+Z = (trafficA * weightA) + (trafficB * weightB) + bias
+isActive = Z >= 200
+revenus = isActive ? (Z - 200) * 50 : 0
+
+// 2. Moteur Force Graph avec les particules de flux
+renderSupermarketNetwork = {
+  const nodes = [
+    { id: "A", label: () => `Zone A\n(${window.simState?.trafficA ?? 300})`, fx: -160, fy: -60, status: "input", shape: "pill" },
+    { id: "B", label: () => `Zone B\n(${window.simState?.trafficB ?? 150})`, fx: -160, fy: 60, status: "input", shape: "pill" },
+    { id: "Bias", label: () => `Piétons\n(b = ${window.simState?.bias ?? 100})`, fx: 0, fy: -110, status: "bias", shape: "circle" },
+    { id: "Neuron", label: () => `Magasin (Σ)\nZ = ${window.simState?.Z ?? 500}`, fx: 0, fy: 0, status: "neuron", shape: "rounded rect" },
+    { id: "Output", label: () => `Revenus\n${window.simState?.revenus ?? 0} €`, fx: 160, fy: 0, status: () => window.simState?.isActive ? "active" : "inactive", shape: "diamond", labelPosition: "bottom" }
+  ];
+
+  const links = [
+    { source: "A", target: "Neuron", label: () => `w₁ = ${(window.simState?.weightA ?? 1.5).toFixed(1)}`, status: "flow", width: () => 1 + (window.simState?.weightA ?? 1.5) * 2.5 },
+    { source: "B", target: "Neuron", label: () => `w₂ = ${(window.simState?.weightB ?? 0.5).toFixed(1)}`, status: "flow", width: () => 1 + (window.simState?.weightB ?? 0.5) * 2.5 },
+    { source: "Bias", target: "Neuron", label: "Biais", status: "biasLink", width: () => 1 + Math.abs(window.simState?.bias ?? 100) / 100 },
+    {
+      source: "Neuron",
+      target: "Output",
+      label: "ReLU",
+      status: () => window.simState?.isActive ? "activeFlow" : "inactiveFlow",
+      width: () => window.simState?.isActive ? 2.5 + Math.min(6, (window.simState?.revenus ?? 0) / 2500) : 1,
+      condition: () => {
+        const active = window.simState?.isActive ?? true;
+        return { value: active, label: active ? "Z ≥ 200" : "Z < 200" };
+      }
+    }
+  ];
+
+  const graph = createGraph("#plot-supermarket-network", { nodes, links }, {
+    nodeRadius: 25,
+    fontSize: 9,
+    enableZoom: false,
+    enablePan: false,
+    enableDrag: false,
+    zoomToFit: true,
+    zoomToFitPadding: 40,
+    styles: {
+      input: { nodeBg: "rgba(38, 139, 210, 0.15)", nodeBorder: "var(--sol-blue)", nodeText: "var(--sol-blue)" },
+      bias: { nodeBg: "rgba(211, 54, 130, 0.15)", nodeBorder: "var(--sol-magenta)", nodeText: "var(--sol-magenta)" },
+      neuron: { nodeBg: "rgba(181, 137, 0, 0.15)", nodeBorder: "var(--sol-yellow)", nodeText: "var(--sol-yellow)" },
+      active: { nodeBg: "rgba(133, 153, 0, 0.15)", nodeBorder: "var(--sol-green)", nodeText: "var(--sol-green)" },
+      inactive: { nodeBg: "rgba(220, 50, 47, 0.15)", nodeBorder: "var(--sol-red)", nodeText: "var(--sol-red)" },
+
+      flow: { linkStroke: "var(--sol-base1)", linkText: "var(--sol-base01)", particles: 3, particleColor: "var(--sol-blue)" },
+      biasLink: { linkStroke: "var(--sol-magenta)", linkText: "var(--sol-magenta)", particles: 1, particleColor: "var(--sol-magenta)", particleSpeed: 0.005 },
+      activeFlow: { linkStroke: "var(--sol-green)", linkText: "var(--sol-green)", particles: 5, particleColor: "var(--sol-green)", particleSpeed: 0.02 },
+      inactiveFlow: { linkStroke: "var(--sol-red)", linkText: "var(--sol-red)", particles: 0 }
+    }
+  });
+
+  invalidation.then(() => { if (graph && graph.destroy) graph.destroy(); });
+  return graph;
+}
+
+// 3. Mise à jour dynamique de l'état sans re-création du graphe
+updateState = {
+  window.simState = { trafficA, trafficB, weightA, weightB, bias, Z, revenus, isActive };
+  if (renderSupermarketNetwork && typeof renderSupermarketNetwork.refresh === "function") {
+    renderSupermarketNetwork.refresh();
+  }
+  return html``;
+}
+
+```
+
+::::
+
+:::

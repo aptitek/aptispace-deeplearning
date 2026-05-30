@@ -3,7 +3,9 @@ cloudflare-project: "aptispace-deeplearning"
 project:
   type: book
   output-dir: _site
-  pre-render: bash _extensions/aptitek/download-fonts/download_fonts.sh
+  pre-render:
+    - python3 scripts/generate_chapters.py
+    - bash _extensions/aptitek/download-fonts/download_fonts.sh
   post-render: []
   resources:
     - "lab/**"
@@ -40,6 +42,11 @@ book:
         - meta/module.qmd
         - meta/syllabus.qmd
         - meta/planning.qmd
+    # DYNAMIC_CHAPTERS_START
+    - part: "🔭 Fondations & Neurones"
+      chapters:
+        - cours/0_intro/index.qmd
+    # DYNAMIC_CHAPTERS_END
     - part: "📚 Annexes"
       chapters:
         - glossaire.qmd
@@ -66,5 +73,7 @@ format:
     number-sections: true
     header-includes: |
       <meta name="robots" content="noindex, nofollow">
+    include-in-header:
+      - text: '<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>'
     include-after-body: assets/fix_links.html
     css: .theme/book_custom.css

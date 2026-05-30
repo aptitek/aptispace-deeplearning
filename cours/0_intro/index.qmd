@@ -1,0 +1,16 @@
+---
+title: "Introduction au Deep Learning"
+part: "🔭 Fondations & Neurones"
+---
+
+# 🚀 Introduction au Deep Learning
+
+Ce chapitre pose les bases de l'apprentissage profond en explorant le fonctionnement d'un neurone artificiel individuel.
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include _01_neuron.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->
+
+## 🌉 Conclusion et Transition
+
+Nous avons vu comment un neurone unique combine ses entrées avec des poids et un biais, puis applique une fonction d'activation comme ReLU. Dans la suite, nous verrons comment ces neurones s'organisent pour former des réseaux capables d'apprendre des représentations complexes.

@@ -11,12 +11,14 @@ tasks:
   render:
     desc: Render the Quarto site
     cmds:
+      - python3 scripts/generate_chapters.py
       - echo "Rendering Quarto site..."
       - quarto render
 
   preview:
     desc: Preview the Quarto site with live reload
     cmds:
+      - python3 scripts/generate_chapters.py
       - echo "Starting Quarto preview server..."
       - quarto preview
 
