@@ -1,0 +1,162 @@
+// ==========================================
+// CARD WINDOW (macOS-style chrome)
+// ==========================================
+
+.card-window {
+    // Map to global semantic tokens with SCSS compile-time fallbacks
+    --card-window-bg:            var(--card-bg,            #{$sol-base3});
+    --card-window-border:        var(--card-border,         #{rgba($sol-base01, 0.12)});
+    --card-window-shadow:        var(--card-shadow,         0 4px 12px #{rgba($sol-base03, 0.03)});
+    --card-window-shadow-hover:  var(--card-shadow-hover,   0 8px 24px #{rgba($sol-base03, 0.05)});
+    --card-window-border-hover:  var(--card-border-hover,   #{rgba($sol-base1, 0.4)});
+    --card-window-header-bg:     var(--card-header-bg,      #{$sol-base2});
+    --card-window-header-border: var(--card-header-border,  #{rgba($sol-base01, 0.08)});
+
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--card-window-bg);
+    border: 1px solid var(--card-window-border);
+    box-shadow: var(--card-window-shadow);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    &:hover {
+        box-shadow: var(--card-window-shadow-hover);
+        border-color: var(--card-window-border-hover);
+    }
+
+    // Title bar with macOS control dots
+    > .card-header {
+        display: flex !important;
+        align-items: center !important;
+        min-height: 38px !important;
+        height: auto !important;
+        padding: 0 16px !important;
+        box-sizing: border-box;
+        user-select: none;
+        font-family: $font-family-code;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: $sol-base01;
+        background-color: var(--card-window-header-bg) !important;
+        border-bottom: 1px solid var(--card-window-header-border) !important;
+        border-radius: 0 !important;
+
+        &::before {
+            content: "";
+            display: inline-block;
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
+            background-color: $sol-red;
+            border-radius: 50%;
+            box-shadow: 14px 0 0 $sol-yellow, 28px 0 0 $sol-green;
+            margin-right: 42px;
+            opacity: 0.85;
+        }
+    }
+}
+
+// ==========================================
+// PANEL-TABSET — macOS chrome header
+// ==========================================
+
+.panel-tabset {
+    .nav-tabs {
+        display: flex !important;
+        align-items: center !important;
+        height: 38px !important;
+        padding: 0 16px !important;
+        user-select: none !important;
+        list-style: none !important;
+        margin-bottom: 0 !important;
+        background-color: var(--card-header-bg, #{$sol-base2}) !important;
+        border-bottom: 1px solid var(--card-header-border, #{rgba($sol-base01, 0.08)}) !important;
+
+        // macOS control dots
+        &::before {
+            content: "" !important;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+            width: 8px !important;
+            height: 8px !important;
+            background-color: $sol-red !important;
+            border-radius: 50% !important;
+            box-shadow: 14px 0 0 $sol-yellow, 28px 0 0 $sol-green !important;
+            margin-right: 42px !important;
+            opacity: 0.85 !important;
+        }
+
+        .nav-item {
+            margin-bottom: -1px !important;
+            border: none !important;
+            padding: 0 !important;
+            list-style: none !important;
+        }
+
+        .nav-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            border-top-left-radius: 6px !important;
+            border-top-right-radius: 6px !important;
+            padding: 5px 14px !important;
+            font-family: $font-family-code !important;
+            font-size: 0.8rem !important;
+            height: 28px !important;
+            line-height: 1 !important;
+            margin-bottom: -1px !important;
+            transition: all 0.15s ease !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+            border: 1px solid transparent !important;
+            border-bottom: none !important;
+            color: var(--card-tab-inactive-color, #{$sol-base1}) !important;
+
+            &:hover {
+                background-color: rgba(var(--sol-base01-rgb), 0.03) !important;
+                color: var(--card-tab-active-color, #{$sol-base01}) !important;
+            }
+
+            &.active {
+                background-color: var(--card-bg, #{$sol-base3}) !important;
+                border-color: rgba(var(--sol-base01-rgb), 0.08) !important;
+                border-bottom-color: var(--card-bg, #{$sol-base3}) !important;
+                color: var(--card-tab-active-color, #{$sol-base01}) !important;
+                font-weight: 700 !important;
+            }
+        }
+    }
+
+    .tab-content {
+        background-color: var(--card-bg, #{$sol-base3}) !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 0 8px 8px !important;
+
+        .tab-pane {
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background-color: transparent !important;
+        }
+    }
+}
+
+// Suppress duplicate dots when panel-tabset sits inside card-window
+// (card-window's card-header already provides the macOS chrome)
+.card-window .panel-tabset .nav-tabs::before {
+    content: none !important;
+}
+
+// ==========================================
+// CARD CONTROL ROW (shared slider bar)
+// ==========================================
+
+.card-control-row {
+    background-color: var(--card-header-bg, #{$sol-base2});
+    border-top: 1px solid var(--card-header-border, #{rgba($sol-base01, 0.08)});
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+}

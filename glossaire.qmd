@@ -8,33 +8,70 @@ Ce glossaire regroupe les termes techniques et concepts clés abordés tout au l
 
 ### A
 
+- **Actor-Critic (Acteur-Critique) :** Architecture d'apprentissage par renforcement où le modèle est divisé en deux parties : l'Acteur (qui choisit les actions) et le Critique (qui évalue ces actions).
 - **Apprentissage Supervisé (Supervised Learning) :** Type d'apprentissage automatique où le modèle apprend à partir d'exemples étiquetés (contenant l'entrée et la sortie attendue).
 - **Apprentissage Non Supervisé (Unsupervised Learning) :** Type d'apprentissage automatique où le modèle cherche des structures ou regroupements cachés dans des données non étiquetées.
+- **Apprentissage par Renforcement Profond (Deep Reinforcement Learning - DRL) :** Combinaison de l'apprentissage par renforcement et du deep learning, où un agent apprend à prendre des décisions optimales par essai-erreur en maximisant des récompenses grâce à des réseaux de neurones.
+- **Apprentissage par Transfert (Transfer Learning) :** Méthode consistant à réutiliser un modèle pré-entraîné sur une tâche source volumineuse comme point de départ pour l'entraîner sur une tâche cible similaire mais avec moins de données.
 - **Arbre de Décision (Decision Tree) :** Modèle prédictif qui segmente les données en sous-groupes selon des règles logiques successives (si/alors) pour aboutir à une décision ou une valeur estimée.
+- **Attention (Self-Attention / Multi-Head Attention) :** Mécanisme permettant à un modèle de se focaliser sur différentes parties d'une séquence d'entrée pour calculer sa représentation, indépendamment de la distance entre les éléments.
+- **Autoencodeur Variationnel (VAE - Variational Autoencoder) :** Modèle génératif probabiliste qui compresse les données d'entrée dans un espace latent continu et structuré, permettant ensuite de générer de nouvelles données réalistes en échantillonnant cet espace.
 
 ### B
 
-- **Bootstrap (Bagging) :** Méthode de rééchantillonnage consistant à créer plusieurs sous-ensembles par tirage avec remplacement à partir du dataset d'origine pour entraîner différents modèles en parallèle (utilisé dans Random Forest).
 - **Backpropagation (Rétropropagation du gradient) :** Algorithme central du Deep Learning qui calcule les gradients de l'erreur par rapport à chaque poids du réseau, de la couche de sortie vers la couche d'entrée, afin d'ajuster les paramètres.
+- **BERT (Bidirectional Encoder Representations from Transformers) :** Modèle de langage pré-entraîné par Google, basé sur l'encodeur du Transformer, conçu pour comprendre le contexte bidirectionnel (gauche et droite) d'un mot dans une phrase.
+- **Bootstrap (Bagging) :** Méthode de rééchantillonnage consistant à créer plusieurs sous-ensembles par tirage avec remplacement à partir du dataset d'origine pour entraîner différents modèles en parallèle (utilisé dans Random Forest).
 
 ### C
 
-- **Courbe ROC :** Graphique représentant la performance d'un classifieur binaire à tous les seuils de classification, en affichant le taux de vrais positifs en fonction du taux de faux positifs.
 - **Clustering :** Technique non supervisée visant à regrouper les individus d'un dataset en plusieurs groupes (clusters) homogènes selon leur similarité.
+- **CNN (Convolutional Neural Network / Réseau de neurones convolutif) :** Architecture de réseau de neurones spécialisée dans le traitement de données à grille spatiale (comme les images), utilisant des opérations de convolution pour extraire automatiquement des caractéristiques locales.
+- **Connexion Résiduelle (Residual / Skip Connection) :** Connexion qui court-circuite une ou plusieurs couches en ajoutant directement l'entrée à la sortie de ces couches, facilitant la propagation des gradients dans les réseaux très profonds (introduite par ResNet).
+- **Connexions Denses (Dense Connections) :** Motif d'architecture (utilisé dans DenseNet) où chaque couche reçoit en entrée les cartes de caractéristiques de toutes les couches précédentes, favorisant la réutilisation des caractéristiques et le flux d'informations.
+- **Constitutional AI (IA constitutionnelle) :** Méthode d'alignement des modèles développée par Anthropic pour guider le comportement d'une IA selon une "constitution" de principes, en utilisant un modèle pour auto-évaluer et corriger ses propres réponses sans intervention humaine constante.
+- **Courbe ROC :** Graphique représentant la performance d'un classifieur binaire à tous les seuils de classification, en affichant le taux de vrais positifs en fonction du taux de faux positifs.
 
 ### D
 
+- **DCGAN (Deep Convolutional GAN) :** Extension des GANs intégrant des couches convolutives et des convolutions transposées, posant les bases de la génération d'images haute résolution.
+- **Détection d'Objets (Object Detection) :** Tâche de vision par ordinateur consistant à localiser (par des boîtes englobantes) et classifier un ou plusieurs objets dans une image (ex: YOLO, Faster R-CNN).
 - **Descente de Gradient (Gradient Descent) :** Algorithme d'optimisation utilisé pour minimiser la fonction de coût d'un modèle en ajustant ses poids pas à pas dans le sens inverse du gradient.
+- **Diffusion (Modèle de Diffusion / DDPM) :** Classe de modèles génératifs qui apprennent à débruiter progressivement des données à partir d'un bruit gaussien pur pour générer de nouveaux échantillons réalistes (ex : Stable Diffusion).
+- **DQN (Deep Q-Network) :** Algorithme d'apprentissage par renforcement profond associant le Q-Learning à un réseau de neurones profond pour estimer la valeur des actions dans des environnements à grands espaces d'états.
+
+### E
+
+- **Équilibre de Nash (Nash Equilibrium) :** Situation de théorie des jeux où aucun joueur (ex: générateur ou discriminateur dans un GAN) ne peut améliorer son gain en changeant unilatéralement sa stratégie.
+- **Espace Latent (Latent Space) :** Espace vectoriel de dimension réduite dans lequel un modèle projette et organise des données complexes, capturant leurs caractéristiques intrinsèques les plus importantes.
 
 ### F
 
 - **Feature Engineering :** Processus de transformation, combinaison ou création de nouvelles variables explicatives (features) à partir des données brutes afin d'améliorer la performance et la pertinence d'un modèle d'apprentissage.
+- **Fine-tuning (Ajustement fin) :** Processus consistant à réentraîner légèrement un modèle pré-entraîné sur un nouvel ensemble de données plus restreint pour l'adapter à une tâche spécifique.
+- **Fine-tuning par Instruction (Instruction Fine-Tuning - IFT) :** Technique consistant à entraîner un LLM sur des paires d'instructions et de réponses attendues afin qu'il atteigne le niveau requis pour suivre des consignes conversationnelles.
 - **Fonction d'Activation (Activation Function) :** Fonction mathématique introduisant une non-linéarité dans le neurone (ex: ReLU, Sigmoïde, Softmax), lui permettant de modéliser des relations complexes.
 - **Fonction de Coût (Loss Function) :** Formule calculant l'écart ou la pénalité entre la prédiction du modèle et la valeur réelle attendue.
+
+### G
+
+- **GAN (Generative Adversarial Network / Réseau antagoniste génératif) :** Architecture composée de deux réseaux de neurones (un générateur et un discriminateur) s'entraînant mutuellement dans un cadre de théorie des jeux pour générer de nouvelles données réalistes.
+- **Générateur / Discriminateur (Generator / Discriminator) :** Les deux composants clés d'un GAN : le générateur crée de fausses données pour tromper le discriminateur, tandis que le discriminateur apprend à distinguer les vraies données des fausses (ex: StyleGAN, Conditional GAN).
+- **GPT (Generative Pre-trained Transformer) :** Famille de grands modèles de langage développés par OpenAI, basés sur le décodeur du Transformer et entraînés de manière autoregressive pour prédire le mot suivant.
+- **GRU (Gated Recurrent Unit) :** Variante simplifiée des LSTM conçue pour traiter les données séquentielles avec moins de paramètres tout en limitant le problème de disparition du gradient.
+
+### I
+
+- **Initialisation des poids (Weight Initialization) :** Choix des valeurs de départ attribuées aux paramètres d'un réseau de neurones (ex: Xavier/Glorot, He), crucial pour assurer la stabilité et éviter l'explosion ou la disparition des gradients lors de l'entraînement.
 
 ### K
 
 - **K-Means :** Algorithme de clustering non supervisé très populaire qui partitionne les données en K groupes distincts en minimisant la distance entre les points et le centroïde de leur groupe.
+
+### L
+
+- **LLM (Large Language Model / Grand modèle de langage) :** Modèle de traitement automatique du langage naturel contenant des milliards de paramètres, entraîné sur d'immenses corpus de textes pour comprendre, générer et manipuler du texte de façon quasi-humaine.
+- **LSTM (Long Short-Term Memory) :** Architecture de réseau de neurones récurrent dotée de mécanismes de portes (gates) permettant de mémoriser et de propager des informations sur de longues séquences temporelles sans perte de gradient.
 
 ### M
 
@@ -47,18 +84,29 @@ Ce glossaire regroupe les termes techniques et concepts clés abordés tout au l
 
 ### P
 
-- **Perceptron Multicouche (PMC / MLP) :** Architecture de base d'un réseau de neurones artificiel profond, composée d'une couche d'entrée, d'une ou plusieurs couches cachées, et d'une couche de sortie entièrement connectées (fully connected).
 - **PCA (ACP - Analyse en Composantes Principales) :** Technique de réduction de dimension qui projette les données dans un espace de dimension inférieure tout en conservant le maximum de variance possible.
+- **Perceptron Multicouche (PMC / MLP) :** Architecture de base d'un réseau de neurones artificiel profond, composée d'une couche d'entrée, d'une ou plusieurs couches cachées, et d'une couche de sortie entièrement connectées (fully connected).
+- **Policy Gradient (Gradient de Politique) :** Famille d'algorithmes d'apprentissage par renforcement qui optimisent directement les paramètres de la politique de l'agent (sa prise de décision) en suivant la direction du gradient de la récompense attendue.
+- **PPO (Proximal Policy Optimization) :** Algorithme populaire d'apprentissage par renforcement par gradient de politique, qui améliore la stabilité de l'entraînement en limitant l'écart maximal autorisé pour la mise à jour de la politique à chaque étape.
 
 ### R
 
 - **Régression Linéaire :** Modèle cherchant à établir une relation linéaire entre une variable continue cible et une ou plusieurs variables explicatives.
 - **Régression Logistique :** Algorithme prédictif utilisé pour les problèmes de classification binaire, estimant la probabilité qu'un événement survienne.
 - **Régularisation (L1/L2) :** Techniques (comme Lasso ou Ridge) qui pénalisent la complexité ou la taille des coefficients d'un modèle afin d'éviter le surapprentissage.
+- **RLHF (Reinforcement Learning from Human Feedback) :** Méthode d'alignement des modèles de langage associant l'apprentissage par renforcement à des évaluations et préférences fournies par des humains pour rendre les réponses plus sûres, utiles et honnêtes.
+- **RNN (Recurrent Neural Network / Réseau de neurones récurrent) :** Type de réseau de neurones conçu pour traiter des données séquentielles (textes, séries temporelles) en maintenant un état interne (mémoire) alimenté par les éléments précédents.
+
+### S
+
+- **SAC (Soft Actor-Critic) :** Algorithme d'apprentissage par renforcement sans modèle (model-free) et hors-politique (off-policy), maximisant à la fois la récompense attendue et l'entropie de la politique pour encourager l'exploration.
+- **Segmentation d'Instances (Instance Segmentation) :** Tâche de vision par ordinateur consistant à détecter et délimiter précisément (au niveau du pixel) chaque objet individuel présent dans une image, même s'ils appartiennent à la même catégorie.
+- **Segmentation Sémantique (Semantic Segmentation) :** Tâche de vision par ordinateur consistant à classifier chaque pixel d'une image dans une catégorie prédéfinie (ex: route, piéton, ciel), sans distinguer les instances individuelles d'une même classe.
 
 ### T
 
 - **Tenseur (Tensor) :** Structure de données multidimensionnelle (généralisation des scalaires, vecteurs et matrices) qui constitue l'unité fondamentale de transport et de calcul dans les frameworks de Deep Learning.
+- **Transformer :** Architecture de réseau de neurones basée entièrement sur des mécanismes d'attention (sans récurrence ni convolution), devenue le standard pour le traitement du langage naturel et d'autres tâches complexes.
 
 ### U
 
@@ -67,3 +115,9 @@ Ce glossaire regroupe les termes techniques et concepts clés abordés tout au l
 ### V
 
 - **Validation Croisée (Cross-Validation) :** Technique d'évaluation consistant à diviser le jeu de données en K parties (folds), à entraîner le modèle sur K-1 parties et à le tester sur la partie restante, en répétant le processus K fois pour fiabiliser la métrique de performance.
+- **Vanishing Gradient (Gradient évanescent) :** Problème survenant lors de l'entraînement de réseaux de neurones profonds par rétropropagation, où les gradients diminuent de manière exponentielle en se rapprochant des premières couches du réseau, bloquant ou ralentissant considérablement leur apprentissage.
+- **Vision Transformer (ViT) :** Adaptation de l'architecture Transformer aux tâches de vision par ordinateur, découpant une image en patchs traités comme des "mots" d'une phrase.
+
+### Y
+
+- **YOLO (You Only Look Once) :** Famille d'algorithmes de détection d'objets en temps réel très rapides, qui prédisent à la fois les boîtes englobantes (bounding boxes) et les classes associées en une seule passe à travers le réseau.

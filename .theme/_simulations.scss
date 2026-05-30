@@ -1,5 +1,78 @@
 
 // ==========================================
+// GLOBAL: Controls Group Layout
+// Works inside .org-controls, .card-control-row, or any container.
+// ==========================================
+
+.org-controls-group {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .observablehq, .observablehq-viewof {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 15px;
+
+        form {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 15px;
+            width: 100% !important;
+            margin: 0 !important;
+
+            label {
+                gap: 10px !important;
+                font-size: 0.72em !important;
+                font-weight: 700 !important;
+                color: $sol-base01 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                flex-wrap: nowrap !important;
+                align-items: center !important;
+            }
+            input[type="range"] {
+                accent-color: $sol-blue;
+                cursor: pointer;
+            }
+            output {
+                font-family: $font-family-code !important;
+                font-size: 1em !important;
+                font-weight: 800 !important;
+                color: $sol-blue !important;
+                background: rgba(var(--sol-blue-rgb), 0.1) !important;
+                padding: 1px 6px !important;
+                border-radius: 4px;
+                min-width: 28px !important;
+                text-align: right;
+                white-space: nowrap;
+                width: auto !important;
+            }
+        }
+
+        &:has(button), &:has(.atom-btn) {
+            flex: 0 0 auto !important;
+        }
+    }
+}
+
+// Separator between stacked groups (in any container)
+.org-controls-group + .org-controls-group {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: 8px;
+    margin-top: 4px;
+}
+
+// ==========================================
 // 15. TEMPLATES (Layout Structures)
 // ==========================================
 
@@ -21,51 +94,20 @@
     &::before {
         display: none !important;
     }
-    
+
     // Header Title
     .tpl-main-title {
         display: none !important;
     }
 
-    // Controls Area
+    // Controls Area (visual wrapper only — layout handled by .org-controls-group)
     .org-controls {
         background: $sol-base3;
         padding: 10px 20px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        
-        .org-controls-group {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: nowrap !important;
-            gap: 40px;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-
-            .observablehq, .observablehq-viewof {
-                flex: 1 !important;
-                display: flex !important;
-                flex-direction: row !important;
-                align-items: center !important;
-                gap: 15px;
-                
-                form { 
-                    display: flex !important;
-                    flex-direction: row !important;
-                    align-items: center !important;
-                    gap: 15px;
-                    width: 100% !important;
-                    margin: 0 !important; 
-                }
-                
-                &:has(button), &:has(.atom-btn) {
-                    flex: 0 0 auto !important;
-                }
-            }
-        }
-
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
 
     // Render Area
@@ -84,10 +126,15 @@
         > * {
             max-width: 100%;
         }
-        
+
         &.transparent { background: transparent; }
-        &.terminal-mode { 
-            background: transparent; 
+        &.terminal-mode {
+            background: transparent;
+            padding: 0;
+        }
+        &.is-tabset {
+            justify-content: flex-start;
+            align-items: stretch;
             padding: 0;
         }
     }
