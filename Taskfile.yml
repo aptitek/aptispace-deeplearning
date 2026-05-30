@@ -1,0 +1,51 @@
+version: '3'
+
+tasks:
+  clean:
+    desc: Clean build outputs and cache directories
+    cmds:
+      - echo "Cleaning Quarto build artifacts..."
+      - rm -rf .quarto _site .jupyterlite.doit.db
+      - echo "Clean complete."
+
+  render:
+    desc: Render the Quarto site
+    cmds:
+      - echo "Rendering Quarto site..."
+      - quarto render
+
+  preview:
+    desc: Preview the Quarto site with live reload
+    cmds:
+      - echo "Starting Quarto preview server..."
+      - quarto preview
+
+  lint:
+    desc: Lint and format Quarto markdown files
+    cmds:
+      - echo "Linting and formatting files..."
+      - python3 scripts/code-lint.py .
+      - python3 scripts/quarto-lint.py .
+
+  publish:
+    desc: Lint, clean, render, and publish updates by committing and pushing to origin main
+    cmds:
+      - |
+        CURRENT_BRANCH=$(git branch --show-current)
+        if [ "$CURRENT_BRANCH" != "main" ]; then
+          echo "Error: You are on branch '$CURRENT_BRANCH'. Publishing is only allowed on the 'main' branch."
+          exit 1
+        fi
+        
+        eval set -- {{.CLI_ARGS}}
+        MSG=${1:-"feat: update template"}
+        
+        echo "Staging changes..."
+        git add .
+        
+        echo "Committing changes..."
+        git commit -m "$MSG" || echo "No changes to commit"
+        
+        echo "Pushing to origin main..."
+        git push origin main
+        echo "Publish complete."

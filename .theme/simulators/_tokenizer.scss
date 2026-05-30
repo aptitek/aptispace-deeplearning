@@ -1,0 +1,83 @@
+/* ==========================================================================
+   LABELED TEXT / TOKEN STREAM SIMULATOR COMPONENT STYLE
+   ========================================================================== */
+
+.org-token-stream {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 16px;
+    background: rgba(var(--sol-base03-rgb), 0.15);
+    border: 1px solid rgba(var(--sol-base01-rgb), 0.15);
+    border-radius: 8px;
+    min-height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.3s ease, border-color 0.3s ease;
+
+    &.is-empty {
+        justify-content: center;
+    }
+}
+
+.mol-token {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--font-code, "Recursive", monospace);
+    position: relative;
+    user-select: none;
+}
+
+.token-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: color-mix(in srgb, var(--token-color, var(--sol-blue)) 12%, transparent);
+    color: var(--token-color, var(--sol-blue));
+    border: 1px solid color-mix(in srgb, var(--token-color, var(--sol-blue)) 30%, transparent);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    box-sizing: border-box;
+
+    &.is-fragment {
+        border-style: dashed;
+        border-width: 1px;
+    }
+
+    &:hover {
+        background: color-mix(in srgb, var(--token-color, var(--sol-blue)) 24%, transparent);
+        border-color: color-mix(in srgb, var(--token-color, var(--sol-blue)) 50%, transparent);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--token-color, var(--sol-blue)) 25%, transparent);
+    }
+
+    &:active {
+        transform: translateY(-0.5px);
+        box-shadow: 0 2px 6px color-mix(in srgb, var(--token-color, var(--sol-blue)) 20%, transparent);
+    }
+}
+
+.token-id {
+    font-size: 9.5px;
+    margin-top: 5px;
+    opacity: 0.65;
+    color: var(--token-color, var(--sol-blue));
+    font-weight: 700;
+    text-align: center;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    letter-spacing: 0.03em;
+}
+
+.space-marker {
+    opacity: 0.6;
+    margin-right: 1px;
+    font-weight: 800;
+    color: color-mix(in srgb, var(--token-color, var(--sol-blue)) 80%, var(--sol-base3));
+}

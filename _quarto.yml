@@ -1,0 +1,70 @@
+cloudflare-project: "aptispace-deeplearning"
+
+project:
+  type: book
+  output-dir: _site
+  pre-render: bash _extensions/aptitek/download-fonts/download_fonts.sh
+  post-render: []
+  resources:
+    - "lab/**"
+    - "assets/**"
+    - "**/_*.qmd"
+
+bibliography: bibliography.bib
+
+filters:
+  - aptitek/dynamic
+  - filetree
+  - card
+  - timeline
+  - embed
+  - aptitek/zoom
+
+book:
+  title: "Deep Learning"
+  author: "Aptitek"
+  search: false
+  site-url: "https://deeplearning.apti.space"
+
+  sidebar:
+    logo: "assets/logo.svg"
+    logo-href: "/"
+    logo-alt: "Aptitek"
+    style: "docked"
+    search: false
+
+  chapters:
+    - index.qmd
+    - part: "🎯 Module"
+      chapters:
+        - meta/module.qmd
+        - meta/syllabus.qmd
+        - meta/planning.qmd
+    - part: "📚 Annexes"
+      chapters:
+        - glossaire.qmd
+        - references.qmd
+
+format:
+  html:
+    theme:
+      - solar
+      - .theme/theme.scss
+    mainfont: "Recursive"
+    monofont: "Recursive"
+    highlight-style: solarized
+    code-overflow: wrap
+    toc: true
+    code-copy: true
+    code-tools:
+      source: true
+      toggle: false
+      caption: "Voir le code source"
+    mermaid:
+      theme: neutral
+    html-math-method: katex
+    number-sections: true
+    header-includes: |
+      <meta name="robots" content="noindex, nofollow">
+    include-after-body: assets/fix_links.html
+    css: .theme/book_custom.css

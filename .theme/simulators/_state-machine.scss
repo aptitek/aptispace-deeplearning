@@ -1,0 +1,48 @@
+/* ==========================================================================
+   SIMULATEUR DE MACHINE À ÉTATS GÉNÉRIQUE (State Machine Graph)
+   ========================================================================== */
+
+.state-machine-wrapper {
+    height: 380px;
+    position: relative;
+    background: transparent;
+    border-radius: 8px;
+    width: 100%;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > div {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    canvas {
+        display: block !important;
+        margin: 0 auto !important;
+    }
+
+    /* 🎨 Design Tokens pour la Machine à États (Lues par JS) */
+    --sm-node-shape: rect;
+    --sm-node-color-idle: var(--sol-blue, #268bd2);
+    --sm-node-color-active: var(--sol-yellow, #b58900);
+    --sm-node-text-color: var(--sol-base3, #fdf6e3);
+    --sm-node-pad-x: 16;
+    --sm-node-font-size: 12;
+    --sm-addr-font-size: 9.5;
+    
+    --sm-wire-width-active: 3;
+    --sm-wire-width-past: 1.5;
+    --sm-wire-width-idle: 1;
+    --sm-wire-color-active: var(--sol-yellow, #b58900);
+    --sm-wire-color-past: var(--sol-base01, #586e75);
+    --sm-wire-color-idle: rgba(var(--sol-base01-rgb), 0.25);
+    
+    --sm-label-font-size: 11;
+    --sm-label-bg: rgba(var(--sol-base03-rgb), 0.9);
+}

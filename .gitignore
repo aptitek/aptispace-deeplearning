@@ -1,0 +1,8 @@
+/.quarto/
+**/*.quarto_ipynb
+_site
+/.luarc.json
+.jupyterlite.doit.db
+**/*.pyc
+/fonts/
+bin/act

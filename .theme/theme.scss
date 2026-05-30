@@ -1,0 +1,493 @@
+/*-- scss:defaults --*/
+@import "variables";
+
+/*-- scss:rules --*/
+@import url('https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap');
+@import "card";
+@import "inputs";
+@import "simulators/index"; // loads all simulator partials — add new files in simulators/_index.scss
+
+
+
+// ==========================================
+// 2. CSS VARIABLES (Runtime Tokens)
+// ==========================================
+// Expose tokens to CSS for usage in JS/HTML (Viewer, IFrames...)
+
+:root {
+    --bg-color: #{$sol-base3};
+    --text-color: #{$sol-base00};
+    --sidebar-bg: #{$sol-base2};
+    --border-color: #{$sol-base2};
+    --link-color: #{$sol-blue};
+    --link-hover: #{$sol-orange};
+    --success-color: #{$sol-green};
+    --error-color: #{$sol-red};
+    --code-bg: #{$sol-base2};
+    --btn-hover: #{$sol-base2};
+
+    --font-base: #{$font-family-base};
+    --font-code: #{$font-family-code};
+}
+
+// ==========================================
+// 3. LAYOUT & TYPOGRAPHY
+// ==========================================
+
+// Import fonts defined in tokens/quarto variables? 
+// No, standard CSS import is better in rules or in _tokens if allowed.
+// But _tokens is defaults.
+// Let's put the font import here or in main.
+
+// 4. TYPOGRAPHY GÉNÉRALE
+body {
+    font-family: $font-family-base;
+    font-variation-settings: 'MONO' 0, 'CASL' 0, 'slnt' 0, 'CRSV' 0.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: $sol-base01;
+    font-weight: $headings-font-weight;
+    font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+}
+
+pre,
+code,
+kbd,
+samp {
+    font-family: $font-family-code;
+    font-variation-settings: 'MONO' 1;
+    font-size: 0.9em;
+}
+
+// 5. GESTION DES LIENS (Corps du texte)
+main {
+    a {
+        color: $sol-blue;
+        text-decoration: none;
+        border-bottom: 1px dotted transparent;
+        transition: all 0.2s ease;
+
+        &:visited {
+            color: $sol-violet !important;
+        }
+
+        &:hover {
+            color: $sol-orange !important;
+            border-bottom-color: $sol-orange;
+        }
+    }
+}
+
+// ==========================================
+// 4. SIDEBAR NAVIGATION
+// ==========================================
+
+div.sidebar-item-container .sidebar-item-text.sidebar-link {
+    color: $sol-base01 !important;
+    font-family: $font-family-base;
+    font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+
+    &:visited {
+        color: $sol-base01 !important;
+    }
+
+    &:hover {
+        color: $sol-orange !important;
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+}
+
+div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
+    color: $sol-blue !important;
+    font-weight: 800;
+    border-left: 3px solid $sol-blue;
+    background-color: transparent;
+    padding-left: 0.8rem;
+}
+
+// Titre du menu gauche
+.sidebar-title {
+    color: $sol-base02;
+    font-weight: 900;
+}
+
+// ==========================================
+// 5. TABLE OF CONTENTS (Right Sidebar)
+// ==========================================
+
+#quarto-toc {
+
+    // Les liens inactifs de la TOC
+    .nav-link {
+        color: $sol-base01;
+        font-family: $font-family-base;
+        font-size: 0.85em;
+        font-variation-settings: 'MONO' 0, 'CASL' 0.5;
+        transition: color 0.2s ease;
+
+        &:hover {
+            color: $sol-orange !important;
+        }
+    }
+}
+
+// L'élément ACTIF (Vert Solarized)
+.sidebar nav[role=doc-toc] ul>li>a.active,
+.sidebar nav[role=doc-toc] ul>li>ul>li>a.active {
+    color: $sol-green !important;
+    font-weight: 700;
+
+    // La petite barre verticale à gauche de l'élément actif
+    border-left: 2px solid $sol-green !important;
+    padding-left: 10px;
+    background-color: transparent;
+}
+
+// ==========================================
+// 5.5 PREMIUM UI TOUCHES
+// ==========================================
+
+// Custom Scrollbars
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb, rgba(147, 161, 161, 0.4));
+    border-radius: 10px;
+    &:hover { background: var(--scrollbar-thumb-hover, rgba(147, 161, 161, 0.8)); }
+}
+
+// ==========================================
+// 6. MERMAID SOLARIZED STYLING & HORIZONTAL CENTERING (Premium Card Style)
+// ==========================================
+
+/* Ciblage global du conteneur Mermaid avec style de carte Premium macOS */
+.cell-output-display .mermaid,
+.cell-output-display div:has(> svg.mermaid-js) {
+    font-family: $font-family-code !important;
+    background-color: $sol-base3 !important;
+
+    svg {
+        font-size: 16px !important;
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    border: 1px solid $sol-base2 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba($sol-base03, 0.05) !important;
+    margin: 2rem auto !important;
+    padding: 48px 24px 24px 24px !important; // 48px top padding for absolute macos dots
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: auto !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+
+    &:hover {
+        box-shadow: 0 8px 24px rgba($sol-base03, 0.08) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    // Built-in premium macOS-style window header decoration (like the dynamic simulators)
+    &::before {
+        content: "" !important;
+        position: absolute !important;
+        top: 14px !important;
+        left: 16px !important;
+        width: 8px !important;
+        height: 8px !important;
+        background-color: #{$sol-red} !important;
+        border-radius: 50% !important;
+        box-shadow: 14px 0 0 #{$sol-yellow}, 28px 0 0 #{$sol-green} !important;
+        opacity: 0.85 !important;
+        z-index: 10 !important;
+    }
+
+    /* 1. LES BOITES (Nœuds) */
+    /* Force le beige foncé ($sol-base2) et les bordures grises ($sol-base01) */
+    g.node rect,
+    g.node circle,
+    g.node polygon,
+    g.node path {
+        fill: $sol-base2 !important;
+        stroke: $sol-base01 !important;
+        stroke-width: 1.5px !important;
+    }
+
+    /* 2. LE TEXTE DANS LES BOITES */
+    /* Gris foncé ($sol-base00) */
+    g.node .label {
+        color: $sol-base00 !important;
+        font-family: $font-family-code !important;
+        font-weight: 500;
+        font-size: 16px !important;
+    }
+
+    /* Hack pour le texte HTML dans Mermaid */
+    g.node .nodeLabel,
+    g.node .label div {
+        color: $sol-base00 !important;
+        background-color: transparent !important;
+        font-size: 16px !important;
+    }
+
+    /* 3. LES LIENS (Flèches) */
+    /* Gris clair ($sol-base1) */
+    .edgePath .path {
+        stroke: $sol-base1 !important;
+        stroke-width: 2px !important;
+    }
+
+    /* Les pointes de flèches (Markers) */
+    #mermaid-defs marker path,
+    marker path {
+        fill: $sol-base1 !important;
+        stroke: $sol-base1 !important;
+    }
+
+    /* 4. LES FORMES SPÉCIALES */
+    g.node polygon {
+        fill: $sol-base3 !important;
+    }
+
+    /* 5. NOTES (Post-it) */
+    g.note rect {
+        fill: $sol-base3 !important;
+        stroke: $sol-yellow !important;
+    }
+
+    g.note .label {
+        color: $sol-base00 !important;
+        font-family: $font-family-code !important;
+        font-size: 16px !important;
+    }
+
+    /* 6. ÉTIQUETTES SUR LES FLÈCHES */
+    g.edgeLabel,
+    .edgeLabel {
+        color: $sol-base00 !important;
+        fill: $sol-base00 !important;
+        font-family: $font-family-code !important;
+        font-size: 16px !important;
+    }
+
+    g.edgeLabel p {
+        background-color: $sol-base3 !important;
+        color: $sol-base00 !important;
+        font-family: $font-family-code !important;
+        padding: 2px 4px;
+        font-size: 0.9em !important;
+    }
+
+    g.edgeLabel rect {
+        fill: $sol-base3 !important;
+        opacity: 1 !important;
+        stroke: none !important;
+    }
+}
+
+
+
+
+// ==========================================
+// 8. JUPYTERLITE CARD (Shortcode)
+// ==========================================
+
+.jupyterlite-container {
+    border: 1px solid $sol-base1;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    background-color: $sol-base3;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-family: $font-family-base;
+}
+
+.jupyterlite-header {
+    background-color: $sol-base2;
+    padding: 8px 12px;
+    border-bottom: 1px solid $sol-base1;
+    color: $sol-base01;
+    font-weight: 700;
+    font-size: 0.9em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    i.bi-journal-code {
+        margin-right: 6px;
+        color: $sol-orange;
+    }
+}
+
+.jupyterlite-fullscreen {
+    color: $sol-base00;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+        color: $sol-blue;
+    }
+}
+
+.jupyterlite-container iframe {
+    width: 100%;
+    height: 600px;
+    /* Default height */
+    border: none;
+    display: block;
+}
+
+// ==========================================
+// 9. NATIVE BOOTSTRAP PROGRESS BAR RESKIN
+// ==========================================
+
+.progress {
+    width: 100% !important;
+    background-color: var(--progressbar-bg, #eee8d5) !important;
+    border-radius: 6px !important;
+    height: 8px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    margin: 10px 0 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    border: none !important;
+}
+
+.progress-bar {
+    height: 100% !important;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background-color: var(--accent-warning, #b58900) !important; /* Default yellow progress */
+    box-shadow: none !important;
+
+    /* Color overrides based on Bootstrap utility names */
+    &.bg-info {
+        background-color: var(--accent-info, #268bd2) !important;
+    }
+    
+    &.bg-success {
+        background-color: var(--accent-success, #859900) !important;
+    }
+
+    &.bg-warning {
+        background-color: var(--accent-warning, #cb4b16) !important;
+    }
+
+    &.bg-danger {
+        background-color: var(--accent-danger, #dc322f) !important;
+    }
+}
+
+// ==========================================
+// 10. PREMIUM NATIVE BOOTSTRAP BADGE RESKIN
+// ==========================================
+
+.badge {
+    font-family: var(--font-code, monospace) !important;
+    font-size: 0.85em !important;
+    font-weight: 600 !important;
+    padding: 3px 8px !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid transparent !important;
+    
+    /* Default styled state */
+    &:not([class*="bg-"]):not([class*="is-"]) {
+        background-color: var(--badge-bg, rgba(147, 161, 161, 0.1)) !important;
+        color: var(--badge-color, #586e75) !important;
+        border-color: var(--badge-border, rgba(147, 161, 161, 0.2)) !important;
+    }
+
+    /* Fixed block variations */
+    &.is-block {
+        width: 18px !important;
+        height: 18px !important;
+        padding: 0 !important;
+        border-radius: 3px !important;
+    }
+
+    /* Info variations */
+    &.bg-info, &.is-info {
+        background-color: rgba(var(--sol-blue-rgb, 38, 139, 210), 0.1) !important;
+        color: var(--accent-info, #268bd2) !important;
+        border-color: rgba(var(--sol-blue-rgb, 38, 139, 210), 0.2) !important;
+    }
+
+    /* Success variations */
+    &.bg-success, &.is-success {
+        background-color: rgba(var(--sol-green-rgb, 133, 153, 0), 0.1) !important;
+        color: var(--accent-success, #859900) !important;
+        border-color: rgba(var(--sol-green-rgb, 133, 153, 0), 0.2) !important;
+    }
+
+    /* Warning variations */
+    &.bg-warning, &.is-warning {
+        background-color: rgba(var(--sol-orange-rgb, 203, 75, 22), 0.1) !important;
+        color: var(--accent-warning, #cb4b16) !important;
+        border-color: rgba(var(--sol-orange-rgb, 203, 75, 22), 0.2) !important;
+    }
+
+    /* Danger variations */
+    &.bg-danger, &.is-danger {
+        background-color: rgba(var(--sol-red-rgb, 220, 50, 47), 0.1) !important;
+        color: var(--accent-danger, #dc322f) !important;
+        border-color: rgba(var(--sol-red-rgb, 220, 50, 47), 0.2) !important;
+    }
+}
+
+// ==========================================
+// 11. COPY-TO-CLIPBOARD FIX
+// ==========================================
+
+// Hide Copy to Clipboard buttons on hidden cells or active OJS widgets
+.sourceCode.cell-code.hidden ~ .code-copy-button {
+    display: none !important;
+}
+
+.cell:has(.observablehq) .code-copy-button {
+    display: none !important;
+}
+
+// ==========================================
+// 12. WORDCLOUD / TAGCLOUD STYLING
+// ==========================================
+
+.tagcloud {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    font-family: var(--font-code, monospace) !important;
+}
+
+.tagcloud--item {
+    font-family: var(--font-code, monospace) !important;
+    font-variation-settings: 'MONO' 1, 'CASL' 0.5, 'slnt' 0, 'CRSV' 0.5 !important;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.25s ease, opacity 0.25s ease !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    z-index: 10 !important;
+
+    &:hover {
+        transform: scale(1.4) !important;
+        filter: brightness(1.35) contrast(1.1);
+        z-index: 1000 !important;
+        font-weight: 900 !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    }
+}

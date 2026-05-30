@@ -1,0 +1,178 @@
+/* ==========================================================================
+   WIDGET "FAKE IDE" (File Explorer) Stylesheet
+   ========================================================================== */
+
+.ui-ide {
+    /* Semantic design tokens mapping to main theme variables with fallbacks */
+    --ui-ide-bg: var(--bg-color, #fdf6e3);
+    --ui-ide-text: var(--text-color, #657b83);
+    --ui-ide-sidebar-bg: var(--sidebar-bg, #eee8d5);
+    --ui-ide-border: var(--border-color, #eee8d5);
+    --ui-ide-link-hover: var(--link-hover, #cb4b16);
+    --ui-ide-active-bg: rgba(38, 139, 210, 0.12);
+    --ui-ide-active-color: var(--link-color, #268bd2);
+
+    /* Layout values */
+    min-height: 100px;
+    background-color: var(--ui-ide-bg);
+    transition: all 0.3s ease-in-out;
+}
+
+/* --- SIDEBAR --- */
+.ui-ide-sidebar {
+    width: 100%;
+    background-color: var(--ui-ide-sidebar-bg);
+    transition: width 0.3s ease-in-out;
+    box-sizing: border-box;
+}
+
+/* --- MAIN INTERACTIVE VIEW --- */
+.ui-ide-main {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* --- ACTIVE EXPANDED STATE --- */
+.ui-ide.is-active {
+    height: 600px;
+}
+
+.ui-ide.is-active .ui-ide-sidebar {
+    width: 260px;
+    border-right: 1px solid var(--ui-ide-border) !important;
+    overflow-y: auto;
+}
+
+.ui-ide.is-active .ui-ide-main {
+    display: flex !important;
+    opacity: 1;
+}
+
+/* --- SPECIFIC LIST STYLING --- */
+.ui-ide-list {
+    padding-left: 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+}
+
+.ui-ide-list .folder ul {
+    padding-left: 20px !important;
+    border-left: 1px dashed rgba(88, 110, 117, 0.2) !important;
+    margin-left: 8px !important;
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+    list-style: none !important;
+}
+
+.ui-ide-list li {
+    padding: 3px 0;
+    line-height: 1.5;
+    list-style: none !important;
+}
+
+.ui-ide-list li a.filetree-link,
+.ui-ide-list li span {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--ui-ide-text);
+    font-size: 0.9rem;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: -6px;
+    transition: all 0.15s ease;
+}
+
+.ui-ide-list li a.filetree-link {
+    cursor: pointer;
+}
+
+.ui-ide-list li a.filetree-link:hover {
+    background-color: rgba(38, 139, 210, 0.08);
+    color: var(--ui-ide-link-hover) !important;
+}
+
+.ui-ide-list li a.filetree-link:hover .filetree-name {
+    color: var(--ui-ide-link-hover) !important;
+}
+
+.ui-ide-list li a.filetree-link.is-active {
+    background-color: var(--ui-ide-active-bg) !important;
+    color: var(--ui-ide-active-color) !important;
+    font-weight: 600;
+}
+
+.ui-ide-list li span {
+    cursor: default;
+}
+
+.ui-ide-list li summary {
+    list-style: none !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--ui-ide-text);
+    user-select: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: -6px;
+    transition: all 0.15s ease;
+}
+
+.ui-ide-list li summary::-webkit-details-marker {
+    display: none !important;
+}
+
+.ui-ide-list li summary:hover {
+    background-color: rgba(181, 137, 0, 0.05);
+}
+
+.ui-ide-list li summary:hover .filetree-name {
+    color: var(--accent-warning, #b58900) !important;
+}
+
+.ui-ide-list li .folder-arrow {
+    margin-right: 5px;
+    font-size: 0.75rem;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-block;
+    color: var(--accent-base1, #93a1a1);
+}
+
+.ui-ide-list li details[open] > summary > .folder-arrow {
+    transform: rotate(90deg);
+    color: var(--accent-warning, #b58900);
+}
+
+/* Icons & Colors */
+.ui-ide-list li .folder-icon {
+    color: var(--accent-warning, #b58900);
+    margin-right: 6px;
+    font-size: 0.95rem;
+}
+
+.ui-ide-list li .file-icon {
+    color: var(--ui-ide-active-color);
+    margin-right: 6px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+/* Name & Comment styling */
+.ui-ide-list .filetree-name {
+    font-family: var(--font-code, monospace);
+    font-weight: 700;
+    color: var(--ui-ide-text);
+    transition: color 0.15s ease;
+}
+
+.ui-ide-list .filetree-comment {
+    font-family: var(--font-base, sans-serif);
+    font-size: 0.82rem;
+    color: var(--accent-base1, #93a1a1);
+    margin-left: 8px;
+    font-style: italic;
+    font-weight: 400;
+    opacity: 0.9;
+}
