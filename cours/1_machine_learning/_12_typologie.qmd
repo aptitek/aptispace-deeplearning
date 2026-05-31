@@ -2,17 +2,93 @@
 
 La distinction entre les différents paradigmes d'apprentissage n'est pas une simple nomenclature académique ; elle constitue la pierre angulaire de toute architecture stratégique en science des données. Le succès d'un déploiement industriel (et la pertinence de notre "moule", pour reprendre notre analogie) repose sur l'adéquation parfaite entre la structure des données disponibles et le choix du paradigme. C'est cette adéquation qui transforme des données brutes en leviers de décision exploitables [@bmc_bias_variance].
 
-### Cartographie des Fondations : Supervisé vs Non-Supervisé
+### Cartographie des Fondations : Les Quatre Paradigmes de l'Apprentissage
 
-Les modèles d'apprentissage se divisent en deux grandes familles, selon la nature des données qui leur sont fournies :
+Les modèles d'apprentissage se structurent autour de quatre grands paradigmes, selon la nature des données d'entraînement et le mode d'interaction avec l'environnement :
 
-* **L'Apprentissage Supervisé (L'apprentissage guidé) :** Il utilise des données étiquetées pour modéliser une relation entre des variables d'entrée et une "vérité terrain" (la réponse attendue) [@delua_supervised_unsupervised]. Le modèle sait exactement à quoi ressemble la "figurine" qu'il doit mouler. Il se décline en deux sous-catégories selon le type de résultat attendu :
-* **La Régression :** Utilisée lorsque l'on s'attend à un résultat continu (par exemple, prédire un prix, une température ou un chiffre d'affaires).
-* **La Classification :** Utilisée lorsque l'on s'attend à un résultat discret ou catégorique (par exemple, déterminer si un e-mail est un "Spam" ou "Non-Spam") [@lee_classification_regression].
+::: {.grid}
 
-* **L'Apprentissage Non-Supervisé (La découverte autonome) :** Le modèle reçoit des données sans aucune étiquette. Il n'a pas de "vérité terrain" pour corriger son moule. Son but est d'identifier des structures intrinsèques, des motifs cachés ou des regroupements naturels [@analystprep_2021_unsupervised].
-* **Le Clustering (Regroupement) :** Consiste à regrouper des données similaires en catégories (résultat discret), comme la segmentation de clients [@google_kmeans].
-* **L'Analyse en Composantes Principales (PCA) :** Une méthode de réduction de dimensionnalité (résultat continu) qui permet de simplifier des données complexes tout en conservant l'essentiel de l'information [@shlens_2014_pca].
+:::: {.g-col-12 .g-col-md-6}
+::::: {.card .card-concept .h-100}
+:::::: {.card-header}
+Apprentissage Supervisé [Supervisé]{.badge .bg-primary .float-end}
+::::::
+:::::: {.card-body}
+::::::: {.concept-details}
+L'algorithme apprend à partir de données d'entraînement étiquetées (couples entrée-sortie). Chaque observation est associée à une "vérité terrain" [@delua_supervised_unsupervised]. Le modèle ajuste ses paramètres pour minimiser l'écart avec les réponses attendues.
+
+* **Régression :** Prédit une variable cible continue (ex. : prix de l'immobilier, température).
+* **Classification :** Prédit une étiquette ou catégorie discrète (ex. : spam vs. non-spam) [@lee_classification_regression].
+
+:::::::: {.callout-example}
+**Cas d'usage :** Détection de fraudes bancaires, reconnaissance d'objets, diagnostic médical.
+::::::::
+:::::::
+::::::
+:::::
+::::
+
+:::: {.g-col-12 .g-col-md-6}
+::::: {.card .card-concept .h-100}
+:::::: {.card-header}
+Apprentissage Non-Supervisé [Non-Supervisé]{.badge .bg-success .float-end}
+::::::
+:::::: {.card-body}
+::::::: {.concept-details}
+L'algorithme reçoit des données brutes sans étiquettes. Il n'a pas de retour correcteur sur ses résultats [@analystprep_2021_unsupervised]. L'objectif est d'explorer les données pour en extraire des structures, des régularités ou des regroupements naturels.
+
+* **Clustering :** Regroupement d'observations similaires en sous-groupes (ex. : segmentation client K-Means) [@google_kmeans].
+* **Réduction de dimension :** Simplification des données complexes en conservant l'information essentielle (ex. : PCA) [@shlens_2014_pca].
+
+:::::::: {.callout-example}
+**Cas d'usage :** Recommandation de produits, détection d'anomalies réseau, compression d'images.
+::::::::
+:::::::
+::::::
+:::::
+::::
+
+:::: {.g-col-12 .g-col-md-6}
+::::: {.card .card-concept .h-100}
+:::::: {.card-header}
+Apprentissage Semi-Supervisé [Semi-Supervisé]{.badge .bg-warning .float-end}
+::::::
+:::::: {.card-body}
+::::::: {.concept-details}
+Une approche hybride combinant une petite quantité de données étiquetées avec un volume massif de données non étiquetées [@chapelle_2006_semi]. Elle permet de bénéficier de la puissance du supervisé tout en évitant le coût d'annotation manuelle.
+
+* **Pseudo-étiquetage :** Le modèle s'entraîne sur les données étiquetées puis étiquette lui-même les données non labellisées.
+* **Graphes de similarité :** Propagation des étiquettes connues aux observations non étiquetées les plus proches.
+
+:::::::: {.callout-example}
+**Cas d'usage :** Classification de pages web, indexation d'images médicales, analyse automatique de la parole.
+::::::::
+:::::::
+::::::
+:::::
+::::
+
+:::: {.g-col-12 .g-col-md-6}
+::::: {.card .card-concept .h-100}
+:::::: {.card-header}
+Apprentissage par Renforcement [Renforcement]{.badge .bg-danger .float-end}
+::::::
+:::::: {.card-body}
+::::::: {.concept-details}
+Un agent autonome interagit avec un environnement dynamique [@sutton_2018_reinforcement]. Sans jeu de données préalable, il apprend à prendre des décisions optimales en effectuant des actions et en maximisant des récompenses cumulatives au fil du temps.
+
+* **Exploration vs Exploitation :** Arbitrage entre tester de nouvelles actions (exploration) et exploiter les connaissances acquises.
+* **Algorithmes clés :** Q-learning, PPO (Proximal Policy Optimization), SAC (Soft Actor-Critic).
+
+:::::::: {.callout-example}
+**Cas d'usage :** Véhicules autonomes, robotique industrielle, IA de jeux (AlphaGo, échecs), gestion de portefeuilles financiers.
+::::::::
+:::::::
+::::::
+:::::
+::::
+
+:::
 
 **L'impact stratégique :** Le choix entre classification et clustering modifie radicalement l'objectif métier. Là où la classification répond à une question fermée sur une catégorie connue (ex: "ce client va-t-il résilier ?"), le clustering permet la découverte de segments de marché "cachés". Cela offre une opportunité de différenciation par la révélation de niches comportementales jusqu'alors invisibles.
 

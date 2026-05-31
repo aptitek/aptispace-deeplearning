@@ -11,6 +11,101 @@ En apprentissage automatique, on applique cette contrainte en ajoutant une péna
 * **Ridge (Régularisation L2) :** Cette méthode ajoute une pénalité proportionnelle au carré des coefficients. Géométriquement, cela agit comme une contrainte circulaire concentrique autour de l'origine. Ridge réduit la magnitude globale des coefficients pour stabiliser le modèle. L'effet visuel est un "amortissement" : les valeurs sont compressées doucement vers le centre, mais ne sont pratiquement jamais réduites à zéro [@shizuya_2024_l1l2; @dave_2020_linear].
 * **Lasso (Régularisation L1) :** Cette méthode ajoute une pénalité proportionnelle à la valeur absolue des coefficients. Géométriquement, la zone de contrainte prend la forme d'un losange (ou d'un diamant). En raison de ses angles aigus, l'optimisation a tendance à rencontrer cette contrainte directement sur les axes du repère géométrique. Le résultat est radical : le Lasso force mathématiquement certains coefficients à valoir exactement zéro [@ibm_overfitting; @dev_lasso_ridge; @deepa_2025_regularization].
 
+::: {.card .card-info .my-4}
+:::: {.card-header}
+🪄 Simulateur Interactif des Chemins de Régularisation
+::::
+:::: {.card-body}
+Jouez avec l'intensité de pénalisation $\lambda$ pour constater en temps réel comment Ridge (L2) amortit doucement les coefficients sans jamais en éliminer aucun, tandis que Lasso (L1) coupe chirurgicalement à zéro (sparsity) les variables inutiles (le bruit ou la redondance).
+
+```{=html}
+<div class="regularization-simulator card border-0 shadow-none bg-transparent m-0 p-0">
+  <div class="row g-3 mb-3 align-items-center">
+    <div class="col-md-6 mb-2 mb-md-0">
+      <label class="form-label fw-bold small text-muted text-uppercase mb-1">🛠️ Type de Régularisation :</label>
+      <select class="form-select" id="reg-type">
+        <option value="lasso">Lasso (Pénalité L1 - Sélection Sparsity)</option>
+        <option value="ridge">Ridge (Pénalité L2 - Réduction Variance)</option>
+        <option value="elastic">ElasticNet (Pénalité Hybride L1 + L2)</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <label class="form-label fw-bold small text-muted text-uppercase mb-0">⚡ Intensité de Pénalité (λ) :</label>
+        <span id="reg-lambda-label" class="font-monospace text-primary fw-bold">15</span>
+      </div>
+      <input type="range" class="form-range" id="reg-lambda" min="0" max="100" value="15">
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-7 mb-2 mb-md-0">
+      <div class="card border bg-light h-100 m-0">
+        <div class="card-header font-monospace text-uppercase text-muted py-2 small">
+          🧪 Évolution des Coefficients Régressifs
+        </div>
+        <div class="card-body p-2 d-flex align-items-center justify-content-center bg-transparent">
+          <svg id="reg-svg" viewBox="0 0 450 220" class="w-100 h-auto"></svg>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="list-group m-0" id="reg-vars">
+        <!-- Rendu dynamique via regularization.js -->
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-start border-4 bg-light mt-3 m-0" id="reg-details-card">
+    <div class="card-body py-2 px-3 text-body" id="reg-details">
+      <!-- Explication pédagogique dynamique -->
+    </div>
+  </div>
+</div>
+```
+
+```{ojs}
+//| echo: false
+import { updateRegularization } from "../../assets/js/sim/regularization.js"
+
+// Liaison réactive des contrôles du DOM à OJS
+viewof regType = {
+  let el = document.querySelector("#reg-type");
+  while (!el) {
+    await Promises.delay(50);
+    el = document.querySelector("#reg-type");
+  }
+  el.value = "lasso";
+  return el;
+}
+
+viewof regLambda = {
+  let el = document.querySelector("#reg-lambda");
+  while (!el) {
+    await Promises.delay(50);
+    el = document.querySelector("#reg-lambda");
+  }
+  el.value = "15";
+  return el;
+}
+
+// Mise à jour réactive de la vue
+updateSimulator = {
+  if (regType && regLambda !== undefined && regLambda !== null) {
+    updateRegularization(regType, parseInt(regLambda), {
+      svgSelector: "#reg-svg",
+      varsSelector: "#reg-vars",
+      detailsSelector: "#reg-details",
+      detailsCardSelector: "#reg-details-card",
+      lambdaLabelSelector: "#reg-lambda-label"
+    });
+  }
+}
+```
+
+::::
+:::
+
 ### L'Équilibre et le Temps : Elastic Net et Early Stopping
 
 Face à des jeux de données complexes, d'autres stratégies complètent l'arsenal du Data Scientist :

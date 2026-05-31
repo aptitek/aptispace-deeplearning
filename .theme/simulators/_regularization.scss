@@ -1,0 +1,91 @@
+// ==========================================
+// _regularization.scss — Regularization Simulator Styles
+// ==========================================
+// styled cleanly using CSS custom properties/Solarized variables.
+// No inline styles or hardcoded hex colors are used.
+
+.regularization-simulator {
+  // Styles for the SVG chart
+  .reg-axis-center {
+    stroke: var(--sol-base01);
+    stroke-width: 1.5;
+    stroke-opacity: 0.4;
+  }
+
+  .reg-axis {
+    stroke: var(--sol-base01);
+    stroke-width: 1.2;
+    stroke-opacity: 0.4;
+  }
+
+  .reg-axis-text {
+    font-family: var(--font-family-code);
+    font-size: 8px;
+    fill: var(--sol-base01);
+    user-select: none;
+  }
+
+  .reg-path {
+    fill: none;
+    stroke-width: 2;
+    stroke-opacity: 0.55;
+    stroke-dasharray: 2.5, 2.5;
+    transition: stroke 0.2s ease;
+  }
+
+  .reg-current-line {
+    stroke: var(--sol-magenta);
+    stroke-width: 2;
+    stroke-opacity: 0.75;
+    stroke-dasharray: none;
+  }
+
+  .reg-dot {
+    stroke: var(--card-bg);
+    stroke-width: 1.2;
+    r: 4.5;
+  }
+
+  // Paths & Dots Individual Variable Color Mappings
+  .path-taille { stroke: var(--sol-cyan); }
+  .dot-taille { fill: var(--sol-cyan); }
+  .var-color-taille { color: var(--sol-cyan) !important; }
+
+  .path-chambres { stroke: var(--sol-green); }
+  .dot-chambres { fill: var(--sol-green); }
+  .var-color-chambres { color: var(--sol-green) !important; }
+
+  .path-garage { stroke: var(--sol-yellow); }
+  .dot-garage { fill: var(--sol-yellow); }
+  .var-color-garage { color: var(--sol-yellow) !important; }
+
+  .path-age { stroke: var(--sol-red); }
+  .dot-age { fill: var(--sol-red); }
+  .var-color-age { color: var(--sol-red) !important; }
+
+  .path-bruit { stroke: var(--sol-magenta); }
+  .dot-bruit { fill: var(--sol-magenta); }
+  .var-color-bruit { color: var(--sol-magenta) !important; }
+
+  // Variables List Layout & Progress Bars
+  .list-group-item {
+    background-color: transparent;
+    border-color: var(--card-header-border);
+    transition: background-color 0.2s ease;
+  }
+
+  .mag-progress-container {
+    background-color: var(--progressbar-bg, var(--sol-base2));
+    border: 1px solid var(--card-border);
+    height: 8px;
+    width: 60px;
+    border-radius: var(--radius-4, 4px);
+    overflow: hidden;
+    display: flex;
+  }
+
+  .mag-progress-bar {
+    height: 100%;
+    transition: width 0.15s ease-out;
+  }
+}
