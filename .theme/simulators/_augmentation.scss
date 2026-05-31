@@ -1,0 +1,69 @@
+/* ==========================================================================
+   DATA AUGMENTATION SIMULATOR
+   ========================================================================== */
+
+.augmentation-simulator {
+    .augmentation-preview-shell {
+        min-height: 260px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .augmentation-viewport {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 1px solid var(--sol-base1);
+        border-radius: 1rem;
+        background:
+            linear-gradient(90deg, rgba(147, 161, 161, 0.18) 1px, transparent 1px),
+            linear-gradient(rgba(147, 161, 161, 0.18) 1px, transparent 1px),
+            var(--sol-base2);
+        background-size: 24px 24px;
+    }
+
+    .augmentation-emoji {
+        position: relative;
+        z-index: 2;
+        font-size: 6rem;
+        line-height: 1;
+        transition: transform 260ms ease;
+        transform-origin: center;
+    }
+
+    .augmentation-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        box-shadow: inset 0 0 0 999px rgba(253, 246, 227, 0.1);
+    }
+
+    .augmentation-analysis-title {
+        font-weight: 800;
+        color: var(--sol-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-size: 0.78rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .augmentation-analysis-list {
+        margin: 0;
+        padding-left: 1.1rem;
+
+        li {
+            color: var(--sol-base01);
+            margin-bottom: 0.35rem;
+        }
+
+        li.is-active {
+            color: var(--sol-base00);
+        }
+    }
+}

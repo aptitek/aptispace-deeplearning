@@ -15,6 +15,67 @@ Pour enrichir artificiellement le jeu d'entraînement, on applique diverses tran
 * **Transformations géométriques :** Rotation (tourner l'image), zoom (rapprocher ou éloigner), déformation (étirement affine) et recadrage (couper une partie de l'image) [@wiki_affine; @anon_data_augmentation].
 * **Ajustements de qualité et colorimétrie :** Ajout de bruit artificiel (comme de la "neige" sur une télévision), modification du contraste, de la luminosité ou de la saturation [@levi_noise_injection].
 
+:::: {.card .card-window .mb-4 .augmentation-simulator}
+
+::::: {.card-header}
+Augmentation de Données : Vue Machine
+:::::
+
+::::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof augTransforms = Inputs.checkbox(
+  ["rotation", "flip", "zoom"],
+  {
+    value: ["rotation"],
+    label: "Transformations appliquées",
+    format: (key) => ({
+      rotation: "Rotation",
+      flip: "Effet miroir",
+      zoom: "Zoom"
+    }[key])
+  }
+)
+```
+
+:::::
+
+::::: {.row .g-3 .px-3 .pb-3 .align-items-stretch}
+
+:::::: {.col-md-7}
+::::::: {.card .border .m-0 .h-100}
+:::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+Image augmentée
+::::::::
+:::::::: {#augmentation-preview .card-body .augmentation-preview-shell}
+::::::::
+:::::::
+::::::
+
+:::::: {.col-md-5}
+::::::: {#augmentation-analysis .card .border-start .border-4 .bg-light .h-100 .p-3}
+:::::::
+::::::
+
+:::::
+
+::::
+
+```{ojs}
+//| echo: false
+import { updateDataAugmentation } from "../../assets/js/custom/augmentation.js"
+
+renderAugmentation = {
+  updateDataAugmentation({
+    transforms: augTransforms,
+    previewEl: document.getElementById("augmentation-preview"),
+    analysisEl: document.getElementById("augmentation-analysis")
+  });
+}
+```
+
+
 ### L'Impact Stratégique et Conclusion
 
 Ces méthodes forcent mathématiquement le modèle à acquérir une **invariance** [@ibm_overfitting; @hendrycks_2019_benchmarking]. En vision industrielle, par exemple, le système de contrôle qualité doit pouvoir reconnaître un défaut sur une pièce de fabrication quels que soient l'angle de vue de la caméra, l'heure de la journée ou l'usure de l'éclairage de l'usine. L'augmentation de données garantit cette résilience.
