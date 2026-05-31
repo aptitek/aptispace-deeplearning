@@ -65,11 +65,20 @@ MLP : Par défaut
 RNN : Pile de feuilles / Dongons/ Magasin avec trésorerie
 CNN : Convolution(Filtres) / Pooling(Sous-échantillonage) / Classification(MLP)
         -> Configuration Spatiale
-Autoencodeur : Compression / Décompression
+        -> Évolution : VGG -> ResNet -> EfficientNet -> Vision Transformer
+        -> Applications : YOLO (Détection d'objets en temps réel)
+        -> Capsule Network : alternative au CNN, sensible aux relations spatiales
+
+Autoencodeur : Espace latent (Compression / Décompression)
  -> VAE (Variational Autoencoder)
  -> VQ-VAE (Vector Quantized Variational Autoencoder)
  -> Débruitage
  -> Détection d'anomalie
+
+Transfer Learning : Réutilisation de l'espace latent appris
+ -> Pré-entrainement sur large corpus, adaptation sur tâche cible
+
+Modèles génératifs :
 GANs : Génération d'image
  -> Architecture GAN : 
     - Générateur (Fake) 
@@ -78,9 +87,23 @@ GANs : Génération d'image
 
     Architectures GAN avancées : DCGAN, StyleGAN et Conditional GAN
 
+DDPM (Denoising Diffusion Probabilistic Model) : Débruitage probabiliste itératif
+
+Graph Neural Networks : GNN
+ -> GCN (Graph Convolutional Network)
+ -> GAT (Graph Attention Network)
+ -> GraphSAGE
+ -> GNN + Autoencodeur
+
 ---
     
 Transformateurs : Traitement du langage naturel
+
+Représentations de texte (précurseurs) :
+ BoW, TF-IDF -> Word2Vec, GloVe, FastText -> ELMo (contextualisé)
+
+Pipeline : Tokenisation -> Word Embedding -> Positional Encoding -> Attention
+
  -> Embedding
  -> Positional encoding
     -> Sinusoidale 
@@ -94,59 +117,25 @@ Transformateurs : Traitement du langage naturel
     -> MLP
     -> Connectivité résiduelle
 
+Fine-tuning LLM :
+ - Pré-entrainement (sur large corpus)
+ - Fine-tuning (sur tâche spécifique)
+
 ---
 
+Apprentissage par renforcement (RL) :
 
-Espace latent :
-- Compression 
-- Décompression
-- Transfer learning
+Policy Gradient :
+ - Monte-Carlo : estimation empirique du retour G(s,a)
+ - G(s,a) : retour total actualisé
+ - Q(s,a) : valeur action-état
+ - V(s) : valeur d'état
+ - D(s,a) Discret / D(s,a) Continu : avantage (advantage)
 
-Policy Gradient : 
- - Monte-carlo
- - G(s,a)
- - Q(s,a)
- - V(s)
- - D(s,a) (Discr)
- - D(s,a) (Cont)
+Progression : DQN -> A2C -> PPO -> SAC
+ -> SAC (Soft Actor-Critic) : maximise récompense + entropie (exploration)
 
-SAC
-
-
-(Tokenisation, Word Embedding, Positional Encoding, Attention)
-
-BoW, TF-IDF, Word2Vec, GloVe, FastText, ELMo ?
-
-VGG -> EfficientNet -> Vision Transformer
-ResNet ->  ?
-
-DQN -> A2C -> PPO -> SAC
-
-RLHF
-
-Alligner LLM avec les objectifs humains
-
-Fine-tuning : 
- - Pré-entrainement 
- - Fine-tuning
-
-DDPM (Denoising Diffusion Probabilistic Model) : Modèle probabiliste de débruitage
-
-Graph Neural Networks : GNN
- -> GraphSAGE
- -> GAT (Graph Attention Network)
- -> GCN (Graph Convolutional Network)
- -> GNN + Autoencodeur
-
-Capsule Network :
- -> Émergence d'une nouvelle forme d'intelligence artificielle, plus performante et polyvalente.
-
-DCGAN
-
-Transfer Learning :
- - Transfert d'apprentissage (Réutilisation des connaissances)
- 
-YOLO
+RLHF : Aligner LLM avec les objectifs humains (via PPO sur feedback humain)
 
 ---
 
