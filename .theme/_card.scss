@@ -9,10 +9,10 @@
     --card-window-shadow: var(--card-shadow, 0 4px 12px rgba(0, 43, 54, 0.03));
     --card-window-shadow-hover: var(--card-shadow-hover, 0 8px 24px rgba(0, 43, 54, 0.05));
     --card-window-border-hover: var(--card-border-hover, rgba(147, 161, 161, 0.4));
-    
+
     --card-window-header-bg: var(--card-header-bg, #eee8d5);
     --card-window-header-border: var(--card-header-border, rgba(88, 110, 117, 0.08));
-    
+
     --card-window-tab-active-bg: var(--card-tab-active-bg, #fdf6e3);
     --card-window-tab-active-color: var(--card-tab-active-color, #586e75);
     --card-window-tab-active-border: var(--card-tab-active-border, rgba(88, 110, 117, 0.08));
@@ -35,12 +35,13 @@
 }
 
 /* --- WINDOW HEADER & CONTROL DOTS --- */
-.card-window > .card-header,
-.card-window > .nav-tabs,
+.card-window>.card-header,
+.card-window>.nav-tabs,
 .card-window-header {
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important; /* Center text horizontally */
+    justify-content: center !important;
+    /* Center text horizontally */
     height: 38px !important;
     padding: 0 16px !important;
     user-select: none !important;
@@ -54,8 +55,8 @@
 }
 
 /* Strip margins and paddings on any nested wrappers (like Quarto paragraphs or headings) to let flex alignment work perfectly */
-.card.card-window > .card-header > *,
-.card-window-header > * {
+.card.card-window>.card-header>*,
+.card-window-header>* {
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1 !important;
@@ -65,8 +66,8 @@
     justify-content: center !important;
 }
 
-.card-window > .card-header::before,
-.card-window > .nav-tabs::before,
+.card-window>.card-header::before,
+.card-window>.nav-tabs::before,
 .card-window-header::before {
     content: "" !important;
     position: absolute !important;
@@ -75,9 +76,11 @@
     transform: translateY(-50%) !important;
     width: 8px !important;
     height: 8px !important;
-    background-color: #dc322f !important; /* red controls */
+    background-color: #dc322f !important;
+    /* red controls */
     border-radius: 50% !important;
-    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important; /* yellow, green controls */
+    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important;
+    /* yellow, green controls */
     opacity: 0.85 !important;
 }
 
@@ -124,7 +127,8 @@
 
 .card-window .nav-link.active::before,
 .card-window .nav-link:active::before {
-    color: var(--accent-primary, #268bd2) !important; /* active indicator color */
+    color: var(--accent-primary, #268bd2) !important;
+    /* active indicator color */
     opacity: 1 !important;
 }
 
@@ -165,9 +169,11 @@
     flex-shrink: 0 !important;
     width: 8px !important;
     height: 8px !important;
-    background-color: #dc322f !important; /* red controls */
+    background-color: #dc322f !important;
+    /* red controls */
     border-radius: 50% !important;
-    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important; /* yellow, green controls */
+    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important;
+    /* yellow, green controls */
     margin-right: 42px !important;
     opacity: 0.85 !important;
 }
@@ -200,7 +206,8 @@
 }
 
 .panel-tabset .nav-tabs .nav-link::before {
-    content: "\f3e6" !important; /* Bootstrap icon bi-file-earmark-code */
+    content: "\f3e6" !important;
+    /* Bootstrap icon bi-file-earmark-code */
     font-family: "bootstrap-icons" !important;
     font-size: 0.85rem !important;
     color: var(--card-window-tab-inactive-color, var(--card-tab-inactive-color, #93a1a1)) !important;
@@ -224,7 +231,8 @@
 
 .panel-tabset .nav-tabs .nav-link.active::before,
 .panel-tabset .nav-tabs .nav-link:active::before {
-    color: var(--accent-primary, #268bd2) !important; /* active indicator color */
+    color: var(--accent-primary, #268bd2) !important;
+    /* active indicator color */
     opacity: 1 !important;
 }
 
@@ -283,20 +291,18 @@
     overflow-y: hidden !important;
 
     /* Hide scrollbar on all browsers while keeping scroll behaviour */
-    scrollbar-width: none !important;          /* Firefox */
-    -ms-overflow-style: none !important;       /* IE/Edge legacy */
+    scrollbar-width: none !important;
+    /* Firefox */
+    -ms-overflow-style: none !important;
+    /* IE/Edge legacy */
 
     /* Fade-out gradient on the right edge hints at hidden tabs */
-    -webkit-mask-image: linear-gradient(
-        to right,
-        black calc(100% - 32px),
-        transparent 100%
-    ) !important;
-    mask-image: linear-gradient(
-        to right,
-        black calc(100% - 32px),
-        transparent 100%
-    ) !important;
+    -webkit-mask-image: linear-gradient(to right,
+            black calc(100% - 32px),
+            transparent 100%) !important;
+    mask-image: linear-gradient(to right,
+            black calc(100% - 32px),
+            transparent 100%) !important;
 }
 
 /* Hide Webkit scrollbar thumb/track */
@@ -305,7 +311,8 @@
 }
 
 .card-window .panel-tabset .nav-tabs::before {
-    display: none !important;  /* No double traffic-light dots */
+    display: none !important;
+    /* No double traffic-light dots */
 }
 
 /* Remove the bi-file-earmark-code icon injected by the global nav-link::before rule */
@@ -351,40 +358,88 @@
         opacity: 0;
         transform: translateY(8px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-.reveal-lines > * {
+.reveal-lines>* {
     opacity: 0;
     animation: reveal-line 0.4s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
 }
 
 /* Staggered transition delays for direct children */
-.reveal-lines > *:nth-child(1)  { animation-delay: 0.1s; }
-.reveal-lines > *:nth-child(2)  { animation-delay: 0.2s; }
-.reveal-lines > *:nth-child(3)  { animation-delay: 0.3s; }
-.reveal-lines > *:nth-child(4)  { animation-delay: 0.4s; }
-.reveal-lines > *:nth-child(5)  { animation-delay: 0.5s; }
-.reveal-lines > *:nth-child(6)  { animation-delay: 0.6s; }
-.reveal-lines > *:nth-child(7)  { animation-delay: 0.7s; }
-.reveal-lines > *:nth-child(8)  { animation-delay: 0.8s; }
-.reveal-lines > *:nth-child(9)  { animation-delay: 0.9s; }
-.reveal-lines > *:nth-child(10) { animation-delay: 1.0s; }
-.reveal-lines > *:nth-child(11) { animation-delay: 1.1s; }
-.reveal-lines > *:nth-child(12) { animation-delay: 1.2s; }
+.reveal-lines>*:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.reveal-lines>*:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.reveal-lines>*:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.reveal-lines>*:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.reveal-lines>*:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.reveal-lines>*:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.reveal-lines>*:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.reveal-lines>*:nth-child(8) {
+    animation-delay: 0.8s;
+}
+
+.reveal-lines>*:nth-child(9) {
+    animation-delay: 0.9s;
+}
+
+.reveal-lines>*:nth-child(10) {
+    animation-delay: 1.0s;
+}
+
+.reveal-lines>*:nth-child(11) {
+    animation-delay: 1.1s;
+}
+
+.reveal-lines>*:nth-child(12) {
+    animation-delay: 1.2s;
+}
 
 /* --- TYPING/TYPEWRITER EFFECT --- */
 @keyframes typing {
-    from { width: 0; }
-    to { width: 100%; }
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
 }
 
 @keyframes caret {
-    from, to { border-color: transparent; }
-    50% { border-color: var(--accent-primary, #268bd2); }
+
+    from,
+    to {
+        border-color: transparent;
+    }
+
+    50% {
+        border-color: var(--accent-primary, #268bd2);
+    }
 }
 
 .typing-effect {
@@ -393,7 +448,7 @@
     white-space: nowrap !important;
     border-right: 2px solid var(--accent-primary, #268bd2) !important;
     width: 0;
-    animation: 
+    animation:
         typing 2.5s steps(40, end) forwards,
         caret 0.75s step-end infinite !important;
 }
@@ -412,7 +467,7 @@
     border: 1px solid var(--card-window-border, var(--card-border, rgba(88, 110, 117, 0.12))) !important;
     box-shadow: var(--card-window-shadow, var(--card-shadow, 0 4px 12px rgba(0, 43, 54, 0.03))) !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    
+
     /* Inject Custom Solarized CSS Variables to override Quarto-Live defaults */
     --exercise-cap-bg: var(--card-window-header-bg, var(--card-header-bg, #eee8d5)) !important;
     --exercise-main-bg: var(--card-window-bg, var(--card-bg, #fdf6e3)) !important;
@@ -444,20 +499,22 @@
     flex-shrink: 0 !important;
     width: 8px !important;
     height: 8px !important;
-    background-color: #dc322f !important; /* red controls */
+    background-color: #dc322f !important;
+    /* red controls */
     border-radius: 50% !important;
-    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important; /* yellow, green controls */
+    box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important;
+    /* yellow, green controls */
     margin-right: 42px !important;
     opacity: 0.85 !important;
 }
 
 /* Hide duplicate centered title that Quarto-Live generates */
-.card.exercise-editor .card-header > .d-flex > div:not(.btn-group):not(.exercise-editor-eval-indicator) {
+.card.exercise-editor .card-header>.d-flex>div:not(.btn-group):not(.exercise-editor-eval-indicator) {
     display: none !important;
 }
 
 /* Push the buttons/controls container to the far right using margin auto on the next sibling of tabs */
-.card.exercise-editor .card-header .ui-code-tabs + .d-flex {
+.card.exercise-editor .card-header .ui-code-tabs+.d-flex {
     margin-left: auto !important;
 }
 
@@ -474,11 +531,13 @@
     display: flex !important;
     align-items: flex-end !important;
     margin-left: 10px !important;
-    margin-bottom: -1px !important; /* Align tab border with header bottom */
+    margin-bottom: -1px !important;
+    /* Align tab border with header bottom */
 }
 
 .card.exercise-editor .card-header .btn-exercise-editor {
-    font-size: 0.78rem !important; /* Restore font size */
+    font-size: 0.78rem !important;
+    /* Restore font size */
 }
 
 .card.exercise-editor .card-header .btn-exercise-editor:first-of-type {
@@ -522,7 +581,7 @@
 }
 
 /* Selection */
-.card.exercise-editor .cm-editor .cm-selectionBackground, 
+.card.exercise-editor .cm-editor .cm-selectionBackground,
 .card.exercise-editor .cm-editor .cm-content ::selection {
     background-color: rgba(38, 139, 210, 0.1) !important;
 }
@@ -558,7 +617,7 @@
     box-shadow: 0 4px 12px rgba(133, 153, 0, 0.25) !important;
 }
 
-.card.exercise-editor .btn-exercise-editor.btn-primary:disabled, 
+.card.exercise-editor .btn-exercise-editor.btn-primary:disabled,
 .card.exercise-editor .btn-exercise-editor.btn-primary.disabled {
     background-color: rgba(133, 153, 0, 0.5) !important;
     border-color: transparent !important;
@@ -707,42 +766,63 @@
 
 /* ==========================================================================
    METRIC CARD COMPONENT
+   — Style ported from ia/.theme/_components.scss (.mol-stat-card)
    ========================================================================== */
 
 .card-metric {
-    flex: 1 !important;
-    min-width: 150px !important;
-    border: 1px solid var(--sol-base1, rgba(88, 110, 117, 0.15)) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
     background-color: var(--sol-base3, #fdf6e3) !important;
     border-radius: 8px !important;
-    padding: 12px 16px !important;
+    padding: 10px 12px 10px 16px !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 6px !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 2px !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    box-shadow: var(--shadow-tiny, 0 1px 3px rgba(0, 43, 54, 0.02)) !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Left accent bar — color is inherited from the value element's Bootstrap text utility */
+.card-metric::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 3px !important;
+    background: currentColor !important;
+    opacity: 0.65 !important;
 }
 
 .card-metric:hover {
-    box-shadow: var(--shadow-small, 0 4px 8px rgba(0, 43, 54, 0.04)) !important;
-    border-color: var(--sol-base01, rgba(88, 110, 117, 0.3)) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+    border-color: var(--sol-base1, rgba(88, 110, 117, 0.3)) !important;
 }
 
 .card-metric-title {
-    font-family: var(--font-base, sans-serif) !important;
-    font-size: 0.75rem !important;
+    font-family: var(--font-code, monospace) !important;
+    font-size: 0.65rem !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    font-weight: bold !important;
+    letter-spacing: 0.3px !important;
+    font-weight: 800 !important;
     color: var(--sol-base01, #93a1a1) !important;
+    margin-bottom: 1px !important;
 }
 
 .card-metric-value {
     font-family: var(--font-code, monospace) !important;
-    font-size: 1.8rem !important;
-    font-weight: bold !important;
+    font-size: 1.6rem !important;
+    font-weight: 900 !important;
+    line-height: 1.1 !important;
     margin: 0 !important;
-    line-height: 1.2 !important;
+}
+
+/* Explicit height for the 3D Plotly container — Plotly needs a real DOM height at init */
+.gradient-3d-container {
+    min-height: 360px !important;
 }
 
 
@@ -763,6 +843,7 @@
 .card.border-info {
     border-color: var(--sol-blue) !important;
 }
+
 .card.bg-light {
     background-color: var(--sol-base2) !important;
 }
@@ -789,7 +870,7 @@
 }
 
 /* Strip default margins/paddings from nested children inside standard card headers and convert them to flex containers for perfect vertical alignment of text and badges */
-.card .card-header > * {
+.card .card-header>* {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -812,7 +893,8 @@
 
 .card-concept .card-body {
     display: flex !important;
-    flex-direction: column !important; /* Mobile first: stack vertically */
+    flex-direction: column !important;
+    /* Mobile first: stack vertically */
     gap: 20px !important;
     padding: 20px !important;
 }
@@ -820,17 +902,21 @@
 /* On desktop and wide screens where there's enough room */
 @media (min-width: 768px) {
     .card-concept .card-body {
-        flex-direction: row !important; /* Dock side-by-side */
-        align-items: center !important; /* Perfect vertical alignment */
+        flex-direction: row !important;
+        /* Dock side-by-side */
+        align-items: center !important;
+        /* Perfect vertical alignment */
         justify-content: flex-start !important;
         gap: 24px !important;
     }
 
     /* Diagram plot container docked on the left */
-    .card-concept .card-body > div[id^="plot-"] {
-        flex: 0 0 160px !important; /* Fixed width for the diagram */
+    .card-concept .card-body>div[id^="plot-"] {
+        flex: 0 0 160px !important;
+        /* Fixed width for the diagram */
         width: 160px !important;
-        height: 140px !important; /* Compact high-fidelity height */
+        height: 140px !important;
+        /* Compact high-fidelity height */
         margin: 0 !important;
         overflow: hidden !important;
     }
@@ -854,7 +940,7 @@
     margin-bottom: 0 !important;
     font-size: 0.85em !important;
     line-height: 1.4 !important;
-    
+
     strong {
         color: var(--sol-green) !important;
     }
@@ -878,7 +964,8 @@
         height: 38px !important;
         padding: 0 16px !important;
         user-select: none !important;
-        background-color: #0b4352 !important; /* Lighter base02 (standard base02 is #073642) */
+        background-color: #0b4352 !important;
+        /* Lighter base02 (standard base02 is #073642) */
         border-bottom: 1px solid rgba(88, 110, 117, 0.15) !important;
         position: relative !important;
         text-align: center !important;
@@ -896,13 +983,15 @@
             transform: translateY(-50%) !important;
             width: 8px !important;
             height: 8px !important;
-            background-color: #dc322f !important; /* red controls */
+            background-color: #dc322f !important;
+            /* red controls */
             border-radius: 50% !important;
-            box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important; /* yellow, green controls */
+            box-shadow: 14px 0 0 #b58900, 28px 0 0 #859900 !important;
+            /* yellow, green controls */
             opacity: 0.85 !important;
         }
 
-        > * {
+        >* {
             margin: 0 !important;
             padding: 0 !important;
             line-height: 1 !important;
@@ -935,13 +1024,15 @@
     line-height: 1.5 !important;
     opacity: 1 !important;
     animation: terminal-line-fade 0.3s ease-out forwards;
-    
+
     &.text-success {
         color: var(--sol-green) !important;
     }
+
     &.text-warning {
         color: var(--sol-yellow) !important;
     }
+
     &.text-danger {
         color: var(--sol-red) !important;
     }
@@ -952,6 +1043,7 @@
         opacity: 0;
         transform: translateY(4px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -970,14 +1062,15 @@
     gap: 10px;
     padding: 0 14px;
     height: 42px;
-    border-radius: 21px;          /* Pill shape */
+    border-radius: 21px;
+    /* Pill shape */
     border: 1.5px solid var(--card-window-header-border, rgba(88, 110, 117, 0.18));
     background: var(--sol-base2, #eee8d5);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
 
     /* Left icon (injected by Lua filter when using [input]{.search-bar .bi-icon}) */
-    > i.bi {
+    >i.bi {
         font-size: 1.05rem;
         color: var(--sol-base01, #586e75);
         flex-shrink: 0;
@@ -986,7 +1079,7 @@
     }
 
     /* The native <input> */
-    > input {
+    >input {
         flex: 1;
         border: none;
         outline: none;
@@ -1007,20 +1100,23 @@
         border-color: var(--sol-blue, #268bd2);
         box-shadow: 0 0 0 3px rgba(38, 139, 210, 0.15);
 
-        > i.bi {
+        >i.bi {
             color: var(--sol-blue, #268bd2);
         }
     }
-}/* ==========================================================================
+}
+
+/* ==========================================================================
    GENERIC CARD CONTROL ROW (Sub-Header)
    ========================================================================== */
 
-.card-window > .card-control-row {
+.card-window>.card-control-row {
     padding: 0 !important;
     background-color: var(--card-window-bg) !important;
     display: flex !important;
     align-items: center !important;
-    height: 34px !important;       /* Compact like a browser tool/address bar */
+    height: 34px !important;
+    /* Compact like a browser tool/address bar */
     overflow: hidden !important;
 
     &.flex-column {
@@ -1030,6 +1126,64 @@
         align-items: stretch !important;
     }
 
+    /* Simulator row: OJS cells laid out horizontally, slider expands */
+    &.sim-controls-row {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 8px 16px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;
+
+        /* Quarto OJS cell wrapper — must also be a flex item */
+        .cell,
+        .observablehq,
+        .observablehq-viewof {
+            flex: 1 !important;
+            min-width: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            margin: 0 !important;
+            padding: 0 !important;
+
+            /* Observable wraps inputs in a <form> */
+            form {
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                flex: 1 !important;
+                min-width: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                gap: 10px !important;
+            }
+
+            /* Range track fills available space */
+            input[type="range"] {
+                flex: 1 !important;
+                min-width: 0 !important;
+                width: 100% !important;
+            }
+
+            /* Value output: never truncate, expand to show full value */
+            output {
+                flex: 0 0 auto !important;
+                min-width: max-content !important;
+                width: auto !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                white-space: nowrap !important;
+            }
+
+            /* Button cells stay compact */
+            &:has(button),
+            &:has(.btn) {
+                flex: 0 0 auto !important;
+            }
+        }
+    }
 
     /* Handle intermediate paragraphs injected by Pandoc */
     p {
@@ -1043,36 +1197,36 @@
 }
 
 /* Make the search pill flat and edge-to-edge when inside the control row */
-.card-window > .card-control-row .search-bar {
+.card-window>.card-control-row .search-bar {
     width: 100% !important;
     height: 100% !important;
     border: none !important;
     border-radius: 0 !important;
     background: transparent !important;
-    padding: 0 16px !important;    /* Align perfectly with card margins */
+    padding: 0 16px !important;
+    /* Align perfectly with card margins */
     gap: 10px !important;
     box-shadow: none !important;
     display: flex !important;
     align-items: center !important;
 
-    > i.bi {
+    >i.bi {
         font-size: 0.95rem !important;
         color: var(--sol-base1, #93a1a1) !important;
     }
 
-    > input {
+    >input {
         font-size: 0.85rem !important;
         height: 100% !important;
         color: var(--sol-base00, #657b83) !important;
     }
 
     &:focus-within {
-        background-color: rgba(38, 139, 210, 0.03) !important; /* Row-wide focus highlight */
-        
-        > i.bi {
+        background-color: rgba(38, 139, 210, 0.03) !important;
+        /* Row-wide focus highlight */
+
+        >i.bi {
             color: var(--sol-blue, #268bd2) !important;
         }
     }
 }
-
-

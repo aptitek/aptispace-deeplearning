@@ -20,21 +20,17 @@ Imaginez que votre jeu de données est une **pièce mécanique** complexe (avec 
 Simulation de Presse
 ::::
 
-:::: {.card-control-row}
+:::: {.card-control-row .sim-controls-row}
 
-[Pression appliquée :]{.text-muted .small}
-
-::::: {#epoch-control}
 ```{ojs}
 //| echo: false
 // Contrôle réactif : L'Époque (Force de pression)
 viewof epoch = Inputs.range([0, 100], {
   value: 0,
   step: 1,
-  width: "200px"
+  label: "Pression appliquée"
 })
 ```
-:::::
 
 ::::
 
@@ -148,36 +144,26 @@ Mathématiquement, le calcul basique d'un neurone peut s'exprimer par $y = w \cd
 Anatomie de la Déformation : Poids (w) & Biais (b)
 ::::
 
-:::: {.card-control-row .d-flex .flex-column .gap-2}
-::::: {.d-flex .align-items-center .gap-2}
-[Biais (Tension / Décalage) :]{.text-muted .small}
+:::: {.card-control-row .sim-controls-row}
 
-:::::: {#bias-control}
 ```{ojs}
 //| echo: false
 viewof bias = Inputs.range([-40, 40], {
   value: 0,
   step: 1,
-  width: "150px"
+  label: "Biais (Tension / Décalage)"
 })
 ```
-::::::
-:::::
 
-::::: {.d-flex .align-items-center .gap-2}
-[Poids (Amplitude) :]{.text-muted .small}
-
-:::::: {#weight-control}
 ```{ojs}
 //| echo: false
 viewof weight = Inputs.range([0, 1.5], {
   value: 0.2,
   step: 0.1,
-  width: "150px"
+  label: "Poids (Amplitude)"
 })
 ```
-::::::
-:::::
+
 ::::
 
 :::: {.card-body}
@@ -328,21 +314,17 @@ Pour savoir comment ajuster notre moule, nous devons mesurer nos erreurs.
 Optimisation : Évaluation de la Perte (Loss) & Direction du Gradient
 ::::
 
-:::: {.card-control-row .d-flex .flex-column .gap-2}
-::::: {.d-flex .align-items-center .gap-3}
-[Ajustement de la Presse (Époques) :]{.text-muted .small}
+:::: {.card-control-row .sim-controls-row}
 
-:::::: {#epoch-g3-control}
 ```{ojs}
 //| echo: false
 viewof epochG3 = Inputs.range([0, 100], {
   value: 0,
   step: 1,
-  width: "180px"
+  label: "Ajustement de la Presse (Époques)"
 })
 ```
-::::::
-:::::
+
 ::::
 
 :::: {.card-body}
@@ -566,3 +548,112 @@ Les flux de gradients à travers les poids assurent la stabilité, évitant ains
 * **AdaGrad :** Particulièrement efficace pour les données éparses (*sparsity*).
 
 **L'impact stratégique :** Le choix d'un optimiseur comme Adam garantit la stabilité de la convergence et réduit drastiquement les coûts computationnels. C'est un levier d'efficience opérationnelle majeur qui permet de naviguer plus sûrement vers l'équilibre critique entre précision mathématique et généralisation au monde réel.
+
+### Simulation de la Trajectoire d'Optimisation
+
+Visualisez de manière interactive comment le paramètre d'inertie (Momentum) modifie le comportement de la descente dans un paysage de coût en trois dimensions.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🏔️ Simulateur 3D de la Descente de Gradient et Inertie (Momentum)
+::::
+
+:::: {.px-3 .pt-2 .pb-1 .text-muted .small}
+Ajustez l'inertie (Momentum) pour voir comment la boule prend de la vitesse et de l'élan afin de descendre la surface en 3D représentant la fonction de coût, et observez si elle parvient à s'extraire des minima locaux.
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof momentumVal = Inputs.range([0.5, 1.0], {
+  value: 0.771,
+  step: 0.001,
+  label: "⚡ Inertie (Momentum)"
+})
+```
+
+```{ojs}
+//| echo: false
+viewof triggerBtn = {
+  const btn = html`<button class="btn btn-danger btn-sm d-flex align-items-center gap-2"><span>🔴</span> Lâcher la Balle</button>`;
+  btn.value = 0;
+  btn.onclick = () => {
+    btn.value++;
+    btn.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  return btn;
+}
+```
+
+::::
+
+:::: {.px-3 .pb-3}
+
+::::: {.col-12 .mb-3}
+:::::: {.card .border .m-0}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+🔍 Représentation 3D du Paysage de Coût (Loss Surface)
+:::::::
+::::::: {#gradient-descent-container .card-body .gradient-3d-container .p-0}
+:::::::
+::::::
+:::::
+
+:::: {.grid}
+
+::::: {.g-col-3}
+:::::: {.card .card-metric}
+[Coût (Loss)]{.card-metric-title}
+
+[7.9000]{#grad-3d-cost .card-metric-value .text-danger}
+::::::
+:::::
+
+::::: {.g-col-3}
+:::::: {.card .card-metric}
+[θ₁]{.card-metric-title}
+
+[2.200]{#grad-3d-theta1 .card-metric-value .text-primary}
+::::::
+:::::
+
+::::: {.g-col-3}
+:::::: {.card .card-metric}
+[θ₂]{.card-metric-title}
+
+[1.500]{#grad-3d-theta2 .card-metric-value .text-success}
+::::::
+:::::
+
+::::: {.g-col-3}
+:::::: {.card .card-metric}
+[Vitesse]{.card-metric-title}
+
+[0.00]{#grad-3d-speed .card-metric-value .text-warning}
+::::::
+:::::
+
+::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { runGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
+
+render3DDescent = {
+  runGradientSimulation(momentumVal, triggerBtn, {
+    containerId: "gradient-descent-container",
+    metrics: {
+      cost: "grad-3d-cost",
+      theta1: "grad-3d-theta1",
+      theta2: "grad-3d-theta2",
+      speed: "grad-3d-speed"
+    }
+  });
+}
+```

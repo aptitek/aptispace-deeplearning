@@ -182,3 +182,48 @@ export function createPyramid(divId, data, options = {}) {
 
 // Alias for spelling compatibility
 export const createPiramid = createPyramid;
+
+/**
+ * 🏔️ 3D Surface & Line Plot
+ */
+export function createPlot3D(divId, traces, title = "", options = {}) {
+  const themeLayout = getPlotlyTheme().layout;
+
+  const defaultAxis = {
+    gridcolor: 'rgba(88, 110, 117, 0.15)',
+    zerolinecolor: 'rgba(88, 110, 117, 0.3)',
+    showbackground: false,
+    titlefont: themeLayout.font,
+    tickfont: themeLayout.font
+  };
+
+  const layout = {
+    title: title ? { text: title, font: { size: 16 } } : undefined,
+    template: getPlotlyTheme(),
+    margin: { t: 10, b: 10, l: 10, r: 10 },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    scene: {
+      xaxis: { ...defaultAxis, ...(options.scene && options.scene.xaxis) },
+      yaxis: { ...defaultAxis, ...(options.scene && options.scene.yaxis) },
+      zaxis: { ...defaultAxis, ...(options.scene && options.scene.zaxis) },
+      camera: options.scene && options.scene.camera,
+      ...options.scene
+    },
+    ...options.layout
+  };
+
+  const config = {
+    responsive: true,
+    displayModeBar: false,
+    ...options.config
+  };
+
+  Plotly.newPlot(divId, traces, layout, config);
+  
+  // Set up ResizeObserver for responsive rendering
+  const el = typeof divId === 'string' ? document.getElementById(divId) : divId;
+  if (el) {
+    new ResizeObserver(() => Plotly.Plots.resize(el)).observe(el);
+  }
+}

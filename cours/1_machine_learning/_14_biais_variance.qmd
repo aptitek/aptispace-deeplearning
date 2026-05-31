@@ -20,6 +20,152 @@ Elle représente l'erreur liée à une sensibilité excessive aux fluctuations d
 
 Dans notre analogie, la matière du moule est ici beaucoup trop liquide et réactive. Non seulement elle capture parfaitement la forme générale de la figurine, mais elle va jusqu'à s'infiltrer dans la moindre micro-rayure et englober chaque grain de poussière présent sur cet exemplaire précis. Le résultat est un **sur-apprentissage** (*overfitting*). Si vous essayez d'utiliser ce moule ultra-spécifique pour valider une nouvelle figurine légèrement différente, il sera totalement inadapté et produira une erreur importante.
 
+::: {.card .card-window}
+:::: {.card-header}
+Généralisation : Le compromis Biais / Variance
+::::
+
+:::: {.card-control-row .d-flex .flex-column .gap-2}
+::::: {.d-flex .align-items-center .gap-3}
+[Propriété du matériau (Complexité du modèle) :]{.text-muted .small}
+
+:::::: {#complexity-control}
+```{ojs}
+//| echo: false
+// Curseur allant de 0 (Très Rigide) à 100 (Très Fluide)
+viewof complexity = Inputs.range([0, 100], {
+  value: 50,
+  step: 1
+})
+```
+::::::
+:::::
+::::
+
+:::: {.card-body}
+::::: {#d3-graph-4-container .w-100 .text-center}
+:::::
+::::
+:::
+
+```{ojs}
+//| echo: false
+// ==========================================
+// 🎨 MOTEUR DE RENDU D3 (Graphique 4)
+// ==========================================
+
+graph4 = {
+  const width = 800;
+  const height = 250;
+
+  const svg = d3.create("svg")
+    .attr("viewBox", [0, 0, width, height])
+    .attr("class", "w-100 h-auto");
+
+  const xScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
+  const yScale = d3.scaleLinear().domain([0, 100]).range([height - 30, 30]);
+
+  // Ligne générique D3
+  const lineGenerator = d3.line()
+    .curve(d3.curveMonotoneX)
+    .x(d => xScale(d.x))
+    .y(d => yScale(d.moldY));
+
+  // --- 1. LOGIQUE D'INTERPOLATION (Rigide -> Optimal -> Fluide) ---
+
+  // On calcule l'état du modèle en fonction du slider (0 à 100)
+  const currentModelData = objectData.map(d => {
+    // État 1 : Rigide (Sous-apprentissage / Biais fort) -> Une simple ligne droite (Moyenne Y = 60)
+    const yRigid = 60;
+
+    // État 2 : Optimal (Équilibre) -> Le vrai signal sans le bruit (Macro-forme)
+    const yOptimal = 60 + 25 * Math.sin(d.x / 12);
+
+    // État 3 : Fluide (Sur-apprentissage / Variance forte) -> Épouse parfaitement le bruit
+    const yOverfit = d.y;
+
+    let currentY;
+
+    if (complexity <= 50) {
+      // Transition Rigide (0) -> Optimal (50)
+      const ratio = complexity / 50;
+      currentY = yRigid + (yOptimal - yRigid) * ratio;
+    } else {
+      // Transition Optimal (50) -> Fluide (100)
+      const ratio = (complexity - 50) / 50;
+      currentY = yOptimal + (yOverfit - yOptimal) * ratio;
+    }
+
+    return { x: d.x, targetY: d.y, moldY: currentY };
+  });
+
+  // --- 2. GESTION DU BADGE UI (Diagnostic) ---
+  const badge = document.getElementById("complexity-badge");
+  let lineColor = "var(--sol-yellow)";
+
+  if (badge) {
+    if (complexity < 30) {
+      badge.textContent = "SOUS-APPRENTISSAGE (Biais Élevé)";
+      badge.style.backgroundColor = "var(--sol-orange)";
+      lineColor = "var(--sol-orange)";
+    } else if (complexity > 70) {
+      badge.textContent = "SUR-APPRENTISSAGE (Variance Élevée)";
+      badge.style.backgroundColor = "var(--sol-red)";
+      lineColor = "var(--sol-red)";
+    } else {
+      badge.textContent = "GÉNÉRALISATION OPTIMALE";
+      badge.style.backgroundColor = "var(--sol-green)";
+      lineColor = "var(--sol-green)";
+    }
+    badge.style.color = "var(--sol-base3)";
+  }
+
+  // --- 3. RENDU GRAPHIQUE ---
+
+  // A. Les données brutes (Le Nuage de points représentant l'objet avec ses défauts)
+  svg.selectAll(".data-point")
+    .data(objectData)
+    .enter()
+    .append("circle")
+    .attr("class", "data-point")
+    .attr("cx", d => xScale(d.x))
+    .attr("cy", d => yScale(d.y))
+    .attr("r", 4)
+    .attr("fill", "var(--sol-base01)")
+    .attr("opacity", 0.6);
+
+  // B. Optionnel : L'ombre du signal optimal parfait (pour référence visuelle)
+  const optimalData = objectData.map(d => ({ x: d.x, moldY: 60 + 25 * Math.sin(d.x / 12) }));
+  svg.append("path")
+    .datum(optimalData)
+    .attr("fill", "none")
+    .attr("stroke", "var(--sol-base02)")
+    .attr("stroke-width", 2)
+    .attr("stroke-dasharray", "4 4")
+    .attr("d", lineGenerator);
+
+  // C. Le Modèle (Le Moule avec sa rigidité/fluidité actuelle)
+  svg.append("path")
+    .datum(currentModelData)
+    .attr("fill", "none")
+    .attr("stroke", lineColor)
+    .attr("stroke-width", 5)
+    .attr("stroke-linecap", "round")
+    .attr("stroke-linejoin", "round")
+    .attr("d", lineGenerator);
+
+  // Projection DOM
+  const container = document.getElementById("d3-graph-4-container");
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(svg.node());
+  }
+
+  return svg.node();
+}
+
+```
+
 ### Le Phénomène de Double Descente
 
 Historiquement, le compromis entre ces deux erreurs est représenté par une courbe en U : on diminue le biais en augmentant la complexité du modèle, jusqu'au point de bascule où la variance explose (sur-apprentissage).
