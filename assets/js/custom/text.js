@@ -72,7 +72,7 @@ export function createLabeledText(selectorOrElement, options = {}) {
   }
 
   // Ensure standard styling class is applied
-  container.classList.add("org-token-stream");
+  container.classList.add("token-stream");
 
   // Options defaults
   const spaceMarker = options.spaceMarker !== undefined ? options.spaceMarker : "Ġ";
@@ -141,7 +141,7 @@ export function createLabeledText(selectorOrElement, options = {}) {
 
       // Build DOM structures with vanilla JS for robustness and memory-efficiency
       const tokenEl = document.createElement("div");
-      tokenEl.className = "mol-token";
+      tokenEl.className = "token-item";
       tokenEl.style.setProperty("--token-color", color);
 
       const node = document.createElement("div");
@@ -217,7 +217,7 @@ export function createLabeledText(selectorOrElement, options = {}) {
     },
     destroy: () => {
       container.innerHTML = "";
-      container.classList.remove("org-token-stream", "is-empty");
+      container.classList.remove("token-stream", "is-empty");
     }
   };
 

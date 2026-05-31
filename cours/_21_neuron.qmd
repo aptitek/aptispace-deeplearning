@@ -37,9 +37,9 @@ Le "Budget Travaux" corrige proportionnellement les poids. Modifiez le taux d'ap
 
 ::::
 
-:::: {.card-control-row}
+:::: {.card-control-row .d-flex .flex-column .gap-2}
 
-::::: {.org-controls-group}
+::::: {.d-flex .flex-wrap .align-items-center .gap-3}
 
 ```{ojs}
 //| echo: false
@@ -52,7 +52,7 @@ viewof bias     = Inputs.range([-300, 300], {value: 100, step: 10,  label: "Pié
 
 :::::
 
-::::: {.org-controls-group}
+::::: {.d-flex .flex-wrap .align-items-center .gap-3}
 
 ```{ojs}
 //| echo: false

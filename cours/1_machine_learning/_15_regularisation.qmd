@@ -17,8 +17,37 @@ En apprentissage automatique, on applique cette contrainte en ajoutant une péna
 🪄 Simulateur Interactif des Chemins de Régularisation
 ::::
 
-:::: {.px-3 .pt-2 .pb-1 .text-muted .small}
-Jouez avec l'intensité de pénalisation $\lambda$ pour constater en temps réel comment Ridge (L2) amortit doucement les coefficients sans jamais en éliminer aucun, tandis que Lasso (L1) coupe chirurgicalement à zéro (sparsity) les variables inutiles (le bruit ou la redondance).
+:::: {.panel-tabset .reg-type-tabset}
+
+##### Lasso (L1)
+
+##### Ridge (L2)
+
+##### ElasticNet
+
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+import { createTabsetWatcher } from "../../assets/js/custom/card.js"
+
+mutable regType = "lasso"
+
+_regTypeWatcher = {
+  const w = createTabsetWatcher(
+    ".reg-type-tabset",
+    { "Lasso (L1)": "lasso", "Ridge (L2)": "ridge", "ElasticNet": "elastic" },
+    (val) => { mutable regType = val; }
+  );
+  invalidation.then(() => w.destroy());
+  return html`<span style="display:none"></span>`;
+}
+
+viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Intensité (λ)" })
+```
+
 ::::
 
 :::: {.row .g-3 .px-3 .pb-2}
@@ -41,26 +70,6 @@ Jouez avec l'intensité de pénalisation $\lambda$ pour constater en temps réel
 ::::
 
 :::: {#reg-details-container .card .border-start .border-4 .bg-light .mx-3 .mb-3}
-::::
-
-:::: {.card-control-row}
-::::: {.org-controls-group}
-
-```{ojs}
-//| echo: false
-viewof regType = Inputs.select(
-  new Map([
-    ["Lasso (Pénalité L1 — Sélection Sparsity)", "lasso"],
-    ["Ridge (Pénalité L2 — Réduction Variance)",  "ridge"],
-    ["ElasticNet (Pénalité Hybride L1 + L2)",      "elastic"]
-  ]),
-  { value: "lasso", label: "🛠️ Type de Régularisation" }
-)
-
-viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Intensité (λ)" })
-```
-
-:::::
 ::::
 
 :::

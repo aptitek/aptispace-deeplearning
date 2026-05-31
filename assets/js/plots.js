@@ -227,3 +227,59 @@ export function createPlot3D(divId, traces, title = "", options = {}) {
     new ResizeObserver(() => Plotly.Plots.resize(el)).observe(el);
   }
 }
+
+/**
+ * 📈 Multi-Trace Line / Scatter Chart
+ * Generic chart accepting an array of fully-formed Plotly trace objects.
+ * Applies the solarized theme, transparent backgrounds, and a ResizeObserver.
+ * Use `Plotly.react(el, traces, el.layout)` for reactive updates after init.
+ *
+ * @param {string|HTMLElement} divId   Container id or element.
+ * @param {Array}  traces              Array of Plotly trace objects.
+ * @param {Object} options             Optional overrides: { layout, config, xaxis, yaxis, shapes }.
+ */
+export function createMultiLine(divId, traces, options = {}) {
+  const themeLayout = getPlotlyTheme().layout;
+
+  const layout = {
+    ...themeLayout,
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    showlegend: options.showlegend !== undefined ? options.showlegend : false,
+    margin: { t: 15, r: 15, b: 40, l: 40 },
+    xaxis: {
+      ...themeLayout.xaxis,
+      gridcolor: 'rgba(88, 110, 117, 0.15)',
+      zerolinecolor: 'rgba(88, 110, 117, 0.4)',
+      ...options.xaxis
+    },
+    yaxis: {
+      ...themeLayout.yaxis,
+      gridcolor: 'rgba(88, 110, 117, 0.15)',
+      zerolinecolor: 'rgba(88, 110, 117, 0.4)',
+      ...options.yaxis
+    },
+    shapes: options.shapes || [],
+    ...options.layout
+  };
+
+  const config = {
+    responsive: true,
+    displayModeBar: false,
+    ...options.config
+  };
+
+  const el = typeof divId === 'string' ? document.getElementById(divId) : divId;
+  if (!el) return;
+
+  Plotly.react(el, traces, layout, config);
+
+  // Preserve layout reference for downstream Plotly.react calls (e.g. camera, shapes)
+  el.layout = layout;
+
+  // Responsive resize
+  if (!el._resizeObserver) {
+    el._resizeObserver = new ResizeObserver(() => Plotly.Plots.resize(el));
+    el._resizeObserver.observe(el);
+  }
+}

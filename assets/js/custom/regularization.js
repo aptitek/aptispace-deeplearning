@@ -1,7 +1,9 @@
 // =====================================================================
 // regularization.js — Regularization simulation using Plotly
 // =====================================================================
-import { resolveCssValue, getPlotlyTheme } from "../core.js";
+import { resolveCssValue } from "../core.js";
+import { createMultiLine } from "../plots.js";
+
 
 // Spécification de nos 5 variables
 const variables = [
@@ -13,7 +15,8 @@ const variables = [
 ];
 
 export function calculateCoefficients(type, lambda) {
-  const x = lambda / 100; // Normalisé [0, 1]
+  const lambdaValue = Number(lambda);
+  const x = Number.isFinite(lambdaValue) ? lambdaValue / 100 : 0; // Normalisé [0, 1]
 
   return variables.map(v => {
     let w = v.w0;
@@ -59,34 +62,30 @@ export function updateRegularization(type, lambda, containers = {}) {
   const { svgEl, varsEl, detailsEl } = containers;
   if (!svgEl || !varsEl || !detailsEl) return;
 
-  const currentCoeffs = calculateCoefficients(type, lambda);
+  const safeType = typeof type === "string" ? type : "lasso";
+  const lambdaValue = Number(lambda);
+  const safeLambda = Number.isFinite(lambdaValue) ? lambdaValue : 0;
+  const currentCoeffs = calculateCoefficients(safeType, safeLambda);
 
   // 1. Plotly-based Chart rendering
-  renderChart(svgEl, type, lambda, currentCoeffs);
+  renderChart(svgEl, safeType, safeLambda, currentCoeffs);
 
   // 2. Variables Sidebar list rendering
   renderVars(varsEl, currentCoeffs);
 
   // 3. Explainer text rendering
-  renderDetails(detailsEl, type, lambda);
+  renderDetails(detailsEl, safeType, safeLambda);
 }
 
 function renderChart(svgEl, type, lambda, currentCoeffs) {
-  // Remove any old static SVG if present
-  const oldSvg = svgEl.querySelector("svg");
-  if (oldSvg) {
-    oldSvg.remove();
-  }
-
-  // Set up traces for the regularization paths (0 to 100 lambda)
+  // Build line-path traces (one per variable across λ 0→100)
   const lineTraces = variables.map(v => {
     const pathX = [];
     const pathY = [];
     for (let l = 0; l <= 100; l += 5) {
       const coeffs = calculateCoefficients(type, l);
-      const val = coeffs.find(tc => tc.id === v.id).w;
       pathX.push(l);
-      pathY.push(val);
+      pathY.push(coeffs.find(tc => tc.id === v.id).w);
     }
     return {
       x: pathX,
@@ -94,15 +93,12 @@ function renderChart(svgEl, type, lambda, currentCoeffs) {
       mode: 'lines',
       type: 'scatter',
       name: v.name,
-      line: {
-        color: resolveCssValue(v.color),
-        width: 2.5
-      },
+      line: { color: resolveCssValue(v.color), width: 2.5 },
       hoverinfo: 'skip'
     };
   });
 
-  // Trace for the current value dots
+  // Current-value dot trace
   const dotsTrace = {
     x: currentCoeffs.map(() => lambda),
     y: currentCoeffs.map(c => c.w),
@@ -112,55 +108,27 @@ function renderChart(svgEl, type, lambda, currentCoeffs) {
     marker: {
       color: currentCoeffs.map(c => resolveCssValue(c.color)),
       size: 9,
-      line: {
-        color: '#ffffff',
-        width: 1
-      }
+      line: { color: '#ffffff', width: 1 }
     },
     hoverinfo: 'text',
     text: currentCoeffs.map(c => `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`)
   };
 
-  const themeLayout = getPlotlyTheme().layout;
-
-  const layout = {
-    ...themeLayout,
-    showlegend: false,
-    margin: { t: 15, r: 15, b: 35, l: 35 },
-    xaxis: {
-      ...themeLayout.xaxis,
-      range: [0, 100],
-      gridcolor: 'rgba(88, 110, 117, 0.15)',
-      zerolinecolor: 'var(--sol-base01, #586e75)'
-    },
-    yaxis: {
-      ...themeLayout.yaxis,
-      range: [-5, 9],
-      gridcolor: 'rgba(88, 110, 117, 0.15)',
-      zerolinecolor: 'var(--sol-base01, #586e75)'
-    },
+  // Delegate to the generic multi-line factory (handles theme, config, ResizeObserver)
+  createMultiLine(svgEl, [...lineTraces, dotsTrace], {
+    xaxis: { range: [0, 100] },
+    yaxis: { range: [-5, 9] },
     shapes: [{
       type: 'line',
-      x0: lambda,
-      y0: -5,
-      x1: lambda,
-      y1: 9,
+      x0: lambda, y0: -5,
+      x1: lambda, y1: 9,
       line: {
         color: resolveCssValue('var(--sol-magenta, #d33682)'),
         width: 1.5,
         dash: 'dash'
       }
     }]
-  };
-
-  const config = {
-    responsive: true,
-    displayModeBar: false
-  };
-
-  if (typeof Plotly !== 'undefined') {
-    Plotly.react(svgEl, [...lineTraces, dotsTrace], layout, config);
-  }
+  });
 }
 
 function renderVars(varsEl, currentCoeffs) {

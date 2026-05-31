@@ -20,7 +20,7 @@ export const ui = {
     };
     const className = classMap[type] || "";
     const styleAttr = color !== "inherit" ? `style="color: ${color};"` : "";
-    return `<div class="${className} atom-text-${type}" ${styleAttr}>${content}</div>`;
+    return `<div class="${className}" ${styleAttr}>${content}</div>`;
   },
   badge: ({ text, colorClass = "" }) => `
     <span class="badge ${colorClass}">${text}</span>
@@ -112,7 +112,6 @@ export const ui = {
   },
   label: (text) => {
     const el = document.createElement('span');
-    el.className = 'atom-label';
     el.innerText = text;
     return el;
   },

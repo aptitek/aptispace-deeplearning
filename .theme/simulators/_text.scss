@@ -2,7 +2,7 @@
    LABELED TEXT / TOKEN STREAM SIMULATOR COMPONENT STYLE
    ========================================================================== */
 
-.org-token-stream {
+.token-stream {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 12px;
@@ -22,7 +22,7 @@
     }
 }
 
-.mol-token {
+.token-item {
     display: flex;
     flex-direction: column;
     align-items: center;
