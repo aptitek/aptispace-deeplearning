@@ -3,7 +3,6 @@
 // ==========================================
 
 .card-window {
-    // Map to global semantic tokens with SCSS compile-time fallbacks
     --card-window-bg:            var(--card-bg,            #{$sol-base3});
     --card-window-border:        var(--card-border,         #{rgba($sol-base01, 0.12)});
     --card-window-shadow:        var(--card-shadow,         0 4px 12px #{rgba($sol-base03, 0.03)});
@@ -12,7 +11,7 @@
     --card-window-header-bg:     var(--card-header-bg,      #{$sol-base2});
     --card-window-header-border: var(--card-header-border,  #{rgba($sol-base01, 0.08)});
 
-    border-radius: 8px;
+    border-radius: $radius-8;
     overflow: hidden;
     background-color: var(--card-window-bg);
     border: 1px solid var(--card-window-border);
@@ -28,9 +27,9 @@
     > .card-header {
         display: flex !important;
         align-items: center !important;
-        min-height: 38px !important;
+        min-height: $sp-40 !important;
         height: auto !important;
-        padding: 0 16px !important;
+        padding: 0 $sp-16 !important;
         box-sizing: border-box;
         user-select: none;
         font-family: $font-family-code;
@@ -45,12 +44,12 @@
             content: "";
             display: inline-block;
             flex-shrink: 0;
-            width: 8px;
-            height: 8px;
+            width: $sp-8;
+            height: $sp-8;
             background-color: $sol-red;
             border-radius: 50%;
             box-shadow: 14px 0 0 $sol-yellow, 28px 0 0 $sol-green;
-            margin-right: 42px;
+            margin-right: $sp-40;
             opacity: 0.85;
         }
     }
@@ -64,8 +63,8 @@
     .nav-tabs {
         display: flex !important;
         align-items: center !important;
-        height: 38px !important;
-        padding: 0 16px !important;
+        height: $sp-40 !important;
+        padding: 0 $sp-16 !important;
         user-select: none !important;
         list-style: none !important;
         margin-bottom: 0 !important;
@@ -77,12 +76,12 @@
             content: "" !important;
             display: inline-block !important;
             flex-shrink: 0 !important;
-            width: 8px !important;
-            height: 8px !important;
+            width: $sp-8 !important;
+            height: $sp-8 !important;
             background-color: $sol-red !important;
             border-radius: 50% !important;
             box-shadow: 14px 0 0 $sol-yellow, 28px 0 0 $sol-green !important;
-            margin-right: 42px !important;
+            margin-right: $sp-40 !important;
             opacity: 0.85 !important;
         }
 
@@ -96,13 +95,13 @@
         .nav-link {
             display: flex !important;
             align-items: center !important;
-            gap: 8px !important;
-            border-top-left-radius: 6px !important;
-            border-top-right-radius: 6px !important;
-            padding: 5px 14px !important;
+            gap: $sp-8 !important;
+            border-top-left-radius: $radius-8 !important;
+            border-top-right-radius: $radius-8 !important;
+            padding: $sp-4 $sp-16 !important;
             font-family: $font-family-code !important;
             font-size: 0.8rem !important;
-            height: 28px !important;
+            height: $sp-28 !important;
             line-height: 1 !important;
             margin-bottom: -1px !important;
             transition: all 0.15s ease !important;
@@ -132,7 +131,7 @@
         border: none !important;
         padding: 0 !important;
         margin: 0 !important;
-        border-radius: 0 0 8px 8px !important;
+        border-radius: 0 0 $radius-8 $radius-8 !important;
 
         .tab-pane {
             border: none !important;
@@ -144,7 +143,6 @@
 }
 
 // Suppress duplicate dots when panel-tabset sits inside card-window
-// (card-window's card-header already provides the macOS chrome)
 .card-window .panel-tabset .nav-tabs::before {
     content: none !important;
 }
@@ -156,7 +154,7 @@
 .card-control-row {
     background-color: var(--card-header-bg, #{$sol-base2});
     border-top: 1px solid var(--card-header-border, #{rgba($sol-base01, 0.08)});
-    padding: 8px 16px;
+    padding: $sp-8 $sp-16;
     display: flex;
     flex-direction: column;
 }

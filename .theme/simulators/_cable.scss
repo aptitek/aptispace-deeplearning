@@ -5,12 +5,10 @@
   position: relative;
   background: var(--cabling-panel-bg);
   border: 1px solid var(--sol-base02);
-  border-radius: 14px;
-  padding: 32px 36px;
-  margin: 25px 0;
-  box-shadow: 
-    0 15px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 2px rgba(255, 255, 255, 0.03);
+  border-radius: $radius-16;
+  padding: $sp-32 $sp-36;
+  margin: $sp-24 0;
+  box-shadow: $box-shadow-lg, inset 0 1px 2px rgba(255, 255, 255, 0.03);
   overflow: visible !important;
 }
 
@@ -31,10 +29,10 @@
     transform: scale(1.1);
   }
 
-  &.top-left     { top: 12px; left: 12px; transform: rotate(18deg); &:hover { transform: scale(1.1) rotate(18deg); } }
-  &.top-right    { top: 12px; right: 12px; transform: rotate(-38deg); &:hover { transform: scale(1.1) rotate(-38deg); } }
-  &.bottom-left  { bottom: 12px; left: 12px; transform: rotate(62deg); &:hover { transform: scale(1.1) rotate(62deg); } }
-  &.bottom-right { bottom: 12px; right: 12px; transform: rotate(-74deg); &:hover { transform: scale(1.1) rotate(-74deg); } }
+  &.top-left     { top: $sp-12; left: $sp-12; transform: rotate(18deg); &:hover { transform: scale(1.1) rotate(18deg); } }
+  &.top-right    { top: $sp-12; right: $sp-12; transform: rotate(-38deg); &:hover { transform: scale(1.1) rotate(-38deg); } }
+  &.bottom-left  { bottom: $sp-12; left: $sp-12; transform: rotate(62deg); &:hover { transform: scale(1.1) rotate(62deg); } }
+  &.bottom-right { bottom: $sp-12; right: $sp-12; transform: rotate(-74deg); &:hover { transform: scale(1.1) rotate(-74deg); } }
 }
 
 /* ── Workspace flex layout (Canvas left, Lever right) ── */
@@ -43,15 +41,15 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: $sp-40;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   overflow: visible !important;
-  
+
   #cabling-canvas {
     flex: 1 1 auto;
-    padding: 16px 0;
+    padding: $sp-16 0;
     box-sizing: border-box;
     overflow: visible !important;
     position: relative;
@@ -72,7 +70,7 @@
 @media (max-width: 768px) {
   .cabling-workspace-wrapper {
     flex-direction: column;
-    gap: 32px;
+    gap: $sp-32;
 
     #cabling-canvas {
       flex: 1 1 100%;
@@ -91,7 +89,7 @@
 .cabling-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: $sp-16;
   flex: 0 0 auto;
   align-items: stretch;
 
@@ -109,8 +107,8 @@
   background: var(--sol-base02);
   color: var(--sol-base0);
   border: 1px solid rgba(var(--sol-base1-rgb), 0.12);
-  border-radius: 10px;
-  padding: 12px 18px;
+  border-radius: $radius-12;
+  padding: $sp-12 $sp-20;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
@@ -122,7 +120,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: $box-shadow-sm;
   transition: border-color 0.25s, box-shadow 0.25s, color 0.25s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   .cabling-col--left  & { border-left:  3px solid var(--sol-base01); text-align: right; }
@@ -130,7 +128,7 @@
 
   &:hover {
     border-color: rgba(var(--sol-blue-rgb), 0.5);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    box-shadow: $box-shadow;
     color: var(--sol-base1);
     transform: translateY(-2px);
   }
@@ -138,7 +136,7 @@
   /* Active / selected state (click-to-connect) */
   &.is-active {
     border-color: var(--sol-yellow) !important;
-    box-shadow: 0 0 0 3px rgba(var(--sol-yellow-rgb), 0.25), 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(var(--sol-yellow-rgb), 0.25), #{$box-shadow} !important;
     color: var(--sol-yellow) !important;
   }
 

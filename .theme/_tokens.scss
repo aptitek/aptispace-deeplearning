@@ -55,4 +55,23 @@
 
     --font-base: #{$font-family-base};
     --font-code: #{$font-family-code};
+
+    // 4-point spacing scale
+    --sp-4:  #{$sp-4};
+    --sp-8:  #{$sp-8};
+    --sp-12: #{$sp-12};
+    --sp-16: #{$sp-16};
+    --sp-20: #{$sp-20};
+    --sp-24: #{$sp-24};
+    --sp-32: #{$sp-32};
+    --sp-40: #{$sp-40};
+    --sp-48: #{$sp-48};
+
+    // Border radius scale
+    --radius-4:   #{$radius-4};
+    --radius-8:   #{$radius-8};
+    --radius-12:  #{$radius-12};
+    --radius-16:  #{$radius-16};
+    --radius-20:  #{$radius-20};
+    --radius-pill: #{$radius-pill};
 }

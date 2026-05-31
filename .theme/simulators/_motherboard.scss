@@ -8,7 +8,7 @@
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    border-radius: 8px;
+    border-radius: $radius-8;
     overflow: hidden;
     aspect-ratio: 2 / 1; /* Garde le ratio 800x400 fluide sur mobile et desktop */
 }
@@ -46,7 +46,7 @@
 }
 
 .cpu-l3-region {
-    fill: #073642;
+    fill: var(--sol-base02);
     stroke: var(--sol-base01);
     stroke-width: 1px;
     transition: all 0.3s ease;
@@ -143,8 +143,8 @@
 
 /* Rangs de profils de performances de mémoires (Sidebar) */
 .perf-level {
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: $sp-8 $sp-12;
+    border-radius: $radius-8;
     border: 1.5px solid transparent;
     transition: all 0.25s ease-in-out;
 }
@@ -152,5 +152,5 @@
 .perf-level.active-level {
     background-color: rgba(38, 139, 210, 0.06);
     border-color: rgba(38, 139, 210, 0.2);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: $box-shadow-sm;
 }

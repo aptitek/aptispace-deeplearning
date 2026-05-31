@@ -7,7 +7,7 @@
     height: 380px;
     position: relative;
     background: transparent;
-    border-radius: 8px;
+    border-radius: $radius-8;
     width: 100%;
     overflow: hidden; /* Prevent canvas/SVG overflow during resize */
 

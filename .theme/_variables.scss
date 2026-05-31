@@ -54,6 +54,28 @@ $danger: $sol-red !default;
 $light: $sol-base2 !default;
 $dark: $sol-base02 !default;
 
+// --- 4-Point Spacing System (1 unit = 4px = 0.25rem) ---
+$sp-4:  0.25rem;  //  4px
+$sp-8:  0.5rem;   //  8px
+$sp-12: 0.75rem;  // 12px
+$sp-16: 1rem;     // 16px
+$sp-20: 1.25rem;  // 20px
+$sp-24: 1.5rem;   // 24px
+$sp-28: 1.75rem;  // 28px
+$sp-32: 2rem;     // 32px
+$sp-36: 2.25rem;  // 36px
+$sp-40: 2.5rem;   // 40px
+$sp-48: 3rem;     // 48px
+$sp-64: 4rem;     // 64px
+
+// --- Border Radius Tokens ---
+$radius-4:   0.25rem;      //  4px – tight corners
+$radius-8:   0.5rem;       //  8px – default card/input
+$radius-12:  0.75rem;      // 12px – panels, pills
+$radius-16:  1rem;         // 16px – large cards
+$radius-20:  1.25rem;      // 20px – pill buttons
+$radius-pill: 624.9375rem; // fully rounded
+
 /*-- scss:rules --*/
 :root {
     --sol-base03: #{$sol-base03};
@@ -110,9 +132,9 @@ $dark: $sol-base02 !default;
     --card-border-hover: rgba(var(--sol-base01-rgb), 0.4);
     
     --shadow-tiny: 0 -2px 4px rgba(var(--sol-base03-rgb), 0.01);
-    --shadow-small: 0 4px 8px rgba(var(--sol-base03-rgb), 0.05);
+    --shadow-small: #{$box-shadow-sm};
     --shadow-medium: 0 -2px 10px rgba(var(--sol-base03-rgb), 0.05);
-    --canvas-shadow-inset: inset 0 2px 8px rgba(var(--sol-base03-rgb), 0.08);
+    --canvas-shadow-inset: #{$box-shadow-inset};
     
     --card-header-bg: var(--sol-base2);
     --card-header-border: rgba(var(--sol-base01-rgb), 0.08);
@@ -182,9 +204,9 @@ $dark: $sol-base02 !default;
     --card-border-hover: var(--sol-base01);
     
     --shadow-tiny: 0 -2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-small: 0 4px 8px rgba(0, 0, 0, 0.2);
+    --shadow-small: #{$box-shadow};
     --shadow-medium: 0 -2px 10px rgba(0, 0, 0, 0.25);
-    --canvas-shadow-inset: inset 0 2px 8px rgba(0, 0, 0, 0.25);
+    --canvas-shadow-inset: #{$box-shadow-inset};
     
     --card-header-bg: var(--sol-base02);
     --card-header-border: rgba(147, 161, 161, 0.1);
