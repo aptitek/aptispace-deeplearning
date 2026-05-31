@@ -323,6 +323,230 @@ Pour savoir comment ajuster notre moule, nous devons mesurer nos erreurs.
 * **La Fonction de Perte (Loss Function) :** Elle mesure l'écart précis entre le moule actuel et la figurine originale. Plus cet écart est grand, plus la valeur de la perte est élevée. Notre but mathématique est de minimiser cette fonction [@grover_loss_functions; @wiki_mse; @mitra_2023_unboxing].
 * **Le Gradient :** Puisque nos paramètres sont des nombres, nous utilisons le calcul différentiel. Le gradient est un vecteur de dérivées partielles. Dans notre analogie, c'est une boussole qui nous indique exactement *dans quelle direction* et *avec quelle force* nous devons presser ou tirer la matière du moule pour réduire l'écart avec l'original.
 
+::: {.card .card-window}
+:::: {.card-header}
+Optimisation : Évaluation de la Perte (Loss) & Direction du Gradient
+::::
+
+:::: {.card-control-row .d-flex .flex-column .gap-2}
+::::: {.d-flex .align-items-center .gap-3}
+[Ajustement de la Presse (Époques) :]{.text-muted .small}
+
+:::::: {#epoch-g3-control}
+```{ojs}
+//| echo: false
+viewof epochG3 = Inputs.range([0, 100], {
+  value: 0,
+  step: 1,
+  width: "180px"
+})
+```
+::::::
+:::::
+::::
+
+:::: {.card-body}
+::::: {#d3-graph-3-container .w-100 .text-center}
+:::::
+::::
+:::
+
+```{ojs}
+//| echo: false
+// ==========================================
+// 🎨 MOTEUR DE RENDU D3 (Graphique 3)
+// ==========================================
+
+graph3 = {
+  const width = 800;
+  const height = 320; // Un peu plus grand pour accueillir la courbe de perte en bas
+
+  const svg = d3.create("svg")
+    .attr("viewBox", [0, 0, width, height])
+    .attr("class", "w-100 h-auto");
+
+  // Définition des marqueurs de flèches pour le Gradient (Rouge)
+  const defs = svg.append("defs");
+  defs.append("marker")
+    .attr("id", "arrow-gradient")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 6)
+    .attr("refY", 5)
+    .attr("markerWidth", 5)
+    .attr("markerHeight", 5)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "var(--sol-red)");
+
+  // Échelles de la zone supérieure (Géométrie du moule)
+  const xScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
+  const yScale = d3.scaleLinear().domain([0, 100]).range([200, 20]);
+
+  // Échelles de la zone inférieure (Courbe de convergence de la Perte)
+  const xLossScale = d3.scaleLinear().domain([0, 100]).range([50, width - 50]);
+  const yLossScale = d3.scaleLinear().domain([0, 1500]).range([300, 230]);
+
+  const lineGenerator = d3.line()
+    .curve(d3.curveMonotoneX)
+    .x(d => xScale(d.x))
+    .y(d => yScale(d.y));
+
+  // --- 1. CALCULS DES ETATS ET GÉOMÉTRIE ---
+  const startY = 95;
+  let totalSquareError = 0;
+
+  const currentSimulationData = objectData.map(d => {
+    // Évolution du modèle similaire au graphe 1
+    const currentY = startY + (d.y - startY) * (epochG3 / 100);
+    const error = d.y - currentY; // Distance/Erreur locale
+    totalSquareError += error * error;
+
+    return {
+      x: d.x,
+      targetY: d.y,
+      moldY: currentY,
+      error: error
+    };
+  });
+
+  const meanSquaredError = totalSquareError / currentSimulationData.length;
+
+  // Mise à jour dynamique du badge HTML de perte (via classes sémantiques de ton thème)
+  const badge = document.getElementById("loss-badge");
+  if (badge) {
+    badge.textContent = meanSquaredError.toFixed(1);
+    badge.style.backgroundColor = meanSquaredError > 100 ? "var(--sol-red)" : "var(--sol-green)";
+    badge.style.color = "var(--sol-base3)";
+  }
+
+  // --- 2. RENDU GÉOMÉTRIQUE (Zone Supérieure) ---
+
+  // Tracé des espaces vides / Air Gaps (Volume de Perte)
+  const areaLoss = d3.area()
+    .curve(d3.curveMonotoneX)
+    .x(d => xScale(d.x))
+    .y0(d => yScale(d.moldY))
+    .y1(d => yScale(d.targetY));
+
+  svg.append("path")
+    .datum(currentSimulationData)
+    .attr("fill", "var(--sol-red)")
+    .attr("opacity", 0.15)
+    .attr("d", areaLoss);
+
+  // Profil de l'Objet Réel (Données)
+  svg.append("path")
+    .datum(objectData)
+    .attr("fill", "none")
+    .attr("stroke", "var(--sol-base01)")
+    .attr("stroke-width", 2)
+    .attr("stroke-dasharray", "4 4")
+    .attr("d", lineGenerator);
+
+  // Vecteurs de Gradients (Forces directionnelles)
+  // Échantillonnage pour éviter l'encombrement visuel
+  const vectors = currentSimulationData.filter((d, i) => i % 4 === 0 && Math.abs(d.error) > 1);
+
+  svg.selectAll(".gradient-arrow")
+    .data(vectors)
+    .enter()
+    .append("line")
+    .attr("class", "gradient-arrow")
+    .attr("x1", d => xScale(d.x))
+    .attr("y1", d => yScale(d.moldY))
+    .attr("x2", d => xScale(d.x))
+    // La flèche pointe vers la cible (direction de la descente de gradient)
+    .attr("y2", d => yScale(d.targetY - (d.error * 0.15)))
+    .attr("stroke", "var(--sol-red)")
+    .attr("stroke-width", 1.5)
+    .attr("opacity", 0.6)
+    .attr("marker-end", "url(#arrow-gradient)");
+
+  // Tracé du Moule (Modèle en cours de compression)
+  svg.append("path")
+    .datum(currentSimulationData)
+    .attr("fill", "none")
+    .attr("stroke", "var(--sol-yellow)")
+    .attr("stroke-width", 4)
+    .attr("d", lineGenerator);
+
+  // --- 3. RENDU DE LA COURBE DE PERTE HISTORIQUE (Zone Inférieure) ---
+
+  // Génération de l'historique complet de la perte de l'époque 0 jusqu'à l'époque actuelle
+  const lossHistory = d3.range(0, epochG3 + 1).map(e => {
+    let sqErr = 0;
+    objectData.forEach(d => {
+      const mY = startY + (d.y - startY) * (e / 100);
+      const err = d.y - mY;
+      sqErr += err * err;
+    });
+    return { epoch: e, lossValue: sqErr / objectData.length };
+  });
+
+  // Séparateur visuel horizontal
+  svg.append("line")
+    .attr("x1", 50)
+    .attr("y1", 215)
+    .attr("x2", width - 50)
+    .attr("y2", 215)
+    .attr("stroke", "var(--sol-base02)")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "2 2");
+
+  // Titre du mini-graphe
+  svg.append("text")
+    .attr("x", 50)
+    .attr("y", 226)
+    .attr("fill", "var(--sol-base00)")
+    .attr("font-family", "var(--font-code, monospace)")
+    .attr("font-size", "10px")
+    .text("HISTORIQUE DE LA PERTE GLOBALE : J(w,b)");
+
+  // Axes discrets de la courbe de perte
+  svg.append("line")
+    .attr("x1", 50)
+    .attr("y1", yLossScale(0))
+    .attr("x2", width - 50)
+    .attr("y2", yLossScale(0))
+    .attr("stroke", "var(--sol-base02)")
+    .attr("stroke-width", 1);
+
+  // Générateur de la courbe de perte
+  const lossLineGenerator = d3.line()
+    .x(d => xLossScale(d.epoch))
+    .y(d => yLossScale(d.lossValue));
+
+  // Tracé de la courbe d'historique de perte
+  svg.append("path")
+    .datum(lossHistory)
+    .attr("fill", "none")
+    .attr("stroke", "var(--sol-red)")
+    .attr("stroke-width", 2)
+    .attr("d", lossLineGenerator);
+
+  // Point d'état actuel sur la courbe de perte
+  if (lossHistory.length > 0) {
+    const currentLoss = lossHistory[lossHistory.length - 1];
+    svg.append("circle")
+      .attr("cx", xLossScale(currentLoss.epoch))
+      .attr("cy", yLossScale(currentLoss.lossValue))
+      .attr("r", 4)
+      .attr("fill", "var(--sol-red)");
+  }
+
+  // Projection Finale dans l'UI
+  const container = document.getElementById("d3-graph-3-container");
+  if (container) {
+    container.innerHTML = "";
+    container.appendChild(svg.node());
+  }
+
+  return svg.node();
+}
+
+```
+
 ### La Descente de Gradient et les Optimiseurs Modernes
 
 L'optimisation repose sur la **Descente de Gradient**, qui minimise la fonction de perte en ajustant itérativement les poids [@wiki_gradient_descent; @ruder_2016_gradient].
