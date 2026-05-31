@@ -44,6 +44,25 @@
         box-shadow: inset 0 0 0 999px rgba(253, 246, 227, 0.1);
     }
 
+    .augmentation-viewport.has-noise .augmentation-overlay {
+        z-index: 3;
+        background-image:
+            radial-gradient(circle at 12% 18%, rgba(7, 54, 66, 0.9) 0 1.6px, transparent 2.2px),
+            radial-gradient(circle at 35% 72%, rgba(203, 75, 22, 0.78) 0 1.4px, transparent 2.1px),
+            radial-gradient(circle at 67% 28%, rgba(38, 139, 210, 0.78) 0 1.5px, transparent 2.2px),
+            radial-gradient(circle at 82% 64%, rgba(88, 110, 117, 0.86) 0 1.5px, transparent 2.2px),
+            repeating-linear-gradient(28deg, transparent 0 7px, rgba(7, 54, 66, 0.12) 7px 8px);
+        background-size: 14px 14px, 17px 17px, 11px 11px, 19px 19px, 100% 100%;
+        opacity: 0.95;
+        mix-blend-mode: multiply;
+    }
+
+    .augmentation-viewport.has-noise .augmentation-emoji {
+        text-shadow:
+            2px 0 rgba(220, 50, 47, 0.45),
+            -2px 0 rgba(38, 139, 210, 0.45);
+    }
+
     .augmentation-analysis-title {
         font-weight: 800;
         color: var(--sol-blue);

@@ -26,14 +26,19 @@ Augmentation de Données : Vue Machine
 ```{ojs}
 //| echo: false
 viewof augTransforms = Inputs.checkbox(
-  ["rotation", "flip", "zoom"],
+  ["rotation", "flip", "zoom", "deformation", "noise", "contrast", "brightness", "saturation"],
   {
     value: ["rotation"],
     label: "Transformations appliquées",
     format: (key) => ({
       rotation: "Rotation",
       flip: "Effet miroir",
-      zoom: "Zoom"
+      zoom: "Zoom",
+      deformation: "Déformation",
+      noise: "Ajout de bruit",
+      contrast: "Contraste",
+      brightness: "Luminosité",
+      saturation: "Saturation"
     }[key])
   }
 )
