@@ -9,14 +9,14 @@ $Biais(\hat{Y})=E(\hat{Y})-Y$
 
 Il représente l'erreur systématique due à des hypothèses trop simplistes. Le modèle "manque" les tendances réelles des données.
 
-Si l'on reprend notre analogie du moulage, un biais élevé correspond à une matière beaucoup trop visqueuse ou rigide. Lorsque vous la pressez sur la figurine originale pour en prendre l'empreinte, elle reste grossièrement plate et ne parvient pas à épouser les formes de l'objet. Le modèle n'a pas réussi à capter la structure sous-jacente des données : c'est ce qu'on appelle le **sous-apprentissage** (*underfitting*).
+Si l'on reprend notre analogie du moulage, un biais élevé correspond à une matière beaucoup trop visqueuse ou rigide. Lorsque vous la pressez sur la figurine originale pour en prendre l'empreinte, elle reste grossièrement plate et ne parvient pas à épouser les formes de l'objet. Le modèle n'a pas réussi à capter la structure sous-jacente des données : c'est ce qu'on appelle le **sous-apprentissage** (*underfitting*) [@cs229_bias_variance; @gfg_bias_variance; @ghadigaonkar_2025_bias].
 
 ### La Variance et le Sur-apprentissage
 
 La **Variance** se définit par :
 $Variance=E[(\hat{Y}-E[\hat{Y}])^2]$
 
-Elle représente l'erreur liée à une sensibilité excessive aux fluctuations du jeu d'entraînement. Le modèle procède à une mémorisation du bruit [@ibm_overfitting] au lieu d'une généralisation.
+Elle représente l'erreur liée à une sensibilité excessive aux fluctuations du jeu d'entraînement. Le modèle procède à une mémorisation du bruit [@ibm_overfitting; @utd_bias_variance] au lieu d'une généralisation.
 
 Dans notre analogie, la matière du moule est ici beaucoup trop liquide et réactive. Non seulement elle capture parfaitement la forme générale de la figurine, mais elle va jusqu'à s'infiltrer dans la moindre micro-rayure et englober chaque grain de poussière présent sur cet exemplaire précis. Le résultat est un **sur-apprentissage** (*overfitting*). Si vous essayez d'utiliser ce moule ultra-spécifique pour valider une nouvelle figurine légèrement différente, il sera totalement inadapté et produira une erreur importante.
 
@@ -28,4 +28,4 @@ Cependant, un phénomène moderne crucial propre au Deep Learning, la **Double D
 
 ### L'Impact Stratégique
 
-Un décideur technique doit savoir diagnostiquer ces symptômes cliniques : une erreur d'entraînement extrêmement basse couplée à une erreur de test élevée est le signe clinique indubitable d'une variance excessive [@ibm_overfitting]. Comprendre que la complexité est multidimensionnelle permet d'éviter les interprétations erronées des performances en phase d'interpolation et d'ajuster l'architecture en conséquence.
+Un décideur technique doit savoir diagnostiquer ces symptômes cliniques : une erreur d'entraînement extrêmement basse couplée à une erreur de test élevée est le signe clinique indubitable d'une variance excessive [@ibm_overfitting; @wandb_learning_curves]. Comprendre que la complexité est multidimensionnelle permet d'éviter les interprétations erronées des performances en phase d'interpolation et d'ajuster l'architecture en conséquence [@yates_cross_validation].

@@ -1,0 +1,49 @@
+## Anatomie du neurone artificiel
+
+Le neurone artificiel constitue l'atome de calcul fondamental de tout réseau de neurones [@Wiki_NeuroneFormel; @Djeffal_Part1]. Sa force réside principalement dans sa modélisation mathématique, à la fois simple et flexible, qui lui permet d'ajuster dynamiquement l'importance de chaque information reçue en entrée. Pour en comprendre le fonctionnement de manière intuitive, on peut l'imaginer comme un **magasin connecté** situé au cœur d'une métropole complexe.
+
+* **L'analogie du magasin connecté à la ville :**
+* Dans cette métropole, notre neurone est une enseigne commerciale qui reçoit des flux en provenance de différents quartiers.
+
+
+* Le but du neurone est de centraliser ces flux pour générer un indicateur global, tout comme un commerce évalue sa fréquentation et son activité en fonction des connexions routières qui le desservent.
+
+
+
+
+* **Les poids (Weights) — Voies d'accès et trafic :**
+* Les poids ($w$) agissent mathématiquement comme des multiplicateurs synaptiques [@EITCA_PoidsBiais; @Djeffal_Part2; @SITAMS_Notes].
+
+
+* Dans notre analogie urbaine, ils représentent directement **l'état et la capacité des routes** menant au magasin.
+
+
+* Une route large, fluide et bien entretenue possède un **poids élevé** : elle va amplifier le trafic d'activations et transmettre une grande quantité de signal vers l'unité de calcul.
+
+
+* À l'inverse, une route encombrée, dégradée ou fermée possède un **poids proche de zéro** : elle neutralise l'influence de ce quartier spécifique, empêchant son information d'avoir un impact réel sur la décision finale du neurone.
+
+
+
+
+* **Le biais (Bias) — Chiffre d'affaires de base :**
+* Le biais ($b$) est une valeur intrinsèque et propre au neurone, qui reste totalement indépendante des flux entrants.
+
+
+* Il s'apparente au **revenu minimal garanti** ou aux services automatiques du magasin, c'est-à-dire ce que l'enseigne génère avant même l'arrivée du tout premier client de la journée.
+
+
+* D'un point de vue mathématique, le biais permet de décaler la fonction d'activation sur l'axe des abscisses. Cela sert à ajuster le seuil de déclenchement ou de réactivité du neurone, garantissant qu'il puisse avoir une activité résiduelle ou un critère d'activation minimal même lorsque toutes les entrées ($x$) sont nulles [@EITCA_PoidsBiais; @Maths_IA].
+
+
+
+
+* **Synthèse de l'unité de calcul (Sommation pondérée) :**
+* Pour prendre sa décision, le neurone combine ces éléments en effectuant une sommation pondérée de l'ensemble des signaux entrants, formalisée par l'équation linéaire:
+
+
+
+$$h = \sum_{i} w_i x_i + b$$
+
+
+* Ce résultat intermédiaire, appelé **pré-activation**, agrège l'ensemble des influences contextuelles et routières de la ville avant que le signal ne soit transmis aux étapes suivantes du réseau [@Bodin_Recher_1; @Buzer2022].

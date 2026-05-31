@@ -1,0 +1,31 @@
+## Rétropropagation (Backpropagation)
+
+La rétropropagation est véritablement le moteur algorithmique de l'apprentissage. Si la propagation avant définit la vision ou la prédiction actuelle du réseau, la rétropropagation (ou passage arrière) est le mécanisme par lequel le système évalue ses propres lacunes pour s'améliorer. Historiquement, bien que ce concept ait été popularisé en 1986 par Rumelhart, Hinton et Williams, sa genèse remonte à 1970 grâce aux travaux de Seppo Linnainmaa [@Wiki_Retropropagation; @Espinasse2008]. Ce mécanisme permet au réseau d'ajuster ses paramètres internes en fonction de l'erreur qu'il vient de commettre.
+
+* **Le calcul de l'erreur (Loss Function) :**
+* Pour apprendre, il faut d'abord quantifier à quel point la prédiction était fausse.
+* C'est le rôle de la fonction de coût, comme l'erreur quadratique moyenne (MSE), qui va mesurer mathématiquement l'écart entre la prédiction générée par le réseau et la "vérité terrain" (le résultat attendu) [@DeeplyLearning_Loss; @Liora_Cout; @MoiAussi_IA].
+
+
+
+
+* **Le mécanisme de rétropropagation de l'erreur :**
+* Une fois l'erreur globale calculée en sortie, le réseau effectue un passage arrière (backward pass).
+
+
+* Il s'appuie pour cela sur un principe mathématique fondamental : la règle de la chaîne (ou Chain Rule) [@Jouannic_Miximum; @GoogleML_Retro].
+
+
+* Cette règle permet de calculer les dérivées partielles de l'erreur par rapport à chaque poids individuel, ce qui s'écrit $\frac{\partial C}{\partial w}$.
+
+
+* L'objectif de ce calcul est de remonter le réseau à l'envers pour distribuer précisément la "responsabilité" de l'erreur globale à chaque connexion synaptique. Cela permet de savoir exactement quel poids a contribué à l'échec, et dans quelle proportion [@Codefinity_Retro; @Bodin_Recher_2].
+
+
+
+
+* **L'ajustement itératif (Descente de gradient) :**
+* Le gradient qui vient d'être calculé agit comme une boussole : il indique la direction mathématique précise dans laquelle il faut modifier les poids pour que l'erreur diminue lors du prochain passage.
+
+
+* On parle alors d'un processus de "descente de pente" (descente de gradient) : le modèle affine ses paramètres pas à pas, de manière itérative, jusqu'à atteindre la convergence, c'est-à-dire le point où l'erreur est minimale [@Wiki_AlgorithmeGradient; @Ruder2016; @IEConcept2026; @Mallat2019].

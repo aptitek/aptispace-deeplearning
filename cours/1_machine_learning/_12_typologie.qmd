@@ -6,14 +6,14 @@ La distinction entre les différents paradigmes d'apprentissage n'est pas une si
 
 Les modèles d'apprentissage se divisent en deux grandes familles, selon la nature des données qui leur sont fournies :
 
-* **L'Apprentissage Supervisé (L'apprentissage guidé) :** Il utilise des données étiquetées pour modéliser une relation entre des variables d'entrée et une "vérité terrain" (la réponse attendue). Le modèle sait exactement à quoi ressemble la "figurine" qu'il doit mouler. Il se décline en deux sous-catégories selon le type de résultat attendu :
+* **L'Apprentissage Supervisé (L'apprentissage guidé) :** Il utilise des données étiquetées pour modéliser une relation entre des variables d'entrée et une "vérité terrain" (la réponse attendue) [@delua_supervised_unsupervised]. Le modèle sait exactement à quoi ressemble la "figurine" qu'il doit mouler. Il se décline en deux sous-catégories selon le type de résultat attendu :
 * **La Régression :** Utilisée lorsque l'on s'attend à un résultat continu (par exemple, prédire un prix, une température ou un chiffre d'affaires).
-* **La Classification :** Utilisée lorsque l'on s'attend à un résultat discret ou catégorique (par exemple, déterminer si un e-mail est un "Spam" ou "Non-Spam").
+* **La Classification :** Utilisée lorsque l'on s'attend à un résultat discret ou catégorique (par exemple, déterminer si un e-mail est un "Spam" ou "Non-Spam") [@lee_classification_regression].
 
 
-* **L'Apprentissage Non-Supervisé (La découverte autonome) :** Le modèle reçoit des données sans aucune étiquette. Il n'a pas de "vérité terrain" pour corriger son moule. Son but est d'identifier des structures intrinsèques, des motifs cachés ou des regroupements naturels.
-* **Le Clustering (Regroupement) :** Consiste à regrouper des données similaires en catégories (résultat discret), comme la segmentation de clients.
-* **L'Analyse en Composantes Principales (PCA) :** Une méthode de réduction de dimensionnalité (résultat continu) qui permet de simplifier des données complexes tout en conservant l'essentiel de l'information.
+* **L'Apprentissage Non-Supervisé (La découverte autonome) :** Le modèle reçoit des données sans aucune étiquette. Il n'a pas de "vérité terrain" pour corriger son moule. Son but est d'identifier des structures intrinsèques, des motifs cachés ou des regroupements naturels [@analystprep_2021_unsupervised].
+* **Le Clustering (Regroupement) :** Consiste à regrouper des données similaires en catégories (résultat discret), comme la segmentation de clients [@google_kmeans].
+* **L'Analyse en Composantes Principales (PCA) :** Une méthode de réduction de dimensionnalité (résultat continu) qui permet de simplifier des données complexes tout en conservant l'essentiel de l'information [@shlens_2014_pca].
 
 
 

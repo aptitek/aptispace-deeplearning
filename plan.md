@@ -142,3 +142,6 @@ Progression : DQN -> A2C -> PPO -> SAC
 RLHF : Aligner LLM avec les objectifs humains (via PPO sur feedback humain)
 
 ---
+
+Fait un support de cours complet qui cite les sources au format Pandoc et qui suis le plan suivant :
+

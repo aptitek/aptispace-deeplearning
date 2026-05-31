@@ -1,0 +1,42 @@
+## Morphologie générale du réseau
+
+L'apprentissage profond s'appuie sur une révolution architecturale où la topologie même du réseau définit sa capacité à capturer et traiter la complexité du monde réel. Le fonctionnement global de ce système peut être visualisé comme une vaste toile d'araignée multicouche organisée de manière très rigoureuse [@IBM_DeepLearning; @Rivals1995; @Djeffal_Part1].
+
+* **La structure globale en "toile d'araignée" :**
+* Cette architecture s'inspire initialement de l'efficacité et du traitement massivement parallèle du cerveau humain.
+
+
+* Néanmoins, le réseau artificiel s'en démarque en étant une structure mathématique où le flux d'informations est strictement dirigé à travers des couches discrètes.
+
+
+* Cette topologie est cruciale car elle permet de fragmenter un problème global complexe en une succession de sous-problèmes résolubles localement [@BlentAI_ToutComprendre; @Wiki_ReseauArtificiels; @Verge2009].
+
+
+
+
+* **La couche d'entrée (Input Layer) :**
+* Elle constitue le point de contact direct avec le monde extérieur en réceptionnant les vecteurs de caractéristiques bruts.
+
+
+* À titre d'exemple, si le réseau analyse une image, cette couche va réceptionner l'information visuelle (comme des pixels) pour la transformer en un signal numérique initial [@MonCoachData; @SITAMS_Notes; @MathWorks_QuEstCe].
+
+
+
+
+* **Les couches cachées (Hidden Layers) :**
+* Ces strates intermédiaires représentent le cœur du traitement de l'information et apportent la fameuse "profondeur" au réseau.
+
+
+* Le consensus académique considère d'ailleurs que l'on entre dans le domaine du Deep Learning lorsqu'un réseau possède au moins quatre de ces couches [@IBM_DeepLearning; @Labomedia2020; @Mezghani2022].
+
+
+* Sans entrer dans le détail de leurs composants, leur rôle global est d'opérer un apprentissage hiérarchique : les premières strates détectent des éléments très simples (comme des textures ou des bords), tandis que les strates suivantes synthétisent ces éléments pour identifier des concepts de plus en plus abstraits [@Bodin_Recher_1; @ElementsAI; @Youtube_Arch_Reseaux].
+
+
+
+
+* **La couche de sortie (Output Layer) :**
+* C'est l'ultime étape du réseau, celle qui est chargée de produire la réponse brute ou l'inférence finale.
+
+
+* Dans des scénarios de classification, elle utilise des mécanismes (comme la fonction Softmax) pour transformer les signaux reçus en une distribution de probabilités dont la somme est égale à 1, garantissant ainsi un résultat clair où les catégories sont mutuellement exclusives [@Ultralytics_Softmax; @DataFranca2026].

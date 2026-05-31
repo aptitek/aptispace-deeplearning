@@ -1,0 +1,21 @@
+---
+title: "🧠 Réseaux de Neurones Profonds"
+part: "🧠 Réseaux de Neurones Profonds"
+bibliography: cours/2_réseaux_de_neuronnes.qmd/bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include _21_morphologie.qmd >}}
+
+{{< include _22_neurone.qmd >}}
+
+{{< include _23_forward.qmd >}}
+
+{{< include _24_backward.qmd >}}
+
+{{< include _25_activation.qmd >}}
+
+{{< include _26_vanishing.qmd >}}
+
+{{< include _27_optimisation.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

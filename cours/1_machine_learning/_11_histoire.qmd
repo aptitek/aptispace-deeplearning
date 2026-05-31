@@ -1,6 +1,6 @@
 ## Genèse et Évolution : La Grande Histoire de l'Apprentissage Automatique
 
-Pour comprendre les architectures modernes et faire des choix technologiques éclairés aujourd'hui, il est indispensable de comprendre comment notre discipline s'est construite. L'histoire de l'Intelligence Artificielle et du Machine Learning n'est pas une ligne droite ; c'est un pendule qui a longuement oscillé entre deux grands paradigmes : l'**IA symbolique** (basée sur la logique et des règles explicites) et le **connexionnisme** (inspiré de la biologie et de l'apprentissage par l'expérience).
+Pour comprendre les architectures modernes et faire des choix technologiques éclairés aujourd'hui, il est indispensable de comprendre comment notre discipline s'est construite. L'histoire de l'Intelligence Artificielle et du Machine Learning n'est pas une ligne droite ; c'est un pendule qui a longuement oscillé entre deux grands paradigmes : l'**IA symbolique** (basée sur la logique et des règles explicites) et le **connexionnisme** (inspiré de la biologie et de l'apprentissage par l'expérience) [@groumpos_2023_ai; @wiki_timeline_ml].
 
 
 ### Timeline
@@ -53,9 +53,9 @@ C'est quelques années plus tard, en 1958, que le premier jalon technique du Mac
 
 ### Le Premier Hiver et le Triomphe Temporaire du Symbolique (1969 - 1980)
 
-L'enthousiasme autour du Perceptron va cependant s'effondrer brutalement. En 1969, Marvin Minsky et Seymour Papert publient le livre *Perceptrons*, dans lequel ils démontrent mathématiquement les limites sévères du modèle de Rosenblatt : un Perceptron simple est incapable de résoudre des problèmes non linéaires de base (comme la fonction logique XOR).
+L'enthousiasme autour du Perceptron va cependant s'effondrer brutalement. En 1969, Marvin Minsky et Seymour Papert publient le livre *Perceptrons*, dans lequel ils démontrent mathématiquement les limites sévères du modèle de Rosenblatt : un Perceptron simple est incapable de résoudre des problèmes non linéaires de base (comme la fonction logique XOR) [@umass_minsky_rosenblatt].
 
-Cette publication, combinée à des promesses technologiques non tenues et au **Rapport Lighthill** [@wiki_lighthill] au Royaume-Uni (qui juge sévèrement les avancées réelles de l'IA), entraîne une coupure drastique des financements gouvernementaux. C'est le premier **Hiver de l'IA (AI Winter)** [@wiki_ai_winter].
+Cette publication, combinée à des promesses technologiques non tenues et au **Rapport Lighthill** [@wiki_lighthill] au Royaume-Uni (qui juge sévèrement les avancées réelles de l'IA), entraîne une coupure drastique des financements gouvernementaux. C'est le premier **Hiver de l'IA (AI Winter)** [@wiki_ai_winter; @alex_2024_ai_winter].
 
 Pendant que le connexionnisme est au point mort, l'IA symbolique prend le relais dans les années 80 avec les **Systèmes Experts**. L'idée n'est plus de faire apprendre la machine, mais d'encoder le savoir humain sous forme de bases de règles complexes ("Si X, alors Y"). Bien qu'utiles en milieu industriel, ces systèmes s'avèrent impossibles à maintenir à grande échelle et totalement inadaptés à l'incertitude ou à la perception (vision, langage naturel).
 
