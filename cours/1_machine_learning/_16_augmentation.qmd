@@ -1,0 +1,22 @@
+## Expansion du Savoir par l'Augmentation de Données
+
+L'augmentation de données est une solution pragmatique pour pallier le manque de diversité ou le faible volume des jeux de données. C'est une étape particulièrement critique pour assurer la robustesse d'un modèle lors de son déploiement en production, notamment dans les domaines de la vision par ordinateur [@ibm_overfitting].
+
+### Forger l'Invariance (L'Analogie du Moule)
+
+Reprenons notre analogie une dernière fois. Si vous n'avez qu'une seule figurine, parfaitement droite et sous un éclairage idéal, pour créer votre moule, la matière risque de s'adapter uniquement à cette configuration parfaite. Si l'on vous présente ensuite la même figurine, mais couchée sur le côté ou dans la pénombre, votre moule (votre modèle) ne la reconnaîtra pas.
+
+L'augmentation de données consiste à prendre cette figurine originale et à en créer artificiellement des dizaines de variantes avant le moulage : on la penche, on l'éloigne, on la salit avec un peu de poussière, on l'éclaire avec une lumière rasante. En forçant le modèle à s'entraîner sur toutes ces variations, on s'assure que le moule final capture l'essence géométrique et structurelle de l'objet, et non les conditions accidentelles de sa présentation.
+
+### Les Techniques d'Augmentation
+
+Pour enrichir artificiellement le jeu d'entraînement, on applique diverses transformations programmées sur les données sources :
+
+* **Transformations géométriques :** Rotation (tourner l'image), zoom (rapprocher ou éloigner), déformation (étirement affine) et recadrage (couper une partie de l'image).
+* **Ajustements de qualité et colorimétrie :** Ajout de bruit artificiel (comme de la "neige" sur une télévision), modification du contraste, de la luminosité ou de la saturation.
+
+### L'Impact Stratégique et Conclusion
+
+Ces méthodes forcent mathématiquement le modèle à acquérir une **invariance** [@ibm_overfitting]. En vision industrielle, par exemple, le système de contrôle qualité doit pouvoir reconnaître un défaut sur une pièce de fabrication quels que soient l'angle de vue de la caméra, l'heure de la journée ou l'usure de l'éclairage de l'usine. L'augmentation de données garantit cette résilience.
+
+**Conclusion du Cours :** La conception d'une intelligence artificielle performante ne se résume pas à empiler des couches de neurones. Elle exige une vision holistique où le choix de l'architecture (le type de moule), l'optimisation mathématique (la manière de presser la matière) et la qualité des données (les figurines de référence) convergent. C'est cette synergie qui permet de créer des systèmes non seulement statistiquement précis en laboratoire, mais résilients et stratégiquement alignés avec les réalités du monde physique.

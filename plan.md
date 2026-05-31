@@ -37,7 +37,6 @@ Forme du réseau :
 Anatomie du neurone artificiel : 
  - Poids
  - Biais
- - Fonction d'activation
 
 Propagation avant :
  - Sommation Pondérée
@@ -48,10 +47,15 @@ Propagation arrière :
  - Backpropagation
 
 Fonctions d'activation :
- - Sigmoïde
- - Tanh
- - ReLU
- - Softmax
+ - Classique
+   - Sigmoïde
+   - Tanh
+   - ReLU
+   - Softmax
+ - Modern
+   - GELU
+   - SELU
+   - Swish
 
 Vanishing gradient:
  - Dérivée > 1 : Gradient EXPLOSIF
@@ -138,5 +142,3 @@ Progression : DQN -> A2C -> PPO -> SAC
 RLHF : Aligner LLM avec les objectifs humains (via PPO sur feedback humain)
 
 ---
-
-Prompt Engineering / Retrieval Augmented Generation : RAG / Langchain / MCP, etc

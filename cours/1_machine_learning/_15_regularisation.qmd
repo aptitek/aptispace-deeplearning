@@ -1,0 +1,28 @@
+## Stratégies de Régularisation et Généralisation
+
+Si le sur-apprentissage (une variance excessive) est la maladie, la régularisation en est le remède. La régularisation impose une contrainte mathématique de "lissage" pour favoriser la généralisation en pénalisant la complexité excessive du modèle [@wiki_early_stopping].
+
+Pour reprendre notre analogie du moulage : si notre matière est devenue trop liquide et commence à s'infiltrer dans les micro-rayures de la figurine, la régularisation consiste à appliquer une force de tension externe (comme un film plastique tendu par-dessus). Cette contrainte empêche la matière de capter les détails superflus (le bruit) et la force à se concentrer uniquement sur la structure globale et pertinente (le signal).
+
+### Pénalisation des Coefficients : Ridge (L2) et Lasso (L1)
+
+En apprentissage automatique, on applique cette contrainte en ajoutant une pénalité directement dans la fonction de perte. Cette pénalité sanctionne les paramètres (les poids ou coefficients) qui prennent trop d'importance. Deux approches géométriques s'opposent :
+
+* **Ridge (Régularisation L2) :** Cette méthode ajoute une pénalité proportionnelle au carré des coefficients. Géométriquement, cela agit comme une contrainte circulaire concentrique autour de l'origine. Ridge réduit la magnitude globale des coefficients pour stabiliser le modèle. L'effet visuel est un "amortissement" : les valeurs sont compressées doucement vers le centre, mais ne sont pratiquement jamais réduites à zéro.
+* **Lasso (Régularisation L1) :** Cette méthode ajoute une pénalité proportionnelle à la valeur absolue des coefficients. Géométriquement, la zone de contrainte prend la forme d'un losange (ou d'un diamant). En raison de ses angles aigus, l'optimisation a tendance à rencontrer cette contrainte directement sur les axes du repère géométrique. Le résultat est radical : le Lasso force mathématiquement certains coefficients à valoir exactement zéro [@ibm_overfitting].
+
+### L'Équilibre et le Temps : Elastic Net et Early Stopping
+
+Face à des jeux de données complexes, d'autres stratégies complètent l'arsenal du Data Scientist :
+
+* **ElasticNet :** Dans les cas où les données présentent de nombreuses variables fortement corrélées entre elles, on utilise cet hybride. Il combine littéralement le meilleur des deux mondes en fusionnant la contrainte circulaire (L2) et la contrainte en losange (L1).
+* **Early Stopping (Arrêt prématuré) :** Il s'agit d'une régularisation purement temporelle. Au lieu de complexifier la fonction de perte, on observe la courbe d'apprentissage en direct. On interrompt l'entraînement au point critique exact où le modèle commence à mémoriser le bruit (c'est-à-dire le moment où l'erreur sur les données de validation commence à remonter, formant une courbe en U) [@wiki_early_stopping].
+
+### L'Impact Stratégique : Le Lasso comme Outil de Gouvernance
+
+L'impact d'une méthode comme le Lasso dépasse très largement la simple performance statistique. C'est un véritable outil de décision stratégique.
+
+En annulant purement et simplement les coefficients des variables non contributives, le Lasso réalise une sélection automatique de variables. Il permet d'identifier les leviers métier réels qui influencent une prédiction. Cela a des conséquences directes en entreprise :
+
+1. **Réduction des coûts opérationnels :** On peut stopper la collecte, le traitement et le stockage de flux de données qui s'avèrent finalement inutiles.
+2. **Auditabilité :** Il simplifie drastiquement l'interprétabilité du modèle pour les instances de gouvernance, rendant l'IA transparente et explicable ("*White Box*").

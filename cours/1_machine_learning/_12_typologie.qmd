@@ -1,0 +1,43 @@
+## Typologie des Paradigmes et Architectures Profondes
+
+La distinction entre les différents paradigmes d'apprentissage n'est pas une simple nomenclature académique ; elle constitue la pierre angulaire de toute architecture stratégique en science des données. Le succès d'un déploiement industriel (et la pertinence de notre "moule", pour reprendre notre analogie) repose sur l'adéquation parfaite entre la structure des données disponibles et le choix du paradigme. C'est cette adéquation qui transforme des données brutes en leviers de décision exploitables [@bmc_bias_variance].
+
+### Cartographie des Fondations : Supervisé vs Non-Supervisé
+
+Les modèles d'apprentissage se divisent en deux grandes familles, selon la nature des données qui leur sont fournies :
+
+* **L'Apprentissage Supervisé (L'apprentissage guidé) :** Il utilise des données étiquetées pour modéliser une relation entre des variables d'entrée et une "vérité terrain" (la réponse attendue). Le modèle sait exactement à quoi ressemble la "figurine" qu'il doit mouler. Il se décline en deux sous-catégories selon le type de résultat attendu :
+* **La Régression :** Utilisée lorsque l'on s'attend à un résultat continu (par exemple, prédire un prix, une température ou un chiffre d'affaires).
+* **La Classification :** Utilisée lorsque l'on s'attend à un résultat discret ou catégorique (par exemple, déterminer si un e-mail est un "Spam" ou "Non-Spam").
+
+
+* **L'Apprentissage Non-Supervisé (La découverte autonome) :** Le modèle reçoit des données sans aucune étiquette. Il n'a pas de "vérité terrain" pour corriger son moule. Son but est d'identifier des structures intrinsèques, des motifs cachés ou des regroupements naturels.
+* **Le Clustering (Regroupement) :** Consiste à regrouper des données similaires en catégories (résultat discret), comme la segmentation de clients.
+* **L'Analyse en Composantes Principales (PCA) :** Une méthode de réduction de dimensionnalité (résultat continu) qui permet de simplifier des données complexes tout en conservant l'essentiel de l'information.
+
+
+
+**L'impact stratégique :** Le choix entre classification et clustering modifie radicalement l'objectif métier. Là où la classification répond à une question fermée sur une catégorie connue (ex: "ce client va-t-il résilier ?"), le clustering permet la découverte de segments de marché "cachés". Cela offre une opportunité de différenciation par la révélation de niches comportementales jusqu'alors invisibles.
+
+### L'Ère de l'Apprentissage Profond (Deep Learning) pour les Données Complexes
+
+Cette transition vers la complexité métier nous amène naturellement à l'étude des structures héritées du Deep Learning. L'émergence de l'apprentissage profond répond à l'incapacité des algorithmes statistiques classiques à traiter la complexité des **données non structurées** (images, texte brut, séries temporelles ou audio).
+
+Pour le volet supervisé, deux grandes architectures dominent la perception automatisée :
+
+* **Les Réseaux de Neurones Convolutifs (CNN - Convolutional Neural Networks) :** Principalement utilisés pour la vision par ordinateur. Ils utilisent des "filtres" mathématiques et des poids pour balayer une image et en extraire des textures, des contours, puis des sémantiques spatiales complexes [@ficus_weights_biases].
+* **Les Réseaux de Neurones Récurrents (RNN - Recurrent Neural Networks) :** Conçus spécifiquement pour la persistance de l'information. Contrairement aux CNN, ils possèdent une "mémoire" interne qui leur permet de traiter des données séquentielles, comme les séries temporelles (météo, bourse) ou le traitement du langage naturel (NLP).
+
+### Les Architectures Génératives et Non-Supervisées
+
+Si les CNN et les RNN ont excellé dans la classification, de nouvelles architectures ont bouleversé le domaine non-supervisé en rendant les machines capables de **créer** :
+
+* **Les Auto-encodeurs :** Des réseaux qui apprennent à compresser (encoder) la donnée dans un espace très réduit, puis à la reconstruire (décoder). Ils sont excellents pour la détection d'anomalies et la réduction de dimension extrême.
+* **Les GANs (Réseaux Antagonistes Génératifs) :** Une architecture fascinante opposant deux réseaux (un Faussaire qui génère des données, et un Détective qui essaie de repérer les fausses données). Cette compétition pousse le réseau à synthétiser du contenu d'un réalisme bluffant [@bmc_bias_variance].
+* **Les Transformateurs (Transformers) :** L'architecture derrière les LLM modernes (comme ChatGPT). Ils utilisent des mécanismes d'attention pour comprendre le contexte global d'une séquence de données, généralisant des motifs d'une complexité inédite.
+
+### L'Impact Stratégique de la Perception Automatisée
+
+Ces réseaux profonds ne se contentent pas de reproduire des données ; ils automatisent la perception humaine en apprenant des **caractéristiques invariantes**.
+
+La puissance de ces architectures réside dans l'ajustement de leurs paramètres internes (les poids et les filtres) : une IA moderne ne se contente plus de suivre une règle statique ("un chat a deux oreilles pointues"). Elle identifie une sémantique visuelle ou textuelle capable de résister aux variations infinies du monde réel (un chat de dos, un chat dans l'ombre, un chat stylisé) [@ficus_weights_biases]. Cette flexibilité structurelle repose intégralement sur une mécanique mathématique précise d'ajustement des paramètres, que nous explorerons dans le chapitre suivant avec la descente de gradient.
