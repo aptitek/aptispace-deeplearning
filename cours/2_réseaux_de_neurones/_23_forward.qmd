@@ -5,37 +5,24 @@ La propagation avant constitue le flux tensorial unidirectionnel qui transforme 
 * **Le processus de sommation pondérée :**
 * À chaque couche, les neurones reçoivent les sorties (ou activations) de la couche précédente.
 
-
 * Le réseau calcule alors systématiquement les produits scalaires entre les matrices de poids et les vecteurs d’activations, propageant ainsi le signal de l'entrée vers la sortie [@Bodin_Recher_2].
-
 
 * Mathématiquement, pour un neurone donné, cette combinaison linéaire (ou pré-activation) agrège l'ensemble des influences avant l'étape de filtrage et s'exprime par la formule :
 
 $$h = \sum_{i} w_i x_i + b$$
 
-
-
 Sous forme matricielle pour une couche complète, l'opération se généralise ainsi :
 
 $$Z = W \cdot X + B$$
 
-
-
-
 * **L'impératif de la non-linéarité :**
 * L'étape la plus cruciale de ce flux consiste à appliquer une fonction d'activation à la somme pondérée $h$.
 
-
 * Sans l'introduction de cette fonction, une succession de plusieurs couches cachées, aussi profonde soit-elle, s'effondrerait mathématiquement en une seule et vaste opération de régression linéaire [@Youtube_NonLinearite; @Maths_IA].
-
 
 * C'est précisément cette non-linéarité qui donne au réseau le pouvoir de « courber » ses frontières de décision et ses prédictions. Elle lui permet de modéliser les motifs chaotiques, les ruptures et les nuances complexes de la réalité là où une simple droite ou un hyperplan linéaire échouerait.
 
-
-
-
 * **La transformation progressive des données :**
 * À travers ce chaînage alterné d'opérations (sommation linéaire puis activation non linéaire), les données transitent d'un état purement brut — comme des valeurs de pixels — à un état de "représentations" abstraites.
-
 
 * Chaque couche successive ajoute une strate de compréhension sémantique, distillant et transformant l'information jusqu'à ce que la couche de sortie produise la réponse finale [@Cloudflare_Inference].

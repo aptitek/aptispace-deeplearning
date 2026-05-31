@@ -2,9 +2,7 @@ Fondements et Mécanismes des Réseaux de Neurones Profonds : De l'Anatomie à l
 
 L'apprentissage profond, ou Deep Learning, ne se résume pas à une simple intensification de la puissance de calcul ; il s'agit d'une révolution architecturale où la topologie des réseaux conditionne leur aptitude à capturer l'essence non linéaire du monde réel. En tant que chercheurs, nous percevons ces structures non comme des boîtes noires, mais comme des symphonies de transformations tensorielles où chaque couche extrait une hiérarchie de représentations, transformant des vecteurs de caractéristiques bruts en abstractions sémantiques raffinées [@IBM].
 
-
 --------------------------------------------------------------------------------
-
 
 I. Morphologie générale du réseau : La structure en "toile d'araignée"
 
@@ -17,9 +15,7 @@ La topologie d'un réseau de neurones artificiels (RNA) dicte sa capacité de tr
 
 Transition : Pour comprendre l'émergence de cette intelligence collective, il est impératif de disséquer l'unité fondamentale de ce système : le neurone artificiel.
 
-
 --------------------------------------------------------------------------------
-
 
 II. Anatomie du neurone artificiel : L'analogie du magasin connecté
 
@@ -31,9 +27,7 @@ Le neurone artificiel est l'atome de calcul du réseau. Sa force réside dans sa
 
 Transition : Une fois cette sommation effectuée, l'information doit être transformée pour circuler de manière unidirectionnelle à travers l'architecture.
 
-
 --------------------------------------------------------------------------------
-
 
 III. Propagation avant (Forward Propagation)
 
@@ -45,9 +39,7 @@ La propagation avant constitue le flux tensorial unidirectionnel qui transforme 
 
 Transition : Si la propagation avant définit la vision actuelle du réseau, l'apprentissage, lui, dépend de la capacité du système à évaluer ses propres lacunes par le passage arrière.
 
-
 --------------------------------------------------------------------------------
-
 
 IV. Rétropropagation (Backpropagation)
 
@@ -59,9 +51,7 @@ La rétropropagation est le moteur algorithmique de l'apprentissage. Historiquem
 
 Transition : La clarté de ce signal d'erreur dépend toutefois de la "perméabilité" des fonctions d'activation utilisées.
 
-
 --------------------------------------------------------------------------------
-
 
 V. Les fonctions d'activation en détail
 
@@ -76,9 +66,7 @@ Les fonctions d'activation agissent comme des interrupteurs ou des variateurs, d
 
 Transition : Malgré ces outils, la profondeur croissante des réseaux engendre des instabilités numériques majeures lors du passage des gradients.
 
-
 --------------------------------------------------------------------------------
-
 
 VI. Le problème du gradient (Vanishing / Exploding)
 
@@ -91,9 +79,7 @@ L'entraînement des réseaux profonds se heurte souvent à une "stabilité insta
 
 Transition : Pour pallier ces défaillances structurelles, des interventions algorithmiques et architecturales spécifiques sont indispensables.
 
-
 --------------------------------------------------------------------------------
-
 
 VII. Solutions et Optimisation du paysage d'apprentissage
 

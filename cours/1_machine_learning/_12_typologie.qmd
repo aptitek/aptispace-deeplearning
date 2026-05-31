@@ -10,12 +10,9 @@ Les modèles d'apprentissage se divisent en deux grandes familles, selon la natu
 * **La Régression :** Utilisée lorsque l'on s'attend à un résultat continu (par exemple, prédire un prix, une température ou un chiffre d'affaires).
 * **La Classification :** Utilisée lorsque l'on s'attend à un résultat discret ou catégorique (par exemple, déterminer si un e-mail est un "Spam" ou "Non-Spam") [@lee_classification_regression].
 
-
 * **L'Apprentissage Non-Supervisé (La découverte autonome) :** Le modèle reçoit des données sans aucune étiquette. Il n'a pas de "vérité terrain" pour corriger son moule. Son but est d'identifier des structures intrinsèques, des motifs cachés ou des regroupements naturels [@analystprep_2021_unsupervised].
 * **Le Clustering (Regroupement) :** Consiste à regrouper des données similaires en catégories (résultat discret), comme la segmentation de clients [@google_kmeans].
 * **L'Analyse en Composantes Principales (PCA) :** Une méthode de réduction de dimensionnalité (résultat continu) qui permet de simplifier des données complexes tout en conservant l'essentiel de l'information [@shlens_2014_pca].
-
-
 
 **L'impact stratégique :** Le choix entre classification et clustering modifie radicalement l'objectif métier. Là où la classification répond à une question fermée sur une catégorie connue (ex: "ce client va-t-il résilier ?"), le clustering permet la découverte de segments de marché "cachés". Cela offre une opportunité de différenciation par la révélation de niches comportementales jusqu'alors invisibles.
 

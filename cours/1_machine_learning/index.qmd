@@ -1,19 +1,14 @@
 ---
 title: "🤖 Machine Learning : Les Fondamentaux"
 part: "🤖 Machine Learning : Les Fondamentaux"
-bibliography: cours/1_machine_learning/bibliography.bib
+bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
 {{< include _11_histoire.qmd >}}
-
 {{< include _12_typologie.qmd >}}
-
 {{< include _13_gradient.qmd >}}
-
 {{< include _14_biais_variance.qmd >}}
-
 {{< include _15_regularisation.qmd >}}
-
 {{< include _16_augmentation.qmd >}}
 <!-- DYNAMIC_INCLUDES_END -->

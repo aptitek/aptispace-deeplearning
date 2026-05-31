@@ -6,7 +6,7 @@ L'Apprentissage Supervisé utilise des données étiquetées pour modéliser une
 
 L'impact stratégique : Le choix entre classification et clustering modifie radicalement l'objectif métier. Là où la classification répond à une question fermée sur une catégorie connue (ex: "ce client va-t-il résilier ?"), le clustering permet la découverte de segments de marché "cachés", offrant une opportunité de différenciation par la révélation de niches comportementales jusqu'alors invisibles. Cette transition vers la complexité nous amène naturellement à l'étude des structures héritées du Deep Learning.
 
-2. L'Ère de l'Apprentissage Profond : Architectures et Génération
+1. L'Ère de l'Apprentissage Profond : Architectures et Génération
 
 L'émergence du Deep Learning répond à l'incapacité des algorithmes classiques à traiter la complexité des données non structurées (images, texte, séries temporelles).
 
@@ -19,7 +19,7 @@ Dans le domaine Non-supervisé et génératif, les Auto-encodeurs, les GANs (Ré
 
 L'impact stratégique : Ces réseaux automatisent la perception humaine en apprenant des caractéristiques invariantes. La puissance réside dans l'ajustement des poids et des filtres : une IA ne se contente plus de suivre une règle statique, elle identifie une sémantique visuelle ou textuelle capable de résister aux variations du monde réel [@FicusTechnologies]. Cette flexibilité structurelle repose sur une mécanique mathématique précise d'ajustement des paramètres.
 
-3. Mécanique de l'Optimisation : Du Gradient aux Optimiseurs
+1. Mécanique de l'Optimisation : Du Gradient aux Optimiseurs
 
 La performance d'un modèle n'est pas uniquement le fruit de son architecture, mais de l'efficacité de son processus d'apprentissage itératif. Il convient ici de distinguer les Coefficients des modèles linéaires simples des Poids des réseaux de neurones complexes [@FicusTechnologies].
 
@@ -34,7 +34,7 @@ L'optimisation repose sur la Descente de Gradient, qui minimise la fonction de p
 
 L'impact stratégique : Le choix d'un optimiseur comme Adam garantit la stabilité de la convergence et réduit drastiquement les coûts computationnels. C'est un levier d'efficience opérationnelle qui permet de naviguer plus sûrement vers l'équilibre entre précision et généralisation.
 
-4. La Physique du Modèle : Le Compromis Biais-Variance
+1. La Physique du Modèle : Le Compromis Biais-Variance
 
 Le succès d'un modèle se mesure à sa capacité à naviguer entre deux sources d'erreurs fondamentales, définies rigoureusement par la statistique [@BMC_Blogs] :
 
@@ -45,7 +45,7 @@ Un phénomène moderne crucial, la Double Descente, semble défier la courbe en 
 
 L'impact stratégique : Un décideur doit diagnostiquer les symptômes : une erreur d'entraînement basse couplée à une erreur de test élevée est le signe clinique d'une variance excessive [@IBM_Overfitting]. Comprendre que la complexité est multidimensionnelle permet d'éviter les interprétations erronées des performances en phase d'interpolation.
 
-5. Stratégies de Régularisation et Généralisation
+1. Stratégies de Régularisation et Généralisation
 
 La régularisation impose une contrainte de "lissage" pour favoriser la généralisation en pénalisant la complexité excessive [@Wikipedia_EarlyStopping].
 
@@ -56,7 +56,7 @@ La régularisation impose une contrainte de "lissage" pour favoriser la généra
 
 L'impact stratégique : Le Lasso est un véritable "outil de décision". En annulant les coefficients des variables non contributives, il identifie les leviers métier réels. Cela permet de réduire les coûts opérationnels en stoppant la collecte de données inutiles et en simplifiant l'interprétabilité du modèle pour les instances de gouvernance.
 
-6. Expansion du Savoir par l'Augmentation de Données
+1. Expansion du Savoir par l'Augmentation de Données
 
 L'augmentation de données est une solution pragmatique pour pallier le manque de diversité des jeux de données, particulièrement critique pour assurer la robustesse en production [@IBM_Overfitting].
 

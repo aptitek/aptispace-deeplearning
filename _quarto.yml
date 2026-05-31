@@ -43,9 +43,12 @@ book:
         - meta/syllabus.qmd
         - meta/planning.qmd
     # DYNAMIC_CHAPTERS_START
-    - part: "🔭 Fondations & Neurones"
+    - part: "🤖 Machine Learning : Les Fondamentaux"
       chapters:
-        - cours/0_intro/index.qmd
+        - cours/1_machine_learning/index.qmd
+    - part: "🧠 Réseaux de Neurones Profonds"
+      chapters:
+        - cours/2_réseaux_de_neurones/index.qmd
     # DYNAMIC_CHAPTERS_END
     - part: "📚 Annexes"
       chapters:
@@ -56,6 +59,7 @@ format:
   html:
     theme:
       - solar
+      - .theme/_variables.scss
       - .theme/theme.scss
     mainfont: "Recursive"
     monofont: "Recursive"

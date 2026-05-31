@@ -4,25 +4,18 @@ L'entraînement des réseaux profonds se heurte souvent à ce que l'on pourrait 
 
 * **Le mécanisme mathématique (La multiplication des dérivées) :**
 * Pour calculer l'ajustement des poids dans les premières couches du réseau, l'algorithme utilise la règle de la chaîne, ce qui implique de multiplier en cascade les dérivées des fonctions d'activation couche après couche.
-* 
+*
 **Disparition du gradient (Vanishing Gradient) :** Si les dérivées des fonctions d'activation sont systématiquement inférieures à 1 (comme c'est souvent le cas avec la fonction Sigmoïde), la multiplication successive de ces petites fractions fait que leur produit tend très rapidement vers zéro. Le signal d'apprentissage s'atténue alors jusqu'à devenir un murmure inaudible. Conséquence : les premières couches du réseau ne reçoivent plus de signal d'erreur significatif et deviennent incapables de se mettre à jour [@RisingScholars_Sigmoid].
 
-
-* 
+*
 **Explosion du gradient (Exploding Gradient) :** À l'inverse, si les dérivées ou les poids initiaux sont supérieurs à 1, leur produit en cascade provoque une croissance exponentielle du gradient. Le signal se transforme en un bruit assourdissant et chaotique qui va générer des mises à jour démesurées, déstabilisant totalement l'apprentissage du modèle [@Geeks_VanishingGradients; @Geeks_GradientClipping].
-
-
-
 
 * **Illustration concrète avec l'analogie de la transmission humaine :**
 * Imaginez une chaîne de transmission composée de 10 personnes en ligne.
 
-
 * **Cas d'évanouissement :** Si chaque personne chuchote le message en divisant le volume de la voix par deux (ce qui équivaut à une dérivée constante de $0.5$), la dixième personne transmettra un signal d'une intensité de $0.5^{10} \approx 0.001$. À l'arrivée, l'instruction originale est totalement inaudible.
 
-
 * **Cas d'explosion :** Si, au contraire, chaque personne utilise un mégaphone pour doubler le volume du message reçu (dérivée de $2$), la dixième personne émettra un signal $2^{10} = 1024$ fois plus fort. Le message original est alors totalement déformé et assourdissant.
-
 
 ```{ojs}
 //| panel: input
@@ -86,22 +79,22 @@ Plot.plot({
   marks: [
     // Ligne de référence à 1 (Solarized Base01)
     Plot.ruleY([1], {
-      stroke: "#586e75", 
-      strokeWidth: 2, 
+      stroke: "#586e75",
+      strokeWidth: 2,
       strokeDasharray: "4"
-    }), 
+    }),
     // Ligne reliant les points (Solarized Blue)
     Plot.line(data, {
-      x: "couche", 
-      y: "gradient", 
-      stroke: "#268bd2", 
+      x: "couche",
+      y: "gradient",
+      stroke: "#268bd2",
       strokeWidth: 3
     }),
     // Points sur chaque couche (Solarized Cyan)
     Plot.dot(data, {
-      x: "couche", 
-      y: "gradient", 
-      fill: "#2aa198", 
+      x: "couche",
+      y: "gradient",
+      fill: "#2aa198",
       r: 6
     })
   ]

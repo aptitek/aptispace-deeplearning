@@ -25,7 +25,7 @@ def process_chapter(dir_name):
     # Find all _*.qmd files
     sub_modules = []
     for f in os.listdir(dir_path):
-        if f.startswith('_') and f.endswith('.qmd'):
+        if f.startswith('_') and f.endswith('.qmd') and f != '_original.qmd':
             sub_modules.append(f)
     sub_modules.sort()
     

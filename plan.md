@@ -10,13 +10,14 @@ Coefficients vs Poids Modifié par rapport au gradient
 
 Descente de gradient | Optimiseurs : Adam / RMSprop / Momentum / AdaGrad
 
-Biais / Variance 
+Biais / Variance
  surapprentissage / sous-apprentissage
 
 Regularisation -> Généralisation
 Ridge / Lasso / ElasticNet
 
 Augmentation de données (Image) :
+
  - Rotation
  - Zoom
  - Déformation
@@ -24,29 +25,33 @@ Augmentation de données (Image) :
  - Ajout de bruit
  - Changement de contraste
 
+---
 
---- 
+Réseau de neurones :
 
-Réseau de neurones : 
- 
-Forme du réseau : 
-- Couches d'entrées 
-- Couches cachées 
-- Couches de sortie 
+Forme du réseau :
 
-Anatomie du neurone artificiel : 
+- Couches d'entrées
+- Couches cachées
+- Couches de sortie
+
+Anatomie du neurone artificiel :
+
  - Poids
  - Biais
 
 Propagation avant :
+
  - Sommation Pondérée
  - Fonction d'activation
 
 Propagation arrière :
- - Calcul de l'erreur 
+
+ - Calcul de l'erreur
  - Backpropagation
 
 Fonctions d'activation :
+
  - Classique
    - Sigmoïde
    - Tanh
@@ -58,14 +63,15 @@ Fonctions d'activation :
    - Swish
 
 Vanishing gradient:
+
  - Dérivée > 1 : Gradient EXPLOSIF
  - Dérivée < 1 : Gradient DISPARAISSANT
- Solution : ReLU / LSTM / Normalisation / Initialisation 
+ Solution : ReLU / LSTM / Normalisation / Initialisation
  GRU ????
 
 ---
 
-MLP : Par défaut 
+MLP : Par défaut
 RNN : Pile de feuilles / Dongons/ Magasin avec trésorerie
 CNN : Convolution(Filtres) / Pooling(Sous-échantillonage) / Classification(MLP)
         -> Configuration Spatiale
@@ -84,8 +90,9 @@ Transfer Learning : Réutilisation de l'espace latent appris
 
 Modèles génératifs :
 GANs : Génération d'image
- -> Architecture GAN : 
-    - Générateur (Fake) 
+ -> Architecture GAN :
+
+    - Générateur (Fake)
     - Discriminateur (Real/Fake)
     - Equilibre de Nash
 
@@ -100,7 +107,7 @@ Graph Neural Networks : GNN
  -> GNN + Autoencodeur
 
 ---
-    
+
 Transformateurs : Traitement du langage naturel
 
 Représentations de texte (précurseurs) :
@@ -110,7 +117,7 @@ Pipeline : Tokenisation -> Word Embedding -> Positional Encoding -> Attention
 
  -> Embedding
  -> Positional encoding
-    -> Sinusoidale 
+    -> Sinusoidale
     -> BERT (Embeddings appris)
     -> RoPE (Rotation Positional Encoding)
     -> ALiBi (Attention with Linear Biases)
@@ -122,6 +129,7 @@ Pipeline : Tokenisation -> Word Embedding -> Positional Encoding -> Attention
     -> Connectivité résiduelle
 
 Fine-tuning LLM :
+
  - Pré-entrainement (sur large corpus)
  - Fine-tuning (sur tâche spécifique)
 
@@ -130,6 +138,7 @@ Fine-tuning LLM :
 Apprentissage par renforcement (RL) :
 
 Policy Gradient :
+
  - Monte-Carlo : estimation empirique du retour G(s,a)
  - G(s,a) : retour total actualisé
  - Q(s,a) : valeur action-état
@@ -144,4 +153,3 @@ RLHF : Aligner LLM avec les objectifs humains (via PPO sur feedback humain)
 ---
 
 Fait un support de cours complet qui cite les sources au format Pandoc et qui suis le plan suivant :
-
