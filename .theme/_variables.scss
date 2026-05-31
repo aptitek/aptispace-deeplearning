@@ -54,28 +54,6 @@ $danger: $sol-red !default;
 $light: $sol-base2 !default;
 $dark: $sol-base02 !default;
 
-// --- 4-Point Spacing System (1 unit = 4px = 0.25rem) ---
-$sp-4:  0.25rem;  //  4px
-$sp-8:  0.5rem;   //  8px
-$sp-12: 0.75rem;  // 12px
-$sp-16: 1rem;     // 16px
-$sp-20: 1.25rem;  // 20px
-$sp-24: 1.5rem;   // 24px
-$sp-28: 1.75rem;  // 28px
-$sp-32: 2rem;     // 32px
-$sp-36: 2.25rem;  // 36px
-$sp-40: 2.5rem;   // 40px
-$sp-48: 3rem;     // 48px
-$sp-64: 4rem;     // 64px
-
-// --- Border Radius Tokens ---
-$radius-4:   0.25rem;      //  4px – tight corners
-$radius-8:   0.5rem;       //  8px – default card/input
-$radius-12:  0.75rem;      // 12px – panels, pills
-$radius-16:  1rem;         // 16px – large cards
-$radius-20:  1.25rem;      // 20px – pill buttons
-$radius-pill: 624.9375rem; // fully rounded
-
 /*-- scss:rules --*/
 :root {
     --sol-base03: #{$sol-base03};
@@ -132,9 +110,9 @@ $radius-pill: 624.9375rem; // fully rounded
     --card-border-hover: rgba(var(--sol-base01-rgb), 0.4);
     
     --shadow-tiny: 0 -2px 4px rgba(var(--sol-base03-rgb), 0.01);
-    --shadow-small: #{$box-shadow-sm};
+    --shadow-small: 0 4px 8px rgba(var(--sol-base03-rgb), 0.05);
     --shadow-medium: 0 -2px 10px rgba(var(--sol-base03-rgb), 0.05);
-    --canvas-shadow-inset: #{$box-shadow-inset};
+    --canvas-shadow-inset: inset 0 2px 8px rgba(var(--sol-base03-rgb), 0.08);
     
     --card-header-bg: var(--sol-base2);
     --card-header-border: rgba(var(--sol-base01-rgb), 0.08);
@@ -161,35 +139,6 @@ $radius-pill: 624.9375rem; // fully rounded
     --badge-bg: rgba(var(--sol-base1-rgb), 0.1);
     --badge-color: var(--sol-base01);
     --badge-border: rgba(var(--sol-base1-rgb), 0.2);
-
-    /* --- Simulator Tokens --- */
-    /* macOS window control dots (used on cards, terminals, tabsets) */
-    --macos-dot-red:    var(--sol-red);
-    --macos-dot-yellow: var(--sol-yellow);
-    --macos-dot-green:  var(--sol-green);
-
-    /* Terminal */
-    --terminal-header-bg: #0b4352; /* Slightly lighter than base02, giving depth to dark terminal chrome */
-
-    /* Cabling panel (deeper than base03 for electric-panel effect) */
-    --cabling-panel-bg:    #001f27;
-    --cabling-cyan-hover:  #1a8080; /* Darker cyan endpoint hover gradient stop */
-    --cabling-green-pin:   #3d5000; /* Darker green gradient stop for connected pin */
-
-    /* Lever slot / handle */
-    --lever-slot-bg:           #02161b; /* Deep socket well, darker than cabling-panel-bg */
-    --lever-on-gradient-mid:   #6a8000; /* Mid green gradient stop on powered handle */
-    --lever-on-gradient-dark:  #3d5000; /* Dark green gradient stop on powered handle */
-
-    /* Lever handle positions in px — single source of truth shared with lever.js */
-    --lever-top-on:  18px;
-    --lever-top-off: 82px;
-
-    /* Inspector token badge */
-    --inspector-color: var(--sol-base01); /* Overridden per-token by JS */
-
-    /* Spark animation — initial bright flash uses lightest Solarized color */
-    --spark-initial: var(--sol-base3);
 }
 
 /* Explicit Dark Theme Overrides */
@@ -204,9 +153,9 @@ $radius-pill: 624.9375rem; // fully rounded
     --card-border-hover: var(--sol-base01);
     
     --shadow-tiny: 0 -2px 4px rgba(0, 0, 0, 0.05);
-    --shadow-small: #{$box-shadow};
+    --shadow-small: 0 4px 8px rgba(0, 0, 0, 0.2);
     --shadow-medium: 0 -2px 10px rgba(0, 0, 0, 0.25);
-    --canvas-shadow-inset: #{$box-shadow-inset};
+    --canvas-shadow-inset: inset 0 2px 8px rgba(0, 0, 0, 0.25);
     
     --card-header-bg: var(--sol-base02);
     --card-header-border: rgba(147, 161, 161, 0.1);

@@ -2,7 +2,7 @@
 // lever.js — Analog lever switch component
 // ==========================================
 // Usage (OJS):
-//   import { createLever } from "./assets/js/sim/lever.js"
+//   import { createLever } from "./assets/js/custom/lever.js"
 //   viewof powerOn = createLever("#power-lever", invalidation)
 //
 // The matching DOM structure must exist in the page (fenced divs in Quarto):
@@ -63,11 +63,10 @@ export function createLever(selector, invalidation) {
   const housing = wrapper.querySelector('.lever-housing');
   const handle  = wrapper.querySelector('.lever-handle');
 
-  // Read pixel positions from CSS custom properties — _variables.scss is the single source of truth
-  const cssVars  = getComputedStyle(document.documentElement);
-  const TOP_ON   = parseFloat(cssVars.getPropertyValue('--lever-top-on'))  || 18;
-  const TOP_OFF  = parseFloat(cssVars.getPropertyValue('--lever-top-off')) || 82;
-  const MID      = (TOP_ON + TOP_OFF) / 2;
+  // Handle pixel positions — must match _lever.scss
+  const TOP_ON  = 18;
+  const TOP_OFF = 82;
+  const MID     = (TOP_ON + TOP_OFF) / 2;
 
   wrapper.value = false;
 

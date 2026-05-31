@@ -1,0 +1,265 @@
+/* ==========================================================================
+   PREMIUM FORM INPUTS & RESKINNED RADIO GROUPS (Vanilla CSS)
+   ========================================================================== */
+
+/* --- Segmented Radio Buttons Group (.btn-group using .btn-check) --- */
+.btn-group:has(.btn-check) {
+    display: flex !important;
+    background: var(--control-bg, #eee8d5) !important;
+    padding: 4px !important;
+    border-radius: 12px !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    gap: 4px !important;
+    width: 100% !important;
+    border: none !important;
+}
+
+/* Individual option labels (the reskinned radio labels) */
+.btn-group:has(.btn-check) .btn {
+    flex: 1 !important;
+    padding: 10px 16px !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--control-fg, #586e75) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    user-select: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+.btn-group:has(.btn-check) .btn:hover {
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Active/Checked state (when the hidden radio input is checked, its sibling label matches) */
+.btn-group:has(.btn-check) .btn-check:checked + .btn {
+    background: var(--control-active-bg, #fdf6e3) !important;
+    color: var(--accent-primary, #268bd2) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Support for state colors on checked labels */
+.btn-group:has(.btn-check) .btn-check:checked + .btn[data-state="danger"] {
+    color: var(--accent-danger, #dc322f) !important;
+}
+
+.btn-group:has(.btn-check) .btn-check:checked + .btn[data-state="success"] {
+    color: var(--accent-success, #859900) !important;
+}
+
+.btn-group:has(.btn-check) .btn-check:checked + .btn[data-state="warning"] {
+    color: var(--accent-warning, #cb4b16) !important;
+}
+
+.btn-group:has(.btn-check) .btn-check:checked + .btn[data-state="info"] {
+    color: var(--accent-info, #268bd2) !important;
+}
+
+/* --- Standard Checkboxes & Radios (.form-check-input) --- */
+.form-check-input {
+    background-color: var(--input-bg, #fdf6e3) !important;
+    border: 1px solid var(--input-border, #93a1a1) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.form-check-input:focus {
+    border-color: var(--accent-primary, #268bd2) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--accent-primary-rgb, 38, 139, 210), 0.15) !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent-primary, #268bd2) !important;
+    border-color: var(--accent-primary, #268bd2) !important;
+}
+
+.form-check-input[type="radio"] {
+    border-radius: 50% !important;
+}
+
+.form-check-input[type="checkbox"] {
+    border-radius: 4px !important;
+}
+
+/* --- Standard Text Controls & Dropdowns --- */
+.form-control,
+.form-select,
+input[type="text"],
+input[type="number"],
+select {
+    background-color: var(--input-bg, #fdf6e3) !important;
+    border: 1px solid var(--input-border, #eee8d5) !important;
+    color: var(--input-color, #657b83) !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    font-size: 0.9rem !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    background-color: var(--input-bg, #fdf6e3) !important;
+    border-color: var(--accent-primary, #268bd2) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--accent-primary-rgb, 38, 139, 210), 0.15) !important;
+    color: var(--input-color, #657b83) !important;
+    outline: none !important;
+}
+
+input[type="number"] {
+    width: 75px !important;
+    text-align: center !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+}
+
+/* --- Default Range Sliders --- */
+input[type="range"] {
+    accent-color: var(--accent-primary, #268bd2) !important;
+    height: 6px !important;
+    background: var(--control-bg, #eee8d5) !important;
+    border-radius: 5px !important;
+    appearance: none !important;
+    cursor: pointer !important;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background: transparent !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    border-radius: 50% !important;
+}
+
+/* --- Typography Labels --- */
+label, 
+.observablehq--label {
+    font-family: var(--font-code, monospace) !important;
+    font-size: 0.75em !important;
+    font-weight: bold !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    color: var(--scrollbar-thumb, #93a1a1) !important;
+    margin-right: 12px !important;
+    white-space: nowrap !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+}
+
+output {
+    font-family: var(--font-code, monospace) !important;
+    font-size: 0.85em !important;
+    color: var(--control-fg, #586e75) !important;
+    margin-left: 10px !important;
+    margin-right: 15px !important;
+    flex: 0 0 auto !important;
+}
+
+/* --- Generic Premium Buttons (.btn) --- */
+.btn:not(.btn-group *) {
+    border-radius: 20px !important;
+    font-weight: 700 !important;
+    padding: 8px 20px !important;
+    font-size: 0.9em !important;
+    letter-spacing: 0.5px !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    
+    &:hover {
+        transform: translateY(-2px) !important;
+        filter: brightness(1.1) !important;
+    }
+    
+    &:active {
+        transform: translateY(1px) !important;
+    }
+    
+    /* Variant overrides */
+    &.btn-primary {
+        background-color: var(--accent-primary, #268bd2) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-blue-rgb, 38, 139, 210), 0.25) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-blue-rgb, 38, 139, 210), 0.4) !important;
+        }
+    }
+    
+    &.btn-success {
+        background-color: var(--accent-success, #859900) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-green-rgb, 133, 153, 0), 0.25) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-green-rgb, 133, 153, 0), 0.4) !important;
+        }
+    }
+    
+    &.btn-info {
+        background-color: var(--accent-info, #268bd2) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-blue-rgb, 38, 139, 210), 0.2) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-blue-rgb, 38, 139, 210), 0.35) !important;
+        }
+    }
+    
+    &.btn-warning {
+        background-color: var(--accent-warning, #cb4b16) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-orange-rgb, 203, 75, 22), 0.25) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-orange-rgb, 203, 75, 22), 0.4) !important;
+        }
+    }
+    
+    &.btn-danger {
+        background-color: var(--accent-danger, #dc322f) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-red-rgb, 220, 50, 47), 0.25) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-red-rgb, 220, 50, 47), 0.4) !important;
+        }
+    }
+    
+    &.btn-light {
+        background-color: var(--sol-base2, #eee8d5) !important;
+        color: var(--sol-base01, #586e75) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-base01-rgb, 88, 110, 117), 0.08) !important;
+        
+        &:hover {
+            background-color: var(--sol-base3, #fdf6e7) !important;
+            box-shadow: 0 6px 16px rgba(var(--sol-base01-rgb, 88, 110, 117), 0.15) !important;
+        }
+    }
+    
+    &.btn-secondary {
+        background-color: var(--sol-base1, #93a1a1) !important;
+        color: var(--sol-base3, #fdf6e7) !important;
+        box-shadow: 0 4px 12px rgba(var(--sol-base1-rgb, 147, 161, 161), 0.1) !important;
+        
+        &:hover {
+            box-shadow: 0 6px 16px rgba(var(--sol-base1-rgb, 147, 161, 161), 0.25) !important;
+        }
+    }
+}
+
+

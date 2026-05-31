@@ -3,12 +3,14 @@
 /* ── Electric Panel Board ── */
 .cabling-panel {
   position: relative;
-  background: var(--cabling-panel-bg);
+  background: #001f27; /* Darker than base03 for real electric control panel depth */
   border: 1px solid var(--sol-base02);
-  border-radius: $radius-16;
-  padding: $sp-32 $sp-36;
-  margin: $sp-24 0;
-  box-shadow: $box-shadow-lg, inset 0 1px 2px rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 32px 36px;
+  margin: 25px 0;
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.03);
   overflow: visible !important;
 }
 
@@ -29,10 +31,10 @@
     transform: scale(1.1);
   }
 
-  &.top-left     { top: $sp-12; left: $sp-12; transform: rotate(18deg); &:hover { transform: scale(1.1) rotate(18deg); } }
-  &.top-right    { top: $sp-12; right: $sp-12; transform: rotate(-38deg); &:hover { transform: scale(1.1) rotate(-38deg); } }
-  &.bottom-left  { bottom: $sp-12; left: $sp-12; transform: rotate(62deg); &:hover { transform: scale(1.1) rotate(62deg); } }
-  &.bottom-right { bottom: $sp-12; right: $sp-12; transform: rotate(-74deg); &:hover { transform: scale(1.1) rotate(-74deg); } }
+  &.top-left     { top: 12px; left: 12px; transform: rotate(18deg); &:hover { transform: scale(1.1) rotate(18deg); } }
+  &.top-right    { top: 12px; right: 12px; transform: rotate(-38deg); &:hover { transform: scale(1.1) rotate(-38deg); } }
+  &.bottom-left  { bottom: 12px; left: 12px; transform: rotate(62deg); &:hover { transform: scale(1.1) rotate(62deg); } }
+  &.bottom-right { bottom: 12px; right: 12px; transform: rotate(-74deg); &:hover { transform: scale(1.1) rotate(-74deg); } }
 }
 
 /* ── Workspace flex layout (Canvas left, Lever right) ── */
@@ -41,15 +43,15 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: $sp-40;
+  gap: 40px;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   overflow: visible !important;
-
+  
   #cabling-canvas {
     flex: 1 1 auto;
-    padding: $sp-16 0;
+    padding: 16px 0;
     box-sizing: border-box;
     overflow: visible !important;
     position: relative;
@@ -70,7 +72,7 @@
 @media (max-width: 768px) {
   .cabling-workspace-wrapper {
     flex-direction: column;
-    gap: $sp-32;
+    gap: 32px;
 
     #cabling-canvas {
       flex: 1 1 100%;
@@ -89,7 +91,7 @@
 .cabling-col {
   display: flex;
   flex-direction: column;
-  gap: $sp-16;
+  gap: 16px;
   flex: 0 0 auto;
   align-items: stretch;
 
@@ -107,8 +109,8 @@
   background: var(--sol-base02);
   color: var(--sol-base0);
   border: 1px solid rgba(var(--sol-base1-rgb), 0.12);
-  border-radius: $radius-12;
-  padding: $sp-12 $sp-20;
+  border-radius: 10px;
+  padding: 12px 18px;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 600;
@@ -120,7 +122,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
-  box-shadow: $box-shadow-sm;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
   transition: border-color 0.25s, box-shadow 0.25s, color 0.25s, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   .cabling-col--left  & { border-left:  3px solid var(--sol-base01); text-align: right; }
@@ -128,7 +130,7 @@
 
   &:hover {
     border-color: rgba(var(--sol-blue-rgb), 0.5);
-    box-shadow: $box-shadow;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     color: var(--sol-base1);
     transform: translateY(-2px);
   }
@@ -136,7 +138,7 @@
   /* Active / selected state (click-to-connect) */
   &.is-active {
     border-color: var(--sol-yellow) !important;
-    box-shadow: 0 0 0 3px rgba(var(--sol-yellow-rgb), 0.25), #{$box-shadow} !important;
+    box-shadow: 0 0 0 3px rgba(var(--sol-yellow-rgb), 0.25), 0 6px 16px rgba(0, 0, 0, 0.25) !important;
     color: var(--sol-yellow) !important;
   }
 
@@ -179,7 +181,7 @@
 
   /* Hover: cyan glow ring around the socket */
   &:hover::after {
-    background: radial-gradient(circle at 35% 35%, var(--sol-cyan), var(--cabling-cyan-hover));
+    background: radial-gradient(circle at 35% 35%, var(--sol-cyan), #1a8080);
     box-shadow:
       0 0 6px rgba(var(--sol-cyan-rgb), 0.9),
       0 0 14px rgba(var(--sol-cyan-rgb), 0.5);
@@ -187,7 +189,7 @@
 
   /* Connected/validated: green pin */
   &.is-connected::after {
-    background: radial-gradient(circle at 35% 35%, var(--sol-green), var(--cabling-green-pin));
+    background: radial-gradient(circle at 35% 35%, var(--sol-green), #3d5000);
     box-shadow:
       0 0 6px rgba(var(--sol-green-rgb), 0.8),
       0 0 12px rgba(var(--sol-green-rgb), 0.4);
@@ -255,8 +257,8 @@
 @keyframes spark-fly {
   0% {
     transform: rotate(var(--angle)) translateX(0) scale(1.2);
-    background: var(--spark-initial);
-    box-shadow: 0 0 5px var(--spark-initial), 0 0 10px var(--sol-orange), 0 0 16px var(--sol-red);
+    background: #fff;
+    box-shadow: 0 0 5px #fff, 0 0 10px var(--sol-orange), 0 0 16px var(--sol-red);
     opacity: 1;
   }
   50% {

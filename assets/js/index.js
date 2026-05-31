@@ -2,8 +2,9 @@
 // index.js - Le Point d'Entrée Global
 // ==========================================
 import { theme, utils } from "./core.js";
+import * as org from "./org.js";
 import * as plots from "./plots.js";
-import * as graph from "./graph.js";
+import * as networks from "./networks.js";
 
 export { theme };
 
@@ -267,12 +268,14 @@ export const ui = {
     return container;
   },
 
+  org,
   plots,
-  graph,
-
+  networks,
+  
   // Alias directs à la racine
+  ...org,
   ...plots,
-  ...graph,
+  ...networks,
   
   // Rétrocompatibilité avec ui.atom.* et ui.mol.*
   get atom() { return ui; },
@@ -530,7 +533,7 @@ const decorateExerciseHeader = (header) => {
 
 const setupExerciseObserver = () => {
   if (typeof document === "undefined") return;
-
+  
   const runDecoration = () => {
     const headers = document.querySelectorAll(".card.exercise-editor .card-header");
     headers.forEach(header => {
@@ -541,7 +544,7 @@ const setupExerciseObserver = () => {
 
   // Run immediately
   runDecoration();
-
+  
   // 1. Observe DOM mutations (for performance and responsiveness)
   const observer = new MutationObserver(runDecoration);
   observer.observe(document.body, {
@@ -551,13 +554,7 @@ const setupExerciseObserver = () => {
   });
 
   // 2. Poll periodically (fail-proof fallback against React/Preact Virtual DOM overrides on status/run changes)
-  const intervalId = setInterval(runDecoration, 150);
-
-  // 3. Clean up on page unload to prevent memory leaks
-  window.addEventListener('beforeunload', () => {
-    observer.disconnect();
-    clearInterval(intervalId);
-  }, { once: true });
+  setInterval(runDecoration, 150);
 };
 
 // Robust initial execution

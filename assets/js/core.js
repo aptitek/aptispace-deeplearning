@@ -41,6 +41,28 @@ export const theme = {
   fontMono: '"Recursive", SFMono-Regular, Menlo, Monaco, Consolas, monospace'
 };
 
+/**
+ * 📊 Plotly Solarized Theme Template
+ * Consumes CSS custom design tokens as the single source of truth.
+ * When the light/dark theme switches, Plotly automatically conforms!
+ */
+export const solarizedTemplate = {
+  layout: {
+    font: {
+      family: "var(--font-code, Consolas, monospace)",
+      color: "var(--sol-base00, #657b83)"
+    },
+    paper_bgcolor: "var(--sol-base3, #fdf6e3)",
+    plot_bgcolor: "var(--sol-base2, #eee8d5)",
+    colorway: [
+      "var(--sol-blue, #268bd2)",
+      "var(--sol-orange, #cb4b16)",
+      "var(--sol-green, #859900)",
+      "var(--sol-yellow, #b58900)"
+    ]
+  }
+};
+
 export const getThemeColor = (varName, fallback) => {
   if (typeof window !== "undefined") {
     const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
@@ -133,7 +155,7 @@ export const utils = {
 /**
  * 📊 Lit un tableau Markdown compilé et le transforme en tableau d'objets JS.
  */
-export function parseTable(selector) {
+export function parseTableData(selector) {
   const table = document.querySelector(selector);
   if (!table) return [];
   const headers = Array.from(table.querySelectorAll("th")).map(th => th.textContent.trim());
@@ -178,7 +200,7 @@ export function renderTemplate(elementOrSelector, data = {}) {
 /**
  * Moteur 2 : Génère une liste d'éléments à partir d'un modèle (Ex: puces de résultats)
  */
-export function renderList(containerSelector, templateSelector, listData = []) {
+export function renderListTemplate(containerSelector, templateSelector, listData = []) {
   const container = document.querySelector(containerSelector);
   const tplElement = document.querySelector(templateSelector);
   
@@ -200,13 +222,13 @@ export function renderList(containerSelector, templateSelector, listData = []) {
 /**
  * Orchestrateur : Utilise nos moteurs génériques pour cet exercice
  */
-export function renderFeedback(panelSelector, state, listData = []) {
+export function renderFeedbackUI(panelSelector, state, listData = []) {
   const panel = document.querySelector(panelSelector);
   if (!panel) return;
 
   // 1. Affichage global du panneau
-  panel.classList.toggle('d-none', state.status === "hidden");
-  panel.querySelectorAll('.feedback-card').forEach(card => card.classList.add('d-none'));
+  panel.style.display = state.status === "hidden" ? "none" : "block";
+  panel.querySelectorAll('.feedback-card').forEach(card => card.style.display = "none");
 
   if (state.status === "hidden") return;
 
@@ -217,11 +239,14 @@ export function renderFeedback(panelSelector, state, listData = []) {
     if (state.status === "incomplete") title = "⚠️ Console — Brassage Incomplet";
     else if (state.status === "validated") title = "✅ Console — Diagnostic Réussi";
     else if (state.status === "error") title = "❌ Console — Conflit de Signal";
-
+    
     let titleSpan = header.querySelector('.terminal-header-title');
     if (!titleSpan) {
       titleSpan = document.createElement('span');
       titleSpan.className = 'terminal-header-title';
+      titleSpan.style.fontFamily = "var(--font-code, monospace)";
+      titleSpan.style.fontSize = "0.85em";
+      titleSpan.style.fontWeight = "bold";
       header.appendChild(titleSpan);
     }
     titleSpan.textContent = title;
@@ -230,7 +255,7 @@ export function renderFeedback(panelSelector, state, listData = []) {
   // 2. Affichage dynamique de la carte active via le Moteur 1
   const activeCard = panel.querySelector(`.feedback-${state.status}`);
   if (activeCard) {
-    activeCard.classList.remove('d-none');
+    activeCard.style.display = "block";
     renderTemplate(activeCard, { score: state.score, total: state.total });
   }
 
@@ -293,7 +318,7 @@ export function renderFeedback(panelSelector, state, listData = []) {
  *
  * @param {string} tabsetSelector  CSS selector for the panel-tabset root.
  */
-export function mountTabIcons(tabsetSelector) {
+export function initTabIcons(tabsetSelector) {
   const panes = document.querySelectorAll(`${tabsetSelector} .tab-pane`);
   const links = document.querySelectorAll(`${tabsetSelector} .nav-link`);
 
@@ -343,7 +368,7 @@ export function mountTabIcons(tabsetSelector) {
  * @param {Function} onChange        Called with the mapped value on tab change.
  * @returns {{ destroy: Function }}
  */
-export function watchTabset(tabsetSelector, labelMap, onChange) {
+export function createTabsetWatcher(tabsetSelector, labelMap, onChange) {
   const tabset = document.querySelector(tabsetSelector);
   if (tabset) {
     const links = tabset.querySelectorAll(".nav-link");
@@ -419,7 +444,7 @@ export function watchTabset(tabsetSelector, labelMap, onChange) {
  * - `data-target` → CSS selector for the parent `.panel-tabset`
  * - `data-icon`   → Bootstrap icon name without `bi-` prefix (optional)
  */
-export function mountTabActions() {
+export function initTabActions() {
   document.querySelectorAll('.tab-actions').forEach(container => {
     // 1. Locate the target tabset
     const tabset = container.closest('.panel-tabset') || 

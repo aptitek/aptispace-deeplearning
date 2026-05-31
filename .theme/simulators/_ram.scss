@@ -29,16 +29,16 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: $sp-24 !important;
-    padding: 0 $sp-48 !important;
-    padding-top: $sp-16 !important;
+    gap: 24px !important; /* Wider spacing to fill the board elegantly with 4 chips */
+    padding: 0 45px !important;
+    padding-top: 14px !important; /* Pushes chips down to sit perfectly in the center of the PCB */
     border: none !important;
     box-shadow: none !important;
     background: transparent !important; /* transparent as parent holds the SVG background */
 
     .badge {
         font-size: 0.7em !important;
-        margin-top: $sp-8 !important;
+        margin-top: 6px !important; /* Elegant spacing under the chip legs */
     }
 }
 
@@ -53,7 +53,7 @@
     align-items: center;
     justify-content: center;
     line-height: 1 !important;
-    padding-top: $sp-16 !important;
+    padding-top: 16px !important;
     font-size: 1.05em !important;
     font-weight: 700;
     color: var(--sol-green, #2aa198) !important;
@@ -85,9 +85,31 @@
    SIMULATEUR DE STOCKAGE (LIGNE VS COLONNE)
    ========================================================================== */
 
-/* Conteneur principal du Canvas (hérite de .plot-wrapper) */
+/* Conteneur principal du Canvas (remplace les styles en ligne) */
 .ram-simulator-wrapper {
-    @extend .plot-wrapper;
+    height: 380px;
+    position: relative;
+    background: transparent;
+    border-radius: 8px;
+    width: 100%;
+    overflow: hidden; /* Empêche tout débordement du canvas pendant le resize */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > div {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    canvas {
+        display: block !important;
+        margin: 0 auto !important;
+    }
 
     /* 🎨 Design Tokens pour le Canvas (Lues par JS) */
     --canvas-node-text: var(--sol-base3, #fdf6e3);
@@ -109,8 +131,8 @@
 /* Bouton de lancement natif */
 .btn-ram-start {
     font-size: 0.78rem;
-    padding: $sp-4 $sp-12;
-    border-radius: $radius-20;
+    padding: 3px 12px;
+    border-radius: 20px;
     border: 1px solid var(--sol-yellow, #b58900);
     color: var(--sol-yellow, #b58900);
     background: transparent;
@@ -119,7 +141,7 @@
     font-weight: 700;
     display: inline-flex;
     align-items: center;
-    gap: $sp-4;
+    gap: 4px;
 
     &:hover, &:focus {
         background: rgba(181, 137, 0, 0.12);
@@ -142,7 +164,7 @@
     border: none !important;
     background: transparent !important;
     color: var(--sol-yellow, #b58900) !important;
-    padding: $sp-8 $sp-12 !important;
+    padding: 6px 12px !important;
     font-weight: 600 !important;
     font-size: 0.82rem !important;
     transition: all 0.15s ease-in-out !important;
@@ -150,7 +172,7 @@
     box-shadow: none !important;
     display: inline-flex !important;
     align-items: center !important;
-    gap: $sp-8 !important;
+    gap: 6px !important;
     height: fit-content !important;
     text-decoration: none !important;
 

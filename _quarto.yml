@@ -4,7 +4,6 @@ project:
   type: book
   output-dir: _site
   pre-render:
-    - python3 scripts/generate_chapters.py
     - bash _extensions/aptitek/download-fonts/download_fonts.sh
   post-render: []
   resources:
@@ -15,12 +14,9 @@ project:
 bibliography: bibliography.bib
 
 filters:
-  - aptitek/dynamic
   - filetree
-  - card
   - timeline
   - embed
-  - aptitek/zoom
 
 book:
   title: "Deep Learning"

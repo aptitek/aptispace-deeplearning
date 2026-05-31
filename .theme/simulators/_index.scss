@@ -4,11 +4,9 @@
 // ==========================================
 
 @import "cable";
+@import "cpu";
 @import "lever";
-@import "memory";
-@import "motherboard";
-@import "state-machine";
-@import "svg";
-@import "tokenizer";
-@import "plot";
-@import "regularization";
+@import "mother_board";
+@import "ram";
+@import "state_machine";
+@import "text";
