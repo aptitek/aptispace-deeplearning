@@ -70,7 +70,23 @@ viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Inte
 ::::
 
 :::: {#reg-details-container .card .border-start .border-4 .bg-light .mx-3 .mb-3}
-::::
+::::: {.card-body .p-3}
+[{{title}}]{.fw-bold style="color:{{titleColor}}; display:block; margin-bottom:6px;"}
+
+{{body}}
+:::::
+
+:::
+
+::: {#reg-variables .d-none}
+
+| id       | name             | w0   | color              | desc                              | lassoThreshold | elasticThreshold |
+| :------- | :--------------- | :--- | :----------------- | :-------------------------------- | :------------- | :--------------- |
+| taille   | Taille (m²)      | 8.0  | var(--sol-cyan)    | Variable majeure très prédictive. | 0.98           | 0.99             |
+| chambres | Chambres         | 5.0  | var(--sol-green)   | Variable importante modérée.      | 0.72           | 0.85             |
+| garage   | Garage           | 3.5  | var(--sol-yellow)  | Corrélée à Taille (Redondance).   | 0.28           | 0.45             |
+| age      | Âge              | -4.0 | var(--sol-red)     | Impact négatif sur le prix.       | 0.48           | 0.68             |
+| bruit    | Bruit dB (Bruit) | 1.5  | var(--sol-magenta) | Bruit aléatoire sans intérêt.     | 0.12           | 0.20             |
 
 :::
 

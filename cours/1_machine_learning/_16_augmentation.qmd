@@ -15,13 +15,13 @@ Pour enrichir artificiellement le jeu d'entraînement, on applique diverses tran
 * **Transformations géométriques :** Rotation (tourner l'image), zoom (rapprocher ou éloigner), déformation (étirement affine) et recadrage (couper une partie de l'image) [@wiki_affine; @anon_data_augmentation].
 * **Ajustements de qualité et colorimétrie :** Ajout de bruit artificiel (comme de la "neige" sur une télévision), modification du contraste, de la luminosité ou de la saturation [@levi_noise_injection].
 
-:::: {.card .card-window .mb-4 .augmentation-simulator}
+::: {.card .card-window .mb-4 .augmentation-simulator}
 
-::::: {.card-header}
+:::: {.card-header}
 Augmentation de Données : Vue Machine
-:::::
+::::
 
-::::: {.card-control-row .sim-controls-row}
+:::: {.card-control-row .sim-controls-row}
 
 ```{ojs}
 //| echo: false
@@ -44,28 +44,28 @@ viewof augTransforms = Inputs.checkbox(
 )
 ```
 
+::::
+
+:::: {.row .g-3 .px-3 .pb-3 .align-items-stretch}
+
+::::: {.col-md-7}
+:::::: {.card .border .m-0 .h-100}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+Image augmentée
+:::::::
+::::::: {#augmentation-preview .card-body .augmentation-preview-shell}
+:::::::
+::::::
 :::::
 
-::::: {.row .g-3 .px-3 .pb-3 .align-items-stretch}
-
-:::::: {.col-md-7}
-::::::: {.card .border .m-0 .h-100}
-:::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-Image augmentée
-::::::::
-:::::::: {#augmentation-preview .card-body .augmentation-preview-shell}
-::::::::
-:::::::
+::::: {.col-md-5}
+:::::: {#augmentation-analysis .card .border-start .border-4 .bg-light .h-100 .p-3}
 ::::::
-
-:::::: {.col-md-5}
-::::::: {#augmentation-analysis .card .border-start .border-4 .bg-light .h-100 .p-3}
-:::::::
-::::::
-
 :::::
 
 ::::
+
+:::
 
 ```{ojs}
 //| echo: false
@@ -79,7 +79,6 @@ renderAugmentation = {
   });
 }
 ```
-
 
 ### L'Impact Stratégique et Conclusion
 

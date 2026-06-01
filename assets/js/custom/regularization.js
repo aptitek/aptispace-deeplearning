@@ -1,60 +1,43 @@
 // =====================================================================
 // regularization.js — Regularization simulation using Plotly
 // =====================================================================
-import { resolveCssValue } from "../core.js";
+import { resolveCssValue, parseTableData, renderTemplate } from "../core.js";
 import { createMultiLine } from "../plots.js";
 
+let _variables = null;
 
-// Spécification de nos 5 variables
-const variables = [
-  { id: "taille", name: "Taille (m²)", w0: 8.0, color: "var(--sol-cyan)", desc: "Variable majeure très prédictive." },
-  { id: "chambres", name: "Chambres", w0: 5.0, color: "var(--sol-green)", desc: "Variable importante modérée." },
-  { id: "garage", name: "Garage", w0: 3.5, color: "var(--sol-yellow)", desc: "Corrélée à Taille (Redondance)." },
-  { id: "age", name: "Âge", w0: -4.0, color: "var(--sol-red)", desc: "Impact négatif sur le prix." },
-  { id: "bruit", name: "Bruit dB (Bruit)", w0: 1.5, color: "var(--sol-magenta)", desc: "Bruit aléatoire sans intérêt." }
-];
+export function loadVariables(selector = "#reg-variables table") {
+  const rows = parseTableData(selector);
+  _variables = rows.map(r => ({
+    id: r.id,
+    name: r.name,
+    w0: parseFloat(r.w0),
+    color: r.color,
+    desc: r.desc,
+    lassoThreshold: parseFloat(r.lassoThreshold),
+    elasticThreshold: parseFloat(r.elasticThreshold)
+  }));
+  return _variables;
+}
+
+function getVariables() {
+  return _variables ?? loadVariables();
+}
 
 export function calculateCoefficients(type, lambda) {
-  const lambdaValue = Number(lambda);
-  const x = Number.isFinite(lambdaValue) ? lambdaValue / 100 : 0; // Normalisé [0, 1]
+  const variables = getVariables();
+  const x = Number.isFinite(Number(lambda)) ? Number(lambda) / 100 : 0;
 
   return variables.map(v => {
     let w = v.w0;
     if (type === "ridge") {
       w = v.w0 / (1 + x * 9);
     } else if (type === "lasso") {
-      const thresholds = {
-        bruit: 0.12,
-        garage: 0.28,
-        age: 0.48,
-        chambres: 0.72,
-        taille: 0.98
-      };
-      const th = thresholds[v.id];
-      if (x >= th) {
-        w = 0;
-      } else {
-        w = v.w0 * (1 - x / th);
-      }
+      w = x >= v.lassoThreshold ? 0 : v.w0 * (1 - x / v.lassoThreshold);
     } else {
-      const thresholds = {
-        bruit: 0.20,
-        garage: 0.45,
-        age: 0.68,
-        chambres: 0.85,
-        taille: 0.99
-      };
-      const th = thresholds[v.id];
-      if (x >= th) {
-        w = 0;
-      } else {
-        w = (v.w0 * (1 - x / th)) / (1 + x * 2.5);
-      }
+      w = x >= v.elasticThreshold ? 0 : (v.w0 * (1 - x / v.elasticThreshold)) / (1 + x * 2.5);
     }
-    return {
-      ...v,
-      w: parseFloat(w.toFixed(2))
-    };
+    return { ...v, w: parseFloat(w.toFixed(2)) };
   });
 }
 
@@ -63,48 +46,36 @@ export function updateRegularization(type, lambda, containers = {}) {
   if (!svgEl || !varsEl || !detailsEl) return;
 
   const safeType = typeof type === "string" ? type : "lasso";
-  const lambdaValue = Number(lambda);
-  const safeLambda = Number.isFinite(lambdaValue) ? lambdaValue : 0;
+  const safeLambda = Number.isFinite(Number(lambda)) ? Number(lambda) : 0;
   const currentCoeffs = calculateCoefficients(safeType, safeLambda);
 
-  // 1. Plotly-based Chart rendering
   renderChart(svgEl, safeType, safeLambda, currentCoeffs);
-
-  // 2. Variables Sidebar list rendering
   renderVars(varsEl, currentCoeffs);
-
-  // 3. Explainer text rendering
   renderDetails(detailsEl, safeType, safeLambda);
 }
 
-function renderChart(svgEl, type, lambda, currentCoeffs) {
-  // Build line-path traces (one per variable across λ 0→100)
+export function renderChart(svgEl, type, lambda, currentCoeffs) {
+  const variables = getVariables();
+
   const lineTraces = variables.map(v => {
-    const pathX = [];
-    const pathY = [];
+    const xs = [], ys = [];
     for (let l = 0; l <= 100; l += 5) {
       const coeffs = calculateCoefficients(type, l);
-      pathX.push(l);
-      pathY.push(coeffs.find(tc => tc.id === v.id).w);
+      xs.push(l);
+      ys.push(coeffs.find(c => c.id === v.id).w);
     }
     return {
-      x: pathX,
-      y: pathY,
-      mode: 'lines',
-      type: 'scatter',
-      name: v.name,
+      x: xs, y: ys,
+      mode: 'lines', type: 'scatter', name: v.name,
       line: { color: resolveCssValue(v.color), width: 2.5 },
       hoverinfo: 'skip'
     };
   });
 
-  // Current-value dot trace
   const dotsTrace = {
     x: currentCoeffs.map(() => lambda),
     y: currentCoeffs.map(c => c.w),
-    mode: 'markers',
-    type: 'scatter',
-    name: 'Actuel',
+    mode: 'markers', type: 'scatter', name: 'Actuel',
     marker: {
       color: currentCoeffs.map(c => resolveCssValue(c.color)),
       size: 9,
@@ -114,19 +85,13 @@ function renderChart(svgEl, type, lambda, currentCoeffs) {
     text: currentCoeffs.map(c => `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`)
   };
 
-  // Delegate to the generic multi-line factory (handles theme, config, ResizeObserver)
   createMultiLine(svgEl, [...lineTraces, dotsTrace], {
     xaxis: { range: [0, 100] },
     yaxis: { range: [-5, 9] },
     shapes: [{
       type: 'line',
-      x0: lambda, y0: -5,
-      x1: lambda, y1: 9,
-      line: {
-        color: resolveCssValue('var(--sol-magenta, #d33682)'),
-        width: 1.5,
-        dash: 'dash'
-      }
+      x0: lambda, y0: -5, x1: lambda, y1: 9,
+      line: { color: resolveCssValue('var(--sol-magenta, #d33682)'), width: 1.5, dash: 'dash' }
     }]
   });
 }
@@ -195,55 +160,63 @@ function renderVars(varsEl, currentCoeffs) {
   });
 }
 
-function renderDetails(detailsEl, type, lambda) {
-  let textExplain = "";
-  if (type === "lasso") {
-    if (lambda === 0) {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-cyan); margin-bottom:6px;">🟡 Lasso (λ = 0) : Régression standard (Moindres Carrés)</div>
-        <div>Sans aucune pénalité, le modèle garde toutes les variables, y compris la variable de <b>bruit purement aléatoire</b> avec un coefficient de +1.5. C'est la zone propice au <strong>surapprentissage (overfitting)</strong>.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-cyan)";
-    } else if (lambda > 0 && lambda < 35) {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-green); margin-bottom:6px;">🏆 Lasso (λ = ${lambda}) : Sélection intelligente active !</div>
-        <div>La pénalité L1 a immédiatement **annulé** la variable de <i>Bruit</i> (w = 0) ! Elle a également fortement réduit le coefficient de la variable <i>Garage</i> (qui fait doublon avec la <i>Taille</i>). Le modèle se concentre sur les variables réellement importantes.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-green)";
-    } else if (lambda >= 35 && lambda < 75) {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-yellow); margin-bottom:6px;">🟡 Lasso (λ = ${lambda}) : Sélection sévère</div>
-        <div>La pénalité élimine maintenant l'<i>Âge</i> et le <i>Garage</i>. Seules les variables fondamentales <i>Taille</i> et <i>Chambres</i> survivent dans l'équation. C'est idéal pour obtenir un modèle **très parcimonieux** et simple.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-yellow)";
-    } else {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-red); margin-bottom:6px;">⚠️ Lasso (λ = ${lambda}) : Sous-apprentissage (Underfitting)</div>
-        <div>La pénalité L1 est trop agressive. Elle a tué quasiment tous les coefficients. Même la <i>Taille</i> (variable majeure) s'approche de zéro. Le modèle a perdu sa capacité prédictive.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-red)";
+// Details config: data separated from DOM construction.
+// title may be a string or a function of lambda.
+const _details = {
+  lasso: [
+    { when: l => l === 0,
+      color: "var(--sol-cyan)",
+      title: "🟡 Lasso (λ = 0) : Régression standard (Moindres Carrés)",
+      body: "Sans aucune pénalité, le modèle garde toutes les variables, y compris la variable de <b>bruit purement aléatoire</b> avec un coefficient de +1.5. C'est la zone propice au <strong>surapprentissage (overfitting)</strong>."
+    },
+    { when: l => l < 35,
+      color: "var(--sol-green)",
+      title: l => `🏆 Lasso (λ = ${l}) : Sélection intelligente active !`,
+      body: "La pénalité L1 a immédiatement annulé la variable de <i>Bruit</i> (w = 0) ! Elle a également fortement réduit le coefficient de la variable <i>Garage</i> (qui fait doublon avec la <i>Taille</i>). Le modèle se concentre sur les variables réellement importantes."
+    },
+    { when: l => l < 75,
+      color: "var(--sol-yellow)",
+      title: l => `🟡 Lasso (λ = ${l}) : Sélection sévère`,
+      body: "La pénalité élimine maintenant l'<i>Âge</i> et le <i>Garage</i>. Seules les variables fondamentales <i>Taille</i> et <i>Chambres</i> survivent dans l'équation. C'est idéal pour obtenir un modèle <strong>très parcimonieux</strong> et simple."
+    },
+    { when: () => true,
+      color: "var(--sol-red)",
+      title: l => `⚠️ Lasso (λ = ${l}) : Sous-apprentissage (Underfitting)`,
+      body: "La pénalité L1 est trop agressive. Elle a tué quasiment tous les coefficients. Même la <i>Taille</i> (variable majeure) s'approche de zéro. Le modèle a perdu sa capacité prédictive."
     }
-  } else if (type === "ridge") {
-    if (lambda === 0) {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-cyan); margin-bottom:6px;">🟡 Ridge (λ = 0) : Aucune régularisation</div>
-        <div>Le modèle conserve tous les coefficients au maximum. La colinéarité entre <i>Taille</i> et <i>Garage</i> n'est pas traitée, ce qui gonfle artificiellement la variance du modèle.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-cyan)";
-    } else {
-      textExplain = `
-        <div style="font-weight:bold; color:var(--sol-green); margin-bottom:6px;">🏆 Ridge (λ = ${lambda}) : Réduction de la variance (L2)</div>
-        <div>Observez la différence avec Lasso ! La pénalité Ridge **ne réduit jamais aucun coefficient à exactement zéro** (toutes les variables restent actives). Elle courbe et atténue les poids de manière progressive pour stabiliser le modèle face au bruit, ce qui est parfait pour gérer la <b>colinéarité (les variables corrélées)</b> sans jeter d'information.</div>
-      `;
-      detailsEl.style.borderLeftColor = "var(--sol-green)";
+  ],
+  ridge: [
+    { when: l => l === 0,
+      color: "var(--sol-cyan)",
+      title: "🟡 Ridge (λ = 0) : Aucune régularisation",
+      body: "Le modèle conserve tous les coefficients au maximum. La colinéarité entre <i>Taille</i> et <i>Garage</i> n'est pas traitée, ce qui gonfle artificiellement la variance du modèle."
+    },
+    { when: () => true,
+      color: "var(--sol-green)",
+      title: l => `🏆 Ridge (λ = ${l}) : Réduction de la variance (L2)`,
+      body: "Observez la différence avec Lasso ! La pénalité Ridge <strong>ne réduit jamais aucun coefficient à exactement zéro</strong> (toutes les variables restent actives). Elle courbe et atténue les poids de manière progressive pour stabiliser le modèle face au bruit, ce qui est parfait pour gérer la <b>colinéarité (les variables corrélées)</b> sans jeter d'information."
     }
-  } else {
-    textExplain = `
-      <div style="font-weight:bold; color:var(--sol-magenta); margin-bottom:6px;">🏆 ElasticNet (λ = ${lambda}) : Le Compromis L1 + L2</div>
-      <div>ElasticNet mélange le meilleur des deux mondes : il **élimine** complètement les variables de bruit (comme Lasso) tout en conservant les variables corrélées ensemble avec des coefficients stables (effet de groupe Ridge), évitant le choix aléatoire d'une variable par rapport à une autre.</div>
-    `;
-    detailsEl.style.borderLeftColor = "var(--sol-magenta)";
-  }
+  ],
+  elastic: [
+    { when: () => true,
+      color: "var(--sol-magenta)",
+      title: l => `🏆 ElasticNet (λ = ${l}) : Le Compromis L1 + L2`,
+      body: "ElasticNet mélange le meilleur des deux mondes : il <strong>élimine</strong> complètement les variables de bruit (comme Lasso) tout en conservant les variables corrélées ensemble avec des coefficients stables (effet de groupe Ridge), évitant le choix aléatoire d'une variable par rapport à une autre."
+    }
+  ]
+};
 
-  detailsEl.innerHTML = textExplain;
+function renderDetails(detailsEl, type, lambda) {
+  const rules = _details[type] ?? _details.elastic;
+  const cfg = rules.find(r => r.when(lambda));
+  if (!cfg) return;
+
+  const titleColor = resolveCssValue(cfg.color);
+  detailsEl.style.borderLeftColor = titleColor;
+
+  renderTemplate(detailsEl, {
+    title: typeof cfg.title === "function" ? cfg.title(lambda) : cfg.title,
+    titleColor,
+    body: cfg.body
+  });
 }

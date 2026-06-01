@@ -5,7 +5,7 @@ import { createPlot3D } from "../plots.js";
  * 🏔️ 3D Gradient Descent Simulation Runner
  * Reacts to momentum slider and trigger counts.
  */
-export function runGradientSimulation(momentum, triggerCount, options = {}) {
+export function runGradientSimulation(optType, optParam, triggerCount, options = {}) {
   const { containerId, metrics = {} } = options;
   const container = typeof containerId === 'string' ? document.getElementById(containerId) : containerId;
   if (!container) return null;
@@ -72,8 +72,12 @@ export function runGradientSimulation(momentum, triggerCount, options = {}) {
   // If triggerCount > 0, run the simulation
   if (triggerCount > 0) {
     let cx = 2.2; let cy = 1.5;
-    let vx = 0; let vy = 0;
-    const lr = 0.03;
+    
+    // Optimizer state variables
+    let vx = 0; let vy = 0; // Momentum velocity / Adam first moment
+    let sqGradX = 0; let sqGradY = 0; // RMSprop / AdaGrad / Adam second moment
+    
+    const eps = 1e-8;
 
     let pathX = [cx]; let pathY = [cy]; let pathV = [0];
     let pathZ = [Math.pow(cx, 4) - 4 * Math.pow(cx, 2) + Math.pow(cy, 2) + 0.5 * cx];
@@ -81,14 +85,59 @@ export function runGradientSimulation(momentum, triggerCount, options = {}) {
     for (let i = 0; i < 250; i++) {
       let gradX = 4 * Math.pow(cx, 3) - 8 * cx + 0.5;
       let gradY = 2 * cy;
-      vx = momentum * vx + lr * gradX;
-      vy = momentum * vy + lr * gradY;
-      cx = cx - vx; cy = cy - vy;
+      
+      let stepX = 0;
+      let stepY = 0;
+
+      if (optType === "momentum") {
+        const momentum = optParam;
+        const lr = 0.03;
+        vx = momentum * vx + lr * gradX;
+        vy = momentum * vy + lr * gradY;
+        stepX = vx;
+        stepY = vy;
+      } else if (optType === "rmsprop") {
+        const beta = optParam;
+        const lr = 0.04;
+        sqGradX = beta * sqGradX + (1 - beta) * gradX * gradX;
+        sqGradY = beta * sqGradY + (1 - beta) * gradY * gradY;
+        stepX = (lr / (Math.sqrt(sqGradX) + eps)) * gradX;
+        stepY = (lr / (Math.sqrt(sqGradY) + eps)) * gradY;
+      } else if (optType === "adagrad") {
+        const lr = optParam;
+        sqGradX = sqGradX + gradX * gradX;
+        sqGradY = sqGradY + gradY * gradY;
+        stepX = (lr / (Math.sqrt(sqGradX) + eps)) * gradX;
+        stepY = (lr / (Math.sqrt(sqGradY) + eps)) * gradY;
+      } else if (optType === "adam") {
+        const beta1 = optParam;
+        const beta2 = 0.999;
+        const lr = 0.1;
+        const t = i + 1;
+
+        vx = beta1 * vx + (1 - beta1) * gradX;
+        vy = beta1 * vy + (1 - beta1) * gradY;
+
+        sqGradX = beta2 * sqGradX + (1 - beta2) * gradX * gradX;
+        sqGradY = beta2 * sqGradY + (1 - beta2) * gradY * gradY;
+
+        const mHatX = vx / (1 - Math.pow(beta1, t));
+        const mHatY = vy / (1 - Math.pow(beta1, t));
+        const vHatX = sqGradX / (1 - Math.pow(beta2, t));
+        const vHatY = sqGradY / (1 - Math.pow(beta2, t));
+
+        stepX = (lr / (Math.sqrt(vHatX) + eps)) * mHatX;
+        stepY = (lr / (Math.sqrt(vHatY) + eps)) * mHatY;
+      }
+
+      cx = cx - stepX;
+      cy = cy - stepY;
+
       if (cx < -2.5) cx = -2.5; if (cx > 2.5) cx = 2.5;
       if (cy < -2.5) cy = -2.5; if (cy > 2.5) cy = 2.5;
       let cz = Math.pow(cx, 4) - 4 * Math.pow(cx, 2) + Math.pow(cy, 2) + 0.5 * cx;
       pathX.push(cx); pathY.push(cy); pathZ.push(cz);
-      pathV.push(Math.sqrt(vx*vx + vy*vy));
+      pathV.push(Math.sqrt(stepX * stepX + stepY * stepY));
     }
 
     // Cache elements to update metrics

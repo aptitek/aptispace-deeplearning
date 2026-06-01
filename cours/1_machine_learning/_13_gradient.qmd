@@ -551,27 +551,80 @@ Les flux de gradients à travers les poids assurent la stabilité, évitant ains
 
 ### Simulation de la Trajectoire d'Optimisation
 
-Visualisez de manière interactive comment le paramètre d'inertie (Momentum) modifie le comportement de la descente dans un paysage de coût en trois dimensions.
+Visualisez de manière interactive comment le choix de l'optimiseur et ses paramètres modifient la trajectoire de la descente dans un paysage de coût en trois dimensions.
 
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🏔️ Simulateur 3D de la Descente de Gradient et Inertie (Momentum)
+🏔️ Simulateur 3D de la Descente de Gradient et Optimiseurs Modernes
 ::::
 
-:::: {.px-3 .pt-2 .pb-1 .text-muted .small}
-Ajustez l'inertie (Momentum) pour voir comment la boule prend de la vitesse et de l'élan afin de descendre la surface en 3D représentant la fonction de coût, et observez si elle parvient à s'extraire des minima locaux.
+:::: {.panel-tabset .opt-type-tabset}
+
+##### Momentum
+L'inertie (Momentum) accumule les gradients passés pour accélérer la descente dans les directions constantes et franchir les plateaux ou minima locaux.
+
+##### RMSprop
+RMSprop adapte le taux d'apprentissage de chaque paramètre selon la moyenne mobile de la magnitude des gradients récents, stabilisant les oscillations verticales.
+
+##### AdaGrad
+AdaGrad adapte le pas d'apprentissage de chaque paramètre selon l'historique de ses gradients accumulés depuis le début (efficace pour les caractéristiques éparses).
+
+##### Adam
+Adam combine Momentum et RMSprop en maintenant à la fois une moyenne mobile des gradients (1er moment) et de leurs carrés (2e moment).
+
 ::::
 
 :::: {.card-control-row .sim-controls-row}
 
 ```{ojs}
 //| echo: false
-viewof momentumVal = Inputs.range([0.5, 1.0], {
-  value: 0.771,
-  step: 0.001,
-  label: "⚡ Inertie (Momentum)"
-})
+import { createTabsetWatcher as createTabsetWatcherGrad } from "../../assets/js/custom/card.js"
+
+mutable optType = "momentum"
+
+_optTypeWatcher = {
+  const w = createTabsetWatcherGrad(
+    ".opt-type-tabset",
+    {
+      "Momentum": "momentum",
+      "RMSprop": "rmsprop",
+      "AdaGrad": "adagrad",
+      "Adam": "adam"
+    },
+    (val) => { mutable optType = val; }
+  );
+  invalidation.then(() => w.destroy());
+  return html`<span style="display:none"></span>`;
+}
+
+viewof optParam = {
+  if (optType === "momentum") {
+    return Inputs.range([0.5, 1.0], {
+      value: 0.771,
+      step: 0.001,
+      label: "⚡ Inertie (Momentum)"
+    });
+  } else if (optType === "rmsprop") {
+    return Inputs.range([0.8, 0.999], {
+      value: 0.9,
+      step: 0.001,
+      label: "⚡ Taux de Décroissance (β)"
+    });
+  } else if (optType === "adagrad") {
+    return Inputs.range([0.01, 0.5], {
+      value: 0.15,
+      step: 0.01,
+      label: "⚡ Taux d'Apprentissage (η)"
+    });
+  } else { // adam
+    return Inputs.range([0.5, 0.999], {
+      value: 0.9,
+      step: 0.001,
+      label: "⚡ Premier Moment (β₁)"
+    });
+  }
+}
 ```
 
 ```{ojs}
@@ -601,41 +654,41 @@ viewof triggerBtn = {
 ::::::
 :::::
 
-:::: {.grid}
+::::: {.grid}
 
-::::: {.g-col-3}
-:::::: {.card .card-metric}
+:::::: {.g-col-3}
+::::::: {.card .card-metric}
 [Coût (Loss)]{.card-metric-title}
 
 [7.9000]{#grad-3d-cost .card-metric-value .text-danger}
+:::::::
 ::::::
-:::::
 
-::::: {.g-col-3}
-:::::: {.card .card-metric}
+:::::: {.g-col-3}
+::::::: {.card .card-metric}
 [θ₁]{.card-metric-title}
 
 [2.200]{#grad-3d-theta1 .card-metric-value .text-primary}
+:::::::
 ::::::
-:::::
 
-::::: {.g-col-3}
-:::::: {.card .card-metric}
+:::::: {.g-col-3}
+::::::: {.card .card-metric}
 [θ₂]{.card-metric-title}
 
 [1.500]{#grad-3d-theta2 .card-metric-value .text-success}
+:::::::
 ::::::
-:::::
 
-::::: {.g-col-3}
-:::::: {.card .card-metric}
+:::::: {.g-col-3}
+::::::: {.card .card-metric}
 [Vitesse]{.card-metric-title}
 
 [0.00]{#grad-3d-speed .card-metric-value .text-warning}
+:::::::
 ::::::
-:::::
 
-::::
+:::::
 
 ::::
 
@@ -646,7 +699,7 @@ viewof triggerBtn = {
 import { runGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
 
 render3DDescent = {
-  runGradientSimulation(momentumVal, triggerBtn, {
+  runGradientSimulation(optType, optParam, triggerBtn, {
     containerId: "gradient-descent-container",
     metrics: {
       cost: "grad-3d-cost",
