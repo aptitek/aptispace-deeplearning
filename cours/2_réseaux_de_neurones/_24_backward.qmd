@@ -19,3 +19,266 @@ La rétropropagation est véritablement le moteur algorithmique de l'apprentissa
 * Le gradient qui vient d'être calculé agit comme une boussole : il indique la direction mathématique précise dans laquelle il faut modifier les poids pour que l'erreur diminue lors du prochain passage.
 
 * On parle alors d'un processus de "descente de pente" (descente de gradient) : le modèle affine ses paramètres pas à pas, de manière itérative, jusqu'à atteindre la convergence, c'est-à-dire le point où l'erreur est minimale [@Wiki_AlgorithmeGradient; @Ruder2016; @IEConcept2026; @Mallat2019].
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🕸️ Réseau de Neurones [Combinaison Linéaire & ReLU]{.badge .bg-success .float-end}
+::::
+
+:::: {.card-control-row .flex-column}
+
+::::: {.row}
+
+:::::: {.col-md-6}
+::: {.input-sol-blue}
+```{ojs}
+//| echo: false
+viewof trafficA = Inputs.range([0, 500],    {value: 300, step: 10,  label: "Zone A (x₁)"})
+```
+:::
+::: {.input-sol-grey}
+```{ojs}
+//| echo: false
+viewof weightA  = Inputs.range([0, 3],      {value: 1.5, step: 0.1, label: "Route A (w₁)"})
+```
+:::
+::: {.input-sol-blue}
+```{ojs}
+//| echo: false
+viewof trafficB = Inputs.range([0, 500],    {value: 150, step: 10,  label: "Zone B (x₂)"})
+```
+:::
+::: {.input-sol-grey}
+```{ojs}
+//| echo: false
+viewof weightB  = Inputs.range([0, 3],      {value: 0.5, step: 0.1, label: "Route B (w₂)"})
+```
+:::
+::: {.input-sol-magenta}
+```{ojs}
+//| echo: false
+viewof bias     = Inputs.range([-300, 300], {value: 100, step: 10,  label: "Piétons (b)"})
+```
+:::
+::::::
+
+:::::: {.col-md-6}
+::: {.input-sol-red}
+```{ojs}
+//| echo: false
+viewof bp_target = Inputs.range([20000, 50000], {value: 35000, step: 1000, label: "Objectif (€)"})
+```
+:::
+::: {.input-sol-green}
+```{ojs}
+//| echo: false
+viewof bp_lr     = Inputs.range([0.01, 0.2],    {value: 0.05,  step: 0.01,  label: "Taux (lr)"})
+```
+:::
+::::::
+
+:::::
+
+::::
+
+:::: {.panel-tabset}
+
+#### ➡️ Propagation Avant
+
+::::: {.px-3 .pt-2 .text-muted .small}
+Les entrées sont pondérées, sommées (Σ), puis filtrées par ReLU. Ajustez les paramètres dans la barre de contrôles ci-dessus.
+:::::
+
+::::: {#plot-supermarket-network .plot-wrapper}
+:::::
+
+#### 🔍 Rétropropagation
+
+::::: {.px-3 .pt-2 .text-muted .small}
+L'inspecteur remonte à l'envers : il distribue la responsabilité de l'erreur proportionnellement au trafic (règle de la chaîne).
+:::::
+
+::::: {#plot-backprop .plot-wrapper}
+:::::
+
+#### 🚧 Descente de Gradient
+
+::::: {.px-3 .pt-2 .text-muted .small}
+Le "Budget Travaux" corrige proportionnellement les poids. Modifiez le taux d'apprentissage ci-dessus pour observer l'amplitude des corrections.
+:::::
+
+::::: {#plot-gradient .plot-wrapper}
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph } from "../../assets/js/networks.js"
+
+// Forward Pass
+Z = (trafficA * weightA) + (trafficB * weightB) + bias
+isActive = Z >= 500
+revenus = isActive ? (Z - 500) * 50 : 0
+
+// Backward Pass (shared from forward pass values)
+bp_error = bp_target - revenus
+grad_w1 = (bp_error / 5000) * (trafficA / 100)
+grad_w2 = (bp_error / 5000) * (trafficB / 100)
+new_w1 = weightA + (bp_lr * grad_w1)
+new_w2 = weightB + (bp_lr * grad_w2)
+
+// Graph 1: Forward Pass (reactive via window.simState + refresh)
+renderSupermarketNetwork = {
+  const nodes = [
+    { id: "A",      label: () => `Zone A\n(${window.simState?.trafficA ?? 300})`,        fx: -160, fy: -60,  status: "input",  shape: "pill" },
+    { id: "B",      label: () => `Zone B\n(${window.simState?.trafficB ?? 150})`,        fx: -160, fy:  60,  status: "input",  shape: "pill" },
+    { id: "Bias",   label: () => `Piétons\n(b = ${window.simState?.bias ?? 100})`,       fx:    0, fy: -110, status: "bias",   shape: "circle" },
+    { id: "Neuron", label: () => `Magasin (Σ)\nZ = ${window.simState?.Z ?? 500}`,        fx:    0, fy:    0, status: "neuron", shape: "rounded rect" },
+    { id: "Output", label: () => `Revenus\n${window.simState?.revenus ?? 0} €`,          fx:  160, fy:    0,
+      status: () => window.simState?.isActive ? "active" : "inactive", shape: "diamond" }
+  ];
+
+  const links = [
+    { source: "A",      target: "Neuron", label: () => `w₁ = ${(window.simState?.weightA ?? 1.5).toFixed(1)}`, status: "flow",     width: () => 1 + (window.simState?.weightA ?? 1.5) * 2.5 },
+    { source: "B",      target: "Neuron", label: () => `w₂ = ${(window.simState?.weightB ?? 0.5).toFixed(1)}`, status: "flow",     width: () => 1 + (window.simState?.weightB ?? 0.5) * 2.5 },
+    { source: "Bias",   target: "Neuron", label: "Biais",                                                       status: "biasLink", width: () => 1 + Math.abs(window.simState?.bias ?? 100) / 100 },
+    {
+      source: "Neuron", target: "Output", label: "ReLU",
+      status: () => window.simState?.isActive ? "activeFlow" : "inactiveFlow",
+      width: () => window.simState?.isActive ? 2.5 + Math.min(6, (window.simState?.revenus ?? 0) / 2500) : 1,
+      condition: () => {
+        const active = window.simState?.isActive ?? true;
+        return { value: active, label: active ? "Z ≥ 500" : "Z < 500", labelPosition: "right" };
+      }
+    }
+  ];
+
+  const graph = createGraph("#plot-supermarket-network", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      input:       { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
+      bias:        { nodeBg: "rgba(var(--sol-magenta-rgb), 0.15)", nodeBorder: "var(--sol-magenta)", nodeText: "var(--sol-magenta)" },
+      neuron:      { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
+      active:      { nodeBg: "rgba(var(--sol-green-rgb), 0.15)",   nodeBorder: "var(--sol-green)",   nodeText: "var(--sol-green)" },
+      inactive:    { nodeBg: "rgba(var(--sol-red-rgb), 0.15)",     nodeBorder: "var(--sol-red)",     nodeText: "var(--sol-red)" },
+      flow:        { linkStroke: "var(--sol-base1)",    linkText: "var(--sol-base01)", particles: 3, particleColor: "var(--sol-blue)" },
+      biasLink:    { linkStroke: "var(--sol-magenta)",  linkText: "var(--sol-magenta)", particles: 1, particleColor: "var(--sol-magenta)", particleSpeed: 0.005 },
+      activeFlow:  { linkStroke: "var(--sol-green)",    linkText: "var(--sol-green)",   particles: 5, particleColor: "var(--sol-green)",   particleSpeed: 0.02 },
+      inactiveFlow:{ linkStroke: "var(--sol-red)",      linkText: "var(--sol-red)",     particles: 0 }
+    }
+  });
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+
+updateState = {
+  window.simState = {
+    trafficA, trafficB, weightA, weightB, bias,
+    Z, revenus, isActive,
+    bp_target, bp_error, grad_w1, grad_w2,
+    new_w1, new_w2
+  };
+  if (typeof renderSupermarketNetwork?.refresh === "function") renderSupermarketNetwork.refresh();
+  if (typeof renderBackprop?.refresh        === "function") renderBackprop.refresh();
+  if (typeof renderGradientDescent?.refresh === "function") renderGradientDescent.refresh();
+  return html``;
+}
+
+// Graph 2: Backpropagation (created once, updated via refresh)
+renderBackprop = {
+  const nodes = [
+    { id: "A",      label: () => `Zone A\n(Trafic: ${window.simState?.trafficA ?? 300})`,          fx: -160, fy: -60,  status: "auditInput",  shape: "pill" },
+    { id: "B",      label: () => `Zone B\n(Trafic: ${window.simState?.trafficB ?? 150})`,          fx: -160, fy:  60,  status: "auditInput",  shape: "pill" },
+    { id: "Bias",   label: () => `Piétons`,                                                          fx:  -70, fy: -110, status: "auditBias",   shape: "circle" },
+    { id: "Neuron", label: () => `Magasin\nCA = ${window.simState?.revenus ?? 0}€`,                 fx:    0, fy:    0, status: "auditNeuron", shape: "rounded rect" },
+    { id: "Output", label: () => `Siège Social\nObjectif: ${window.simState?.bp_target ?? 35000}€`, fx:  170, fy:    0, status: "errorNode",   shape: "square" }
+  ];
+
+  const links = [
+    { source: "Output", target: "Neuron", label: () => `Perte : ${(window.simState?.bp_error ?? 0) > 0 ? "+" : ""}${window.simState?.bp_error ?? 0} €`, status: "errorFlow" },
+    { source: "Neuron", target: "A",      label: () => `Resp. Forte (Δ: ${(window.simState?.grad_w1 ?? 0).toFixed(1)})`,                                  status: "errorFlow" },
+    { source: "Neuron", target: "B",      label: () => `Resp. Faible (Δ: ${(window.simState?.grad_w2 ?? 0).toFixed(1)})`,                                  status: "errorFlow" },
+    { source: "Neuron", target: "Bias",   label: () => `Ajust.`,                                                                                            status: "errorFlow" }
+  ];
+
+  const graph = createGraph("#plot-backprop", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      errorNode:   { nodeBg: "rgba(var(--sol-red-rgb), 0.15)",    nodeBorder: "var(--sol-red)",    nodeText: "var(--sol-red)" },
+      auditNeuron: { nodeBg: "rgba(var(--sol-orange-rgb), 0.15)", nodeBorder: "var(--sol-orange)", nodeText: "var(--sol-orange)" },
+      auditInput:  { nodeBg: "var(--sol-base2)",  nodeBorder: "var(--sol-base00)", nodeText: "var(--sol-base01)" },
+      auditBias:   { nodeBg: "var(--sol-base2)",  nodeBorder: "var(--sol-base00)", nodeText: "var(--sol-base01)" },
+      errorFlow:   { linkStroke: "var(--sol-red)", linkText: "var(--sol-red)", particles: 4, particleColor: "var(--sol-red)", particleSpeed: 0.015 }
+    }
+  });
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+
+// Graph 3: Gradient Descent
+renderGradientDescent = {
+  const nodes = [
+    { id: "A",      label: `Zone A`,            fx: -160, fy: -60,  status: "input",  shape: "pill" },
+    { id: "B",      label: `Zone B`,            fx: -160, fy:  60,  status: "input",  shape: "pill" },
+    { id: "Bias",   label: `Piétons`,           fx:  -70, fy: -110, status: "bias",   shape: "circle" },
+    { id: "Neuron", label: `Magasin`,   fx:    0, fy:    0, status: "neuron", shape: "rounded rect" },
+    { id: "Output", label: `Prêt pour\nJour 2`, fx:  160, fy:    0, status: "active", shape: "diamond" }
+  ];
+
+  const links = [
+    { source: "A",      target: "Neuron", label: () => `w₁ : ${(window.simState?.weightA ?? 1.5).toFixed(1)} ➔ ${(window.simState?.new_w1 ?? 1.5).toFixed(2)}`, status: "updateFlow" },
+    { source: "B",      target: "Neuron", label: () => `w₂ : ${(window.simState?.weightB ?? 0.5).toFixed(1)} ➔ ${(window.simState?.new_w2 ?? 0.5).toFixed(2)}`, status: "updateFlow" },
+    { source: "Bias",   target: "Neuron", label: "b mis à jour",                                        status: "biasFlow" },
+    { source: "Neuron", target: "Output", label: "Nouveau Potentiel",                                   status: "activeFlow" }
+  ];
+
+  const graph = createGraph("#plot-gradient", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      input:      { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
+      bias:       { nodeBg: "rgba(var(--sol-magenta-rgb), 0.15)", nodeBorder: "var(--sol-magenta)", nodeText: "var(--sol-magenta)" },
+      neuron:     { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
+      active:     { nodeBg: "rgba(var(--sol-green-rgb), 0.15)",   nodeBorder: "var(--sol-green)",   nodeText: "var(--sol-green)" },
+      updateFlow: { linkStroke: "var(--sol-green)",   linkText: "var(--sol-green)",   particles: 2, particleColor: "var(--sol-green)",   particleWidth: 4 },
+      activeFlow: { linkStroke: "var(--sol-base1)",   linkText: "var(--sol-base01)",  particles: 1 },
+      biasFlow:   { linkStroke: "var(--sol-magenta)", linkText: "var(--sol-magenta)", particles: 1 }
+    }
+  });
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+```
+
+```{ojs}
+//| echo: false
+// Ajustements dynamiques pour insérer les contrôles sous les onglets et au-dessus des graphes
+layoutAdjust = {
+  const card = document.querySelector('.card-window');
+  if (card) {
+    const controls = card.querySelector('.card-control-row');
+    const tabset = card.querySelector('.panel-tabset');
+    if (controls && tabset) {
+      const navTabs = tabset.querySelector('.nav-tabs');
+      const tabContent = tabset.querySelector('.tab-content');
+      if (navTabs && tabContent) {
+        tabset.insertBefore(controls, tabContent);
+      }
+    }
+  }
+  return true;
+}
+```
+

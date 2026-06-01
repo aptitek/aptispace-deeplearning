@@ -3,18 +3,110 @@
 Les fonctions d'activation agissent comme des interrupteurs ou des variateurs, dictant la dynamique de transmission du signal au sein du réseau [@DeeplyLearning_Activation; @Daniella2024]. Elles sont le cœur de la non-linéarité et se divisent en deux grandes familles.
 
 * **Les fonctions classiques et leurs limitations :**
-*
-**Sigmoïde et TanH :** Inspirées par la biologie, elles offrent une courbe caractéristique en "S". Cependant, leur défaut majeur est qu'elles saturent pour les valeurs extrêmes, ce qui paralyse l'apprentissage lors du calcul des gradients [@RisingScholars_Sigmoid].
+* **Sigmoïde et TanH :** Inspirées par la biologie, elles offrent une courbe caractéristique en "S". Cependant, leur défaut majeur est qu'elles saturent pour les valeurs extrêmes, ce qui paralyse l'apprentissage lors du calcul des gradients [@RisingScholars_Sigmoid].
 
-*
-**ReLU (Rectified Linear Unit) :** Sa règle est d'une grande simplicité (renvoyer $x$ si $x > 0$, sinon $0$), ce qui a révolutionné le domaine. Elle favorise la parcimonie en créant des activations sélectives et évite la saturation positive. Néanmoins, elle souffre du problème du "Dying ReLU", où des neurones recevant uniquement des entrées négatives s'éteignent définitivement et ne se mettent plus à jour [@Youtube_NonLinearite; @CS231n_Part1; @Ultralytics_LeakyReLU].
+* **ReLU (Rectified Linear Unit) :** Sa règle est d'une grande simplicité (renvoyer $x$ si $x > 0$, sinon $0$), ce qui a révolutionné le domaine. Elle favorise la parcimonie en créant des activations sélectives et évite la saturation positive. Néanmoins, elle souffre du problème du "Dying ReLU", où des neurones recevant uniquement des entrées négatives s'éteignent définitivement et ne se mettent plus à jour [@Youtube_NonLinearite; @CS231n_Part1; @Ultralytics_LeakyReLU].
 
-*
-**Softmax :** Utilisée majoritairement sur la couche de sortie, elle est réservée aux classifications où les classes sont mutuellement exclusives, contrairement à la Sigmoïde qui traite les étiquettes de manière indépendante. Elle transforme les scores bruts en une distribution de probabilités [@Ultralytics_Softmax].
+* **Softmax :** Utilisée majoritairement sur la couche de sortie, elle est réservée aux classifications où les classes sont mutuellement exclusives, contrairement à la Sigmoïde qui traite les étiquettes de manière indépendante. Elle transforme les scores bruts en une distribution de probabilités [@Ultralytics_Softmax].
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+⚡ Simulateur des Fonctions d'Activation Classiques
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof x_classic = Inputs.range([-5, 5], { value: 0, step: 0.1, label: "Valeur de x" })
+```
+
+::::
+
+:::: {.row .g-3 .px-3 .pb-2}
+
+::::: {.col-md-7}
+:::::: {.card .border .m-0}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+📈 Courbes d'Activation
+:::::::
+::::::: {#classic-plotly-container .card-body .p-2}
+:::::::
+::::::
+:::::
+
+::::: {.col-md-5}
+:::::: {#classic-vars-container .list-group .m-0}
+::::::
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateClassicActivation } from "../../assets/js/custom/activation.js"
+
+_updateClassic = {
+  updateClassicActivation(x_classic, {
+    chartEl: document.getElementById("classic-plotly-container"),
+    varsEl:  document.getElementById("classic-vars-container")
+  });
+}
+```
 
 * **Les fonctions modernes :**
-*
-**GELU (Gaussian Error Linear Unit) :** Devenue aujourd'hui un pilier des architectures avancées comme les Transformers, GELU est une fonction "douce" et probabiliste. Plutôt que de bloquer brutalement le signal négatif comme le ferait ReLU, elle le pondère subtilement, permettant une meilleure fluidité du gradient [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
+* **GELU (Gaussian Error Linear Unit) :** Devenue aujourd'hui un pilier des architectures avancées comme les Transformers, GELU is une fonction "douce" et probabiliste. Plutôt que de bloquer brutalement le signal négatif comme le ferait ReLU, elle le pondère subtilement, permettant une meilleure fluidité du gradient [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
 
 * **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, elle permet aux réseaux très profonds de converger sans nécessiter de couches de normalisation externes complexes [@PlanificationLR; @Stanford_CS230].
 * **Swish :** Développée pour lisser l'activation mathématique ($f(x) = x \cdot \text{sigmoid}(x)$), elle permet à de petites valeurs négatives de passer, ce qui surpasse souvent ReLU dans les architectures très profondes en évitant les coupures d'information abruptes [@Lim2026].
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+✨ Simulateur des Fonctions d'Activation Modernes
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof x_modern = Inputs.range([-3, 3], { value: 0, step: 0.1, label: "Valeur de x" })
+```
+
+::::
+
+:::: {.row .g-3 .px-3 .pb-2}
+
+::::: {.col-md-7}
+:::::: {.card .border .m-0}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+📈 Courbes d'Activation (Modernes)
+:::::::
+::::::: {#modern-plotly-container .card-body .p-2}
+:::::::
+::::::
+:::::
+
+::::: {.col-md-5}
+:::::: {#modern-vars-container .list-group .m-0}
+::::::
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateModernActivation } from "../../assets/js/custom/activation.js"
+
+_updateModern = {
+  updateModernActivation(x_modern, {
+    chartEl: document.getElementById("modern-plotly-container"),
+    varsEl:  document.getElementById("modern-vars-container")
+  });
+}
+```

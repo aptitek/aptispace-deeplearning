@@ -31,6 +31,64 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
   ctx.closePath();
 }
 
+// Private: helper to evaluate dynamic functions or static values
+function evaluate(val, ...args) {
+  return typeof val === "function" ? val(...args) : val;
+}
+
+// Private: helper to setup automatic ResizeObserver for responsiveness
+function setupResponsiveResize(graph, targetEl, options) {
+  let resizeObserver;
+  let isFirstResize = true;
+  let lastW = 0;
+  let lastH = 0;
+
+  if (!options.width || !options.height) {
+    resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width: w, height: h } = entry.contentRect;
+        if (w > 0 && h > 0 && (w !== lastW || h !== lastH)) {
+          lastW = w;
+          lastH = h;
+          if (!options.width) graph.width(w);
+          if (!options.height) graph.height(h);
+
+          if (options.zoomToFit && typeof graph.zoomToFit === "function") {
+            try { 
+              const safetyPadding = Math.max(options.zoomToFitPadding, (options.nodeRadius || 16) * 1.5);
+              graph.zoomToFit(isFirstResize ? 400 : 0, safetyPadding); 
+            }
+            catch (err) { console.warn("zoomToFit error:", err); }
+          }
+
+          isFirstResize = false;
+        }
+      }
+    });
+    resizeObserver.observe(targetEl);
+  }
+
+  // Wrap destruction to handle reference counting and disconnect ResizeObserver
+  const originalDestroy = graph.destroy;
+  graph.destroy = () => {
+    graph.__activeReferences = (graph.__activeReferences || 1) - 1;
+    if (graph.__activeReferences <= 0) {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      if (targetEl.__forceGraphInstance === graph) {
+        delete targetEl.__forceGraphInstance;
+      }
+      if (typeof originalDestroy === "function") {
+        originalDestroy.call(graph);
+      } else if (typeof graph._destructor === "function") {
+        graph._destructor();
+      }
+      targetEl.innerHTML = "";
+    }
+  };
+}
+
 /**
  * 🕸️ Force-Directed Graph (2D or 3D)
  * Creates and returns a highly customizable graph instance mounted on the given container.
@@ -43,13 +101,12 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
  * @returns {Object} The ForceGraph instance.
  */
 export function createGraph(container, graphData, optionsOr3d = {}) {
-  // 1. Resolve container target element and clear previous content (OJS safe)
+  // 1. Resolve container target element
   const targetEl = typeof container === "string" ? document.querySelector(container) : container;
   if (!targetEl) {
     console.warn("createGraph: Target container not found.", container);
     return null;
   }
-  targetEl.innerHTML = "";
 
   let is3D = false;
   let customOptions = {};
@@ -59,6 +116,34 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     is3D = !!optionsOr3d.is3D;
     customOptions = optionsOr3d;
   }
+
+  // Check if we can reuse an existing instance on this container to avoid flickering
+  if (targetEl.__forceGraphInstance) {
+    const existingGraph = targetEl.__forceGraphInstance;
+    if (existingGraph.is3D === is3D) {
+      existingGraph.__activeReferences = (existingGraph.__activeReferences || 0) + 1;
+      existingGraph.graphData(graphData);
+
+      const padding = customOptions.zoomToFitPadding !== undefined ? customOptions.zoomToFitPadding : 50;
+      if (customOptions.zoomToFit && typeof existingGraph.zoomToFit === "function") {
+        try { 
+          const safetyPadding = Math.max(padding, (customOptions.nodeRadius || 16) * 1.5);
+          existingGraph.zoomToFit(0, safetyPadding); 
+        }
+        catch (err) { console.warn("zoomToFit error:", err); }
+      }
+      return existingGraph;
+    } else {
+      if (typeof existingGraph.destroy === "function") {
+        existingGraph.__activeReferences = 0;
+        existingGraph.destroy();
+      }
+      delete targetEl.__forceGraphInstance;
+      targetEl.innerHTML = "";
+    }
+  }
+
+  targetEl.innerHTML = "";
 
   // 2. Build default options and style parameters
   const options = {
@@ -75,12 +160,12 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     enableDrag: true,
     zoomToFit: false,
     zoomToFitPadding: 50,
-    getNodeStatus: (node) => node.status || "default",
-    getLinkStatus: (link) => link.status || "default",
-    getNodeLabel: (node) => node.label || node.id,
-    getNodeShape: (node) => node.shape || options.nodeShape || "circle",
-    getLinkLabel: (link) => link.label || "",
-    getLinkCondition: (link) => link.condition,
+    getNodeStatus: (node) => evaluate(node.status, node) || "default",
+    getLinkStatus: (link) => evaluate(link.status, link) || "default",
+    getNodeLabel: (node) => evaluate(node.label, node) || evaluate(node.id, node),
+    getNodeShape: (node) => evaluate(node.shape, node) || evaluate(options.nodeShape, node) || "circle",
+    getLinkLabel: (link) => evaluate(link.label, link) || "",
+    getLinkCondition: (link) => evaluate(link.condition, link),
     onNodeClick: null,
     styles: {},
     ...customOptions
@@ -131,6 +216,10 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
         sprite.textHeight = options.fontSize || 8;
         return sprite;
       });
+    graph.is3D = true;
+    graph.__activeReferences = 1;
+    setupResponsiveResize(graph, targetEl, options);
+    targetEl.__forceGraphInstance = graph;
     return graph;
   }
 
@@ -152,16 +241,19 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     .linkColor((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return resolveColor(link.color || link.stroke || style.linkStroke, "#586e75");
+      const rawColor = evaluate(link.color, link) || evaluate(link.stroke, link) || style.linkStroke;
+      return resolveColor(rawColor, "#586e75");
     })
     .linkWidth((link) => {
       const status = options.getLinkStatus(link);
-      return status === "current" ? options.linkWidth * 1.5 : options.linkWidth;
+      const baseWidth = evaluate(link.width, link) || options.linkWidth;
+      return status === "current" ? baseWidth * 1.5 : baseWidth;
     })
     .linkDirectionalArrowColor((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return resolveColor(link.color || link.stroke || style.linkStroke, "#586e75");
+      const rawColor = evaluate(link.color, link) || evaluate(link.stroke, link) || style.linkStroke;
+      return resolveColor(rawColor, "#586e75");
     });
 
   // Dynamic flow particles based on link status
@@ -169,22 +261,26 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     .linkDirectionalParticles((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return style.particles || 0;
+      const val = evaluate(link.particles, link);
+      return val !== undefined ? val : (style.particles || 0);
     })
     .linkDirectionalParticleColor((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return resolveColor(link.color || link.particleColor || style.particleColor || style.linkStroke, "#2aa198");
+      const rawColor = evaluate(link.color, link) || evaluate(link.particleColor, link) || style.particleColor || style.linkStroke;
+      return resolveColor(rawColor, "#2aa198");
     })
     .linkDirectionalParticleWidth((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return style.particleWidth || 2;
+      const val = evaluate(link.particleWidth, link);
+      return val !== undefined ? val : (style.particleWidth || 2);
     })
     .linkDirectionalParticleSpeed((link) => {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
-      return style.particleSpeed || 0.01;
+      const val = evaluate(link.particleSpeed, link);
+      return val !== undefined ? val : (style.particleSpeed || 0.01);
     });
 
   // 4. Custom Node Drawing: nodeCanvasObject
@@ -242,15 +338,15 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     const shape = options.getNodeShape(node);
     const style = styles[status] || styles.default;
     
-    const rawBg = node.color || node.nodeBg || style.nodeBg || style.color;
-    const rawBorder = node.borderColor || node.nodeBorder || node.border || style.nodeBorder || style.border;
-    const rawText = node.textColor || node.nodeText || style.nodeText;
+    const rawBg = evaluate(node.color, node) || evaluate(node.nodeBg, node) || style.nodeBg || style.color;
+    const rawBorder = evaluate(node.borderColor, node) || evaluate(node.nodeBorder, node) || evaluate(node.border, node) || style.nodeBorder || style.border;
+    const rawText = evaluate(node.textColor, node) || evaluate(node.nodeText, node) || style.nodeText;
 
     const nodeBg = resolveColor(rawBg, "#eee8d5");
     const nodeBorder = resolveColor(rawBorder, "#586e75");
     const nodeText = resolveColor(rawText, "#657b83");
     
-    const r = options.nodeRadius;
+    const r = evaluate(options.nodeRadius, node) || 16;
 
     ctx.save();
 
@@ -288,25 +384,37 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
       const fSize = options.fontSize;
       ctx.font = `bold ${fSize}px ${options.fontFamily}`;
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      const labelPos = node.labelPosition || "center";
+      const isBottom = labelPos === "bottom";
+      ctx.textBaseline = isBottom ? "top" : "middle";
       ctx.fillStyle = nodeText;
       
-      let maxTextWidth = r * 1.8;
-      if (shape === "rect" || shape === "rounded rect") maxTextWidth = r * 2.3;
-      if (shape === "pill") maxTextWidth = r * 2.6;
-      if (shape === "oval") maxTextWidth = r * 2.2;
-      
-      let text = label;
-      
-      let textWidth = ctx.measureText(text).width;
-      if (textWidth > maxTextWidth) {
-        while (text.length > 3 && textWidth > maxTextWidth) {
-          text = text.slice(0, -1);
-          textWidth = ctx.measureText(text + "…").width;
-        }
-        text = text + "…";
+      let maxTextWidth = isBottom ? r * 5.0 : r * 1.8;
+      if (!isBottom) {
+        if (shape === "rect" || shape === "rounded rect") maxTextWidth = r * 2.3;
+        if (shape === "pill") maxTextWidth = r * 2.6;
+        if (shape === "oval") maxTextWidth = r * 2.2;
       }
-      ctx.fillText(text, node.x, node.y);
+      
+      const lines = label.split("\n");
+      const lineHeight = fSize + 2;
+      const totalHeight = lines.length * lineHeight;
+      const startY = isBottom
+        ? node.y + r + 4
+        : node.y - (totalHeight - lineHeight) / 2;
+
+      lines.forEach((lineText, index) => {
+        let text = lineText;
+        let textWidth = ctx.measureText(text).width;
+        if (textWidth > maxTextWidth) {
+          while (text.length > 3 && textWidth > maxTextWidth) {
+            text = text.slice(0, -1);
+            textWidth = ctx.measureText(text + "…").width;
+          }
+          text = text + "…";
+        }
+        ctx.fillText(text, node.x, startY + index * lineHeight);
+      });
     }
 
     ctx.restore();
@@ -315,8 +423,7 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
   // 5. Custom Link Overlay Elements (Labels & Conditional Tags) in 'after' mode
   const hasLinkOverlays = graphData.links.some(l => 
     options.getLinkLabel(l) || 
-    (options.getLinkCondition && options.getLinkCondition(l)) || 
-    l.condition !== undefined
+    evaluate(l.condition, l) !== undefined
   );
 
   if (hasLinkOverlays) {
@@ -431,12 +538,18 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
   if (options.zoomToFit) {
     setTimeout(() => {
       try {
-        graph.zoomToFit(400, options.zoomToFitPadding);
+        const safetyPadding = Math.max(options.zoomToFitPadding, options.nodeRadius * 1.5);
+        graph.zoomToFit(400, safetyPadding);
       } catch (err) {
         console.warn("zoomToFit error:", err);
       }
     }, 150);
   }
+
+  graph.is3D = false;
+  graph.__activeReferences = 1;
+  setupResponsiveResize(graph, targetEl, options);
+  targetEl.__forceGraphInstance = graph;
 
   return graph;
 }
