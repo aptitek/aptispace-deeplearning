@@ -26,3 +26,196 @@ L'apprentissage profond s'appuie sur une révolution architecturale où la topol
 
 * Dans des scénarios de classification, elle utilise des mécanismes (comme la fonction Softmax) pour transformer les signaux reçus en une distribution de probabilités dont la somme est égale à 1, garantissant ainsi un résultat clair où les catégories sont mutuellement exclusives [@Ultralytics_Softmax; @DataFranca2026].
 
+::: {.card .card-window .mb-4 .morphology-simulator}
+
+:::: {.card-header}
+🕸️ Simulateur de Flux d'Information — Réseau Multicouche (RMN)
+::::
+
+:::: {.card-control-row .flex-column}
+```{ojs}
+//| echo: false
+viewof morphologyActionButton = {
+  // États de la propagation avant de l'information
+  const states = [
+    { phase: "idle",          description: "Réseau au repos — En attente d'informations." },
+    { phase: "input",         description: "Étape 1 : Les données d'entrée (x₁, x₂) entrent dans la couche d'entrée." },
+    { phase: "hidden_prop",   description: "Étape 2 : Transmission des signaux pondérés vers la couche cachée." },
+    { phase: "hidden_active",  description: "Étape 3 : Activation des neurones de la couche cachée." },
+    { phase: "output_prop",   description: "Étape 4 : Transmission des signaux activés vers la couche de sortie." },
+    { phase: "output_active",  description: "Étape 5 : Le neurone de sortie produit la prédiction finale." }
+  ];
+
+  // Initialisation de l'état global
+  if (!window.morphologySimState) {
+    window.morphologySimState = states[0];
+  }
+
+  // Machine à états de contrôle de la simulation
+  const sm = new MorphologyStateMachine({
+    states: states,
+    interval: 1500,
+    loop: true,
+    onStateChange: (state, index) => {
+      window.morphologySimState = state;
+      if (typeof window.updateMorphologyUI === "function") {
+        window.updateMorphologyUI(state);
+      }
+      if (window.morphologyGraphInstance && typeof window.morphologyGraphInstance.refresh === "function") {
+        window.morphologyGraphInstance.refresh();
+      }
+    }
+  });
+
+  const container = html`<div class="d-flex flex-column align-items-center gap-2 w-100">
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn btn-outline-primary btn-sm btn-play">▶️ Lancer</button>
+      <button class="btn btn-outline-secondary btn-sm btn-pause">⏸️ Pause</button>
+      <button class="btn btn-outline-danger btn-sm btn-reset">🔄 Reset</button>
+    </div>
+    <div class="text-muted fst-italic text-center my-1 small description-box" style="min-height: 20px;">
+      ${window.morphologySimState?.description ?? "Réseau au repos — En attente d'informations."}
+    </div>
+  </div>`;
+
+  const playBtn = container.querySelector(".btn-play");
+  const pauseBtn = container.querySelector(".btn-pause");
+  const resetBtn = container.querySelector(".btn-reset");
+
+  const updateButtons = () => {
+    playBtn.classList.toggle("active", sm.isPlaying);
+    pauseBtn.classList.toggle("active", !sm.isPlaying && sm.currentIndex > 0);
+  };
+
+  playBtn.onclick = () => {
+    sm.start();
+    updateButtons();
+  };
+  pauseBtn.onclick = () => {
+    sm.stop();
+    updateButtons();
+  };
+  resetBtn.onclick = () => {
+    sm.reset();
+    updateButtons();
+  };
+
+  window.updateMorphologyUI = (state) => {
+    const descBox = container.querySelector(".description-box");
+    if (descBox) {
+      descBox.textContent = state.description;
+    }
+    updateButtons();
+  };
+
+  updateButtons();
+  return container;
+}
+```
+::::
+
+:::: {#plot-morphology-network .plot-wrapper}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph as createMorphologyGraph } from "../../assets/js/networks.js"
+import { StateMachine as MorphologyStateMachine } from "../../assets/js/core.js"
+
+// Rendu réactif du graphe de réseau multicouche
+renderMorphologyNetwork = {
+  // force graph nodes positions & connections
+  const nodes = [
+    { id: "x1", label: "Entrée x₁", fx: -160, fy: -50, shape: "pill",
+      status: () => (window.morphologySimState?.phase !== "idle") ? "activeInput" : "default" },
+    { id: "x2", label: "Entrée x₂", fx: -160, fy: 50, shape: "pill",
+      status: () => (window.morphologySimState?.phase !== "idle") ? "activeInput" : "default" },
+    { id: "h1", label: "Caché h₁",  fx: 0,    fy: -80, shape: "circle",
+      status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_active" || phase === "output_prop" || phase === "output_active") ? "activeHidden" : "default";
+      }
+    },
+    { id: "h2", label: "Caché h₂",  fx: 0,    fy: 0,   shape: "circle",
+      status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_active" || phase === "output_prop" || phase === "output_active") ? "activeHidden" : "default";
+      }
+    },
+    { id: "h3", label: "Caché h₃",  fx: 0,    fy: 80,  shape: "circle",
+      status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_active" || phase === "output_prop" || phase === "output_active") ? "activeHidden" : "default";
+      }
+    },
+    { id: "y",  label: "Sortie y",  fx: 160,  fy: 0,   shape: "diamond",
+      status: () => (window.morphologySimState?.phase === "output_active") ? "activeOutput" : "default" }
+  ];
+
+  const links = [
+    { source: "x1", target: "h1", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "x1", target: "h2", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "x1", target: "h3", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "x2", target: "h1", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "x2", target: "h2", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "x2", target: "h3", status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "hidden_prop" || phase === "hidden_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "h1", target: "y",  status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "output_prop" || phase === "output_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "h2", target: "y",  status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "output_prop" || phase === "output_active") ? "activeFlow" : "default";
+      }
+    },
+    { source: "h3", target: "y",  status: () => {
+        const phase = window.morphologySimState?.phase;
+        return (phase === "output_prop" || phase === "output_active") ? "activeFlow" : "default";
+      }
+    }
+  ];
+
+  const graph = createMorphologyGraph("#plot-morphology-network", { nodes, links }, {
+    nodeRadius: 22, fontSize: 9, height: 320,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 45,
+    styles: {
+      activeInput:  { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
+      activeHidden: { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
+      activeOutput: { nodeBg: "rgba(var(--sol-green-rgb), 0.15)",   nodeBorder: "var(--sol-green)",   nodeText: "var(--sol-green)" },
+      activeFlow:   { linkStroke: "var(--sol-cyan)", particles: 3, particleColor: "var(--sol-cyan)", particleSpeed: 0.025 }
+    }
+  });
+
+  window.morphologyGraphInstance = graph;
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+```
