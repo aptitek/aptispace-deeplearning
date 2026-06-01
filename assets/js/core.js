@@ -65,7 +65,8 @@ export const solarizedTemplate = {
 
 export const getThemeColor = (varName, fallback) => {
   if (typeof window !== "undefined") {
-    const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    const el = document.body || document.documentElement;
+    const value = getComputedStyle(el).getPropertyValue(varName).trim();
     if (value) {
       return resolveCssValue(value);
     }
@@ -86,7 +87,8 @@ export function resolveCssValue(value) {
   for (let i = 0; i < 3; i++) {
     if (!resolved.includes("var(")) break;
     resolved = resolved.replace(varRegex, (match, varName, fallback) => {
-      const computed = getComputedStyle(document.documentElement).getPropertyValue(varName.trim()).trim();
+      const el = document.body || document.documentElement;
+      const computed = getComputedStyle(el).getPropertyValue(varName.trim()).trim();
       return computed || (fallback ? fallback.trim() : "");
     });
   }

@@ -71,14 +71,28 @@ viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Inte
 
 :::: {#reg-details-container .card .border-start .border-4 .bg-light .mx-3 .mb-3}
 ::::: {.card-body .p-3}
-[{{title}}]{.fw-bold style="color:{{titleColor}}; display:block; margin-bottom:6px;"}
+[{{title}}]{.fw-bold .d-block .mb-2 .detail-title-color}
 
 {{body}}
 :::::
 
-:::
+::::
 
-::: {#reg-variables .d-none}
+:::: {#reg-details-data .d-none}
+
+| type    | max_lambda | color              | title                                                   | body                                                                                                                                                                                                                                                                                                                                                                         |
+| :------ | :--------- | :----------------- | :------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| lasso   | 0          | var(--sol-cyan)    | 🟡 Lasso (λ = 0) : Régression standard (Moindres Carrés) | Sans aucune pénalité, le modèle garde toutes les variables, y compris la variable de <b>bruit purement aléatoire</b> avec un coefficient de +1.5. C'est la zone propice au <strong>surapprentissage (overfitting)</strong>.                                                                                                                                                  |
+| lasso   | 34         | var(--sol-green)   | 🏆 Lasso (λ = {λ}) : Sélection intelligente active !     | La pénalité L1 a immédiatement annulé la variable de <i>Bruit</i> (w = 0) ! Elle a également fortement réduit le coefficient de la variable <i>Garage</i> (qui fait doublon avec la <i>Taille</i>). Le modèle se concentre sur les variables réellement importantes.                                                                                                         |
+| lasso   | 74         | var(--sol-yellow)  | 🟡 Lasso (λ = {λ}) : Sélection sévère                    | La pénalité élimine maintenant l'<i>Âge</i> et le <i>Garage</i>. Seules les variables fondamentales <i>Taille</i> et <i>Chambres</i> survivent dans l'équation. C'est idéal pour obtenir un modèle <strong>très parcimonieux</strong> et simple.                                                                                                                             |
+| lasso   | 100        | var(--sol-red)     | ⚠️ Lasso (λ = {λ}) : Sous-apprentissage (Underfitting)  | La pénalité L1 est trop agressive. Elle a tué quasiment tous les coefficients. Même la <i>Taille</i> (variable majeure) s'approche de zéro. Le modèle a perdu sa capacité prédictive.                                                                                                                                                                                        |
+| ridge   | 0          | var(--sol-cyan)    | 🟡 Ridge (λ = 0) : Aucune régularisation                 | Le modèle conserve tous les coefficients au maximum. La colinéarité entre <i>Taille</i> et <i>Garage</i> n'est pas traitée, ce qui gonfle artificiellement la variance du modèle.                                                                                                                                                                                            |
+| ridge   | 100        | var(--sol-green)   | 🏆 Ridge (λ = {λ}) : Réduction de la variance (L2)       | Observez la différence avec Lasso ! La pénalité Ridge <strong>ne réduit jamais aucun coefficient à exactement zéro</strong> (toutes les variables restent actives). Elle courbe et atténue les poids de manière progressive pour stabiliser le modèle face au bruit, ce qui est parfait pour gérer la <b>colinéarité (les variables corrélées)</b> sans jeter d'information. |
+| elastic | 100        | var(--sol-magenta) | 🏆 ElasticNet (λ = {λ}) : Le Compromis L1 + L2           | ElasticNet mélange le meilleur des deux mondes : il <strong>élimine</strong> complètement les variables de bruit (comme Lasso) tout en conservant les variables corrélées ensemble avec des coefficients stables (effet de groupe Ridge), évitant le choix aléatoire d'une variable par rapport à une autre.                                                                 |
+
+::::
+
+:::: {#reg-variables .d-none}
 
 | id       | name             | w0   | color              | desc                              | lassoThreshold | elasticThreshold |
 | :------- | :--------------- | :--- | :----------------- | :-------------------------------- | :------------- | :--------------- |
@@ -88,7 +102,7 @@ viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Inte
 | age      | Âge              | -4.0 | var(--sol-red)     | Impact négatif sur le prix.       | 0.48           | 0.68             |
 | bruit    | Bruit dB (Bruit) | 1.5  | var(--sol-magenta) | Bruit aléatoire sans intérêt.     | 0.12           | 0.20             |
 
-:::
+::::
 
 ```{ojs}
 //| echo: false
@@ -118,3 +132,4 @@ En annulant purement et simplement les coefficients des variables non contributi
 
 1. **Réduction des coûts opérationnels :** On peut stopper la collecte, le traitement et le stockage de flux de données qui s'avèrent finalement inutiles.
 2. **Auditabilité :** Il simplifie drastiquement l'interprétabilité du modèle pour les instances de gouvernance, rendant l'IA transparente et explicable ("*White Box*") [@oyegoke_2020_regularization].
+:::

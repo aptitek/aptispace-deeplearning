@@ -5,6 +5,7 @@ import { resolveCssValue, parseTableData, renderTemplate } from "../core.js";
 import { createMultiLine } from "../plots.js";
 
 let _variables = null;
+let _details = null;
 
 export function loadVariables(selector = "#reg-variables table") {
   const rows = parseTableData(selector);
@@ -22,6 +23,30 @@ export function loadVariables(selector = "#reg-variables table") {
 
 function getVariables() {
   return _variables ?? loadVariables();
+}
+
+export function loadDetails(selector = "#reg-details-data table") {
+  const rows = parseTableData(selector);
+  _details = {};
+  rows.forEach(r => {
+    const type = r.type;
+    if (!_details[type]) _details[type] = [];
+    _details[type].push({
+      maxLambda: parseInt(r.max_lambda),
+      color: r.color,
+      title: r.title,
+      body: r.body
+    });
+  });
+  
+  Object.keys(_details).forEach(type => {
+    _details[type].sort((a, b) => a.maxLambda - b.maxLambda);
+  });
+  return _details;
+}
+
+function getDetails() {
+  return _details ?? loadDetails();
 }
 
 export function calculateCoefficients(type, lambda) {
@@ -70,16 +95,14 @@ export function renderChart(svgEl, type, lambda, currentCoeffs) {
       line: { color: resolveCssValue(v.color), width: 2.5 },
       hoverinfo: 'skip'
     };
-  });
-
-  const dotsTrace = {
+  });  const dotsTrace = {
     x: currentCoeffs.map(() => lambda),
     y: currentCoeffs.map(c => c.w),
     mode: 'markers', type: 'scatter', name: 'Actuel',
     marker: {
       color: currentCoeffs.map(c => resolveCssValue(c.color)),
       size: 9,
-      line: { color: '#ffffff', width: 1 }
+      line: { color: resolveCssValue("var(--body-bg)"), width: 1 }
     },
     hoverinfo: 'text',
     text: currentCoeffs.map(c => `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`)
@@ -88,6 +111,9 @@ export function renderChart(svgEl, type, lambda, currentCoeffs) {
   createMultiLine(svgEl, [...lineTraces, dotsTrace], {
     xaxis: { range: [0, 100] },
     yaxis: { range: [-5, 9] },
+    layout: {
+      font: { color: resolveCssValue("var(--sol-base03)") }
+    },
     shapes: [{
       type: 'line',
       x0: lambda, y0: -5, x1: lambda, y1: 9,
@@ -104,15 +130,15 @@ function renderVars(varsEl, currentCoeffs) {
     const pct = Math.min(100, Math.max(0, (Math.abs(c.w) / 10) * 100));
 
     const item = document.createElement("div");
-    item.className = "list-group-item d-flex justify-content-between align-items-center py-2 px-3 border-0 border-bottom";
-    item.style.backgroundColor = "transparent";
+    item.className = "list-group-item bg-transparent d-flex justify-content-between align-items-center py-2 px-3 border-0 border-bottom";
+    item.style.setProperty("color", resolveCssValue("var(--sol-base03)"), "important");
 
     const labelCol = document.createElement("div");
     labelCol.className = "d-flex flex-column";
 
     const nameSpan = document.createElement("span");
     nameSpan.className = "fw-bold";
-    nameSpan.style.color = resolveCssValue(c.color);
+    nameSpan.style.setProperty("color", resolveCssValue(c.color), "important");
     nameSpan.textContent = c.name;
 
     const descSpan = document.createElement("span");
@@ -126,26 +152,22 @@ function renderVars(varsEl, currentCoeffs) {
 
     const valueSpan = document.createElement("span");
     valueSpan.className = "font-monospace fw-bold";
+    valueSpan.style.setProperty("color", resolveCssValue("var(--sol-base03)"), "important");
     valueSpan.textContent = `${c.w >= 0 ? "+" : ""}${c.w.toFixed(2)}`;
 
     const progressContainer = document.createElement("div");
-    progressContainer.style.cssText = `
-      background: var(--sol-base03);
-      border: 1px solid var(--sol-base01);
-      height: 8px;
-      width: 60px;
-      border-radius: 3px;
-      overflow: hidden;
-      display: flex;
-      ${c.w < 0 ? "justify-content: flex-end;" : "justify-content: flex-start;"}
-    `;
+    progressContainer.className = "progress my-0";
+    progressContainer.style.setProperty("width", "60px", "important");
+    progressContainer.style.setProperty("flex", "0 0 60px", "important");
+    progressContainer.style.setProperty("margin", "0", "important");
 
     const bar = document.createElement("div");
-    bar.style.cssText = `
-      height: 100%;
-      width: ${pct}%;
-      background-color: ${c.w < 0 ? "var(--sol-red)" : "var(--sol-cyan)"};
-    `;
+    bar.className = "progress-bar";
+    bar.style.width = `${pct}%`;
+    
+    const barColor = c.w < 0 ? "var(--sol-red)" : "var(--sol-cyan)";
+    bar.style.setProperty("background-color", resolveCssValue(barColor), "important");
+    
     progressContainer.appendChild(bar);
 
     const badge = document.createElement("span");
@@ -160,63 +182,24 @@ function renderVars(varsEl, currentCoeffs) {
   });
 }
 
-// Details config: data separated from DOM construction.
-// title may be a string or a function of lambda.
-const _details = {
-  lasso: [
-    { when: l => l === 0,
-      color: "var(--sol-cyan)",
-      title: "🟡 Lasso (λ = 0) : Régression standard (Moindres Carrés)",
-      body: "Sans aucune pénalité, le modèle garde toutes les variables, y compris la variable de <b>bruit purement aléatoire</b> avec un coefficient de +1.5. C'est la zone propice au <strong>surapprentissage (overfitting)</strong>."
-    },
-    { when: l => l < 35,
-      color: "var(--sol-green)",
-      title: l => `🏆 Lasso (λ = ${l}) : Sélection intelligente active !`,
-      body: "La pénalité L1 a immédiatement annulé la variable de <i>Bruit</i> (w = 0) ! Elle a également fortement réduit le coefficient de la variable <i>Garage</i> (qui fait doublon avec la <i>Taille</i>). Le modèle se concentre sur les variables réellement importantes."
-    },
-    { when: l => l < 75,
-      color: "var(--sol-yellow)",
-      title: l => `🟡 Lasso (λ = ${l}) : Sélection sévère`,
-      body: "La pénalité élimine maintenant l'<i>Âge</i> et le <i>Garage</i>. Seules les variables fondamentales <i>Taille</i> et <i>Chambres</i> survivent dans l'équation. C'est idéal pour obtenir un modèle <strong>très parcimonieux</strong> et simple."
-    },
-    { when: () => true,
-      color: "var(--sol-red)",
-      title: l => `⚠️ Lasso (λ = ${l}) : Sous-apprentissage (Underfitting)`,
-      body: "La pénalité L1 est trop agressive. Elle a tué quasiment tous les coefficients. Même la <i>Taille</i> (variable majeure) s'approche de zéro. Le modèle a perdu sa capacité prédictive."
-    }
-  ],
-  ridge: [
-    { when: l => l === 0,
-      color: "var(--sol-cyan)",
-      title: "🟡 Ridge (λ = 0) : Aucune régularisation",
-      body: "Le modèle conserve tous les coefficients au maximum. La colinéarité entre <i>Taille</i> et <i>Garage</i> n'est pas traitée, ce qui gonfle artificiellement la variance du modèle."
-    },
-    { when: () => true,
-      color: "var(--sol-green)",
-      title: l => `🏆 Ridge (λ = ${l}) : Réduction de la variance (L2)`,
-      body: "Observez la différence avec Lasso ! La pénalité Ridge <strong>ne réduit jamais aucun coefficient à exactement zéro</strong> (toutes les variables restent actives). Elle courbe et atténue les poids de manière progressive pour stabiliser le modèle face au bruit, ce qui est parfait pour gérer la <b>colinéarité (les variables corrélées)</b> sans jeter d'information."
-    }
-  ],
-  elastic: [
-    { when: () => true,
-      color: "var(--sol-magenta)",
-      title: l => `🏆 ElasticNet (λ = ${l}) : Le Compromis L1 + L2`,
-      body: "ElasticNet mélange le meilleur des deux mondes : il <strong>élimine</strong> complètement les variables de bruit (comme Lasso) tout en conservant les variables corrélées ensemble avec des coefficients stables (effet de groupe Ridge), évitant le choix aléatoire d'une variable par rapport à une autre."
-    }
-  ]
-};
-
 function renderDetails(detailsEl, type, lambda) {
-  const rules = _details[type] ?? _details.elastic;
-  const cfg = rules.find(r => r.when(lambda));
+  const allDetails = getDetails();
+  const rules = allDetails[type] ?? allDetails.elastic;
+  if (!rules) return;
+
+  const cfg = rules.find(r => lambda <= r.maxLambda);
   if (!cfg) return;
 
   const titleColor = resolveCssValue(cfg.color);
   detailsEl.style.borderLeftColor = titleColor;
 
   renderTemplate(detailsEl, {
-    title: typeof cfg.title === "function" ? cfg.title(lambda) : cfg.title,
-    titleColor,
+    title: cfg.title.replace("{λ}", lambda),
     body: cfg.body
   });
+
+  const titleEl = detailsEl.querySelector('.detail-title-color');
+  if (titleEl) {
+    titleEl.style.color = titleColor;
+  }
 }
