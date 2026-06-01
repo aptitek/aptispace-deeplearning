@@ -1,7 +1,7 @@
 // ==========================================
 // plots.js - Composants Graphiques Plotly Standardisés
 // ==========================================
-import { getPlotlyTheme } from "./core.js";
+import { getPlotlyTheme, resolveCssValue } from "./core.js";
 
 /**
  * 📈 Scatter Plot (Nuage de points)
@@ -282,4 +282,58 @@ export function createMultiLine(divId, traces, options = {}) {
     el._resizeObserver = new ResizeObserver(() => Plotly.Plots.resize(el));
     el._resizeObserver.observe(el);
   }
+}
+
+/**
+ * 📈 Render a standard interactive simulator chart with lines, current dots, and a vertical slider indicator line.
+ *
+ * @param {string|HTMLElement} divId   Container id or element.
+ * @param {Array}  lineData            Array of line configurations: { x, y, name, color }.
+ * @param {Array}  activeDots          Array of dot configurations: { x, y, color, text }.
+ * @param {number} currentX            Current slider value.
+ * @param {Object} options             Plot configuration: { xRange, yRange, layoutOverrides }.
+ */
+export function createSimulatorPlot(divId, lineData, activeDots, currentX, options = {}) {
+  const { xRange, yRange } = options;
+
+  const lineTraces = lineData.map(line => ({
+    x: line.x,
+    y: line.y,
+    mode: 'lines',
+    type: 'scatter',
+    name: line.name,
+    line: { color: resolveCssValue(line.color), width: 2.5 },
+    hoverinfo: 'skip'
+  }));
+
+  const dotsTrace = {
+    x: activeDots.map(d => d.x),
+    y: activeDots.map(d => d.y),
+    mode: 'markers',
+    type: 'scatter',
+    name: 'Actuel',
+    marker: {
+      color: activeDots.map(d => resolveCssValue(d.color)),
+      size: 9,
+      line: { color: resolveCssValue("var(--body-bg)"), width: 1 }
+    },
+    hoverinfo: 'text',
+    text: activeDots.map(d => d.text)
+  };
+
+  const shapes = [{
+    type: 'line',
+    x0: currentX, y0: yRange[0], x1: currentX, y1: yRange[1],
+    line: { color: resolveCssValue('var(--sol-magenta, #d33682)'), width: 1.5, dash: 'dash' }
+  }];
+
+  createMultiLine(divId, [...lineTraces, dotsTrace], {
+    xaxis: { range: xRange },
+    yaxis: { range: yRange },
+    layout: {
+      font: { color: resolveCssValue("var(--sol-base03)") }
+    },
+    shapes,
+    ...options.layoutOverrides
+  });
 }

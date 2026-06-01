@@ -25,3 +25,4 @@ L'apprentissage profond s'appuie sur une révolution architecturale où la topol
 * C'est l'ultime étape du réseau, celle qui est chargée de produire la réponse brute ou l'inférence finale.
 
 * Dans des scénarios de classification, elle utilise des mécanismes (comme la fonction Softmax) pour transformer les signaux reçus en une distribution de probabilités dont la somme est égale à 1, garantissant ainsi un résultat clair où les catégories sont mutuellement exclusives [@Ultralytics_Softmax; @DataFranca2026].
+

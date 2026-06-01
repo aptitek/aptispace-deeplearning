@@ -2,7 +2,7 @@
 // regularization.js — Regularization simulation using Plotly
 // =====================================================================
 import { resolveCssValue, parseTableData, renderTemplate } from "../core.js";
-import { createMultiLine } from "../plots.js";
+import { createSimulatorPlot } from "../plots.js";
 
 let _variables = null;
 let _details = null;
@@ -82,7 +82,7 @@ export function updateRegularization(type, lambda, containers = {}) {
 export function renderChart(svgEl, type, lambda, currentCoeffs) {
   const variables = getVariables();
 
-  const lineTraces = variables.map(v => {
+  const lineData = variables.map(v => {
     const xs = [], ys = [];
     for (let l = 0; l <= 100; l += 5) {
       const coeffs = calculateCoefficients(type, l);
@@ -90,35 +90,23 @@ export function renderChart(svgEl, type, lambda, currentCoeffs) {
       ys.push(coeffs.find(c => c.id === v.id).w);
     }
     return {
-      x: xs, y: ys,
-      mode: 'lines', type: 'scatter', name: v.name,
-      line: { color: resolveCssValue(v.color), width: 2.5 },
-      hoverinfo: 'skip'
+      x: xs,
+      y: ys,
+      name: v.name,
+      color: v.color
     };
-  });  const dotsTrace = {
-    x: currentCoeffs.map(() => lambda),
-    y: currentCoeffs.map(c => c.w),
-    mode: 'markers', type: 'scatter', name: 'Actuel',
-    marker: {
-      color: currentCoeffs.map(c => resolveCssValue(c.color)),
-      size: 9,
-      line: { color: resolveCssValue("var(--body-bg)"), width: 1 }
-    },
-    hoverinfo: 'text',
-    text: currentCoeffs.map(c => `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`)
-  };
+  });
 
-  createMultiLine(svgEl, [...lineTraces, dotsTrace], {
-    xaxis: { range: [0, 100] },
-    yaxis: { range: [-5, 9] },
-    layout: {
-      font: { color: resolveCssValue("var(--sol-base03)") }
-    },
-    shapes: [{
-      type: 'line',
-      x0: lambda, y0: -5, x1: lambda, y1: 9,
-      line: { color: resolveCssValue('var(--sol-magenta, #d33682)'), width: 1.5, dash: 'dash' }
-    }]
+  const activeDots = currentCoeffs.map(c => ({
+    x: lambda,
+    y: c.w,
+    color: c.color,
+    text: `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`
+  }));
+
+  createSimulatorPlot(svgEl, lineData, activeDots, lambda, {
+    xRange: [0, 100],
+    yRange: [-5, 9]
   });
 }
 

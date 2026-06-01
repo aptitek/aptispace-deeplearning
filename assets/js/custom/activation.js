@@ -2,7 +2,7 @@
 // activation.js — Activation function calculations & Plotly rendering
 // =====================================================================
 import { resolveCssValue } from "../core.js";
-import { createMultiLine } from "../plots.js";
+import { createSimulatorPlot } from "../plots.js";
 
 // Math helper functions
 export const sigmoid = (x) => 1 / (1 + Math.exp(-x));
@@ -31,6 +31,7 @@ export function updateClassicActivation(xVal, containers = {}) {
     {
       id: "sigmoid",
       name: "Sigmoïde",
+      fn: sigmoid,
       value: sigmoid(currentX),
       formula: "f(x) = 1 / (1 + e⁻ˣ)",
       color: "var(--sol-red)",
@@ -41,6 +42,7 @@ export function updateClassicActivation(xVal, containers = {}) {
     {
       id: "tanh",
       name: "Tanh",
+      fn: tanh,
       value: tanh(currentX),
       formula: "f(x) = tanh(x)",
       color: "var(--sol-green)",
@@ -51,6 +53,7 @@ export function updateClassicActivation(xVal, containers = {}) {
     {
       id: "relu",
       name: "ReLU",
+      fn: relu,
       value: relu(currentX),
       formula: "f(x) = max(0, x)",
       color: "var(--sol-blue)",
@@ -61,6 +64,7 @@ export function updateClassicActivation(xVal, containers = {}) {
     {
       id: "softmax",
       name: "Softmax",
+      fn: softmax,
       value: softmax(currentX),
       formula: "f(x) = eˣ / Σ e^(x_i)",
       color: "var(--sol-magenta)",
@@ -91,6 +95,7 @@ export function updateModernActivation(xVal, containers = {}) {
     {
       id: "swish",
       name: "Swish",
+      fn: swish,
       value: swish(currentX),
       formula: "f(x) = x · sigmoid(x)",
       color: "var(--sol-orange)",
@@ -101,6 +106,7 @@ export function updateModernActivation(xVal, containers = {}) {
     {
       id: "gelu",
       name: "GELU",
+      fn: gelu,
       value: gelu(currentX),
       formula: "f(x) = x · Φ(x)",
       color: "var(--sol-magenta)",
@@ -111,6 +117,7 @@ export function updateModernActivation(xVal, containers = {}) {
     {
       id: "selu",
       name: "SELU",
+      fn: selu,
       value: selu(currentX),
       formula: "f(x) = λ·x (x > 0) else λ·α·(eˣ - 1)",
       color: "var(--sol-red)",
@@ -121,8 +128,8 @@ export function updateModernActivation(xVal, containers = {}) {
   ];
 
   renderChart(chartEl, items, currentX, {
-    xRange: [-3, 3],
-    yRange: [-2, 0.7]
+    xRange: [-2, 2],
+    yRange: [-2, 2]
   });
 
   renderList(varsEl, items);
@@ -134,74 +141,37 @@ export function updateModernActivation(xVal, containers = {}) {
 function renderChart(chartEl, items, currentX, options = {}) {
   const { xRange, yRange } = options;
 
-  const lineTraces = items.map(item => {
+  const lineData = items.map(item => {
     const xs = [];
     const ys = [];
     const step = 0.1;
     for (let x = xRange[0]; x <= xRange[1]; x += step) {
       xs.push(x);
-      let y = 0;
-      if (item.id === "sigmoid") y = sigmoid(x);
-      else if (item.id === "tanh") y = tanh(x);
-      else if (item.id === "relu") y = relu(x);
-      else if (item.id === "softmax") y = softmax(x);
-      else if (item.id === "swish") y = swish(x);
-      else if (item.id === "gelu") y = gelu(x);
-      else if (item.id === "selu") y = selu(x);
-      ys.push(y);
+      ys.push(item.fn(x));
     }
-
     return {
       x: xs,
       y: ys,
-      mode: 'lines',
-      type: 'scatter',
       name: item.name,
-      line: { color: resolveCssValue(item.color), width: 2.5 },
-      hoverinfo: 'skip'
+      color: item.color
     };
   });
 
-  const dotXs = [];
-  const dotYs = [];
-  const dotColors = [];
-  const dotTexts = [];
-
+  const activeDots = [];
   items.forEach(item => {
     if (currentX >= xRange[0] && currentX <= xRange[1]) {
-      dotXs.push(currentX);
-      dotYs.push(item.value);
-      dotColors.push(resolveCssValue(item.color));
-      dotTexts.push(`${item.name}: ${item.value.toFixed(3)}`);
+      activeDots.push({
+        x: currentX,
+        y: item.value,
+        color: item.color,
+        text: `${item.name}: ${item.value.toFixed(3)}`
+      });
     }
   });
 
-  const dotsTrace = {
-    x: dotXs,
-    y: dotYs,
-    mode: 'markers',
-    type: 'scatter',
-    name: 'Actuel',
-    marker: {
-      color: dotColors,
-      size: 9,
-      line: { color: resolveCssValue("var(--body-bg)"), width: 1 }
-    },
-    hoverinfo: 'text',
-    text: dotTexts
-  };
-
-  createMultiLine(chartEl, [...lineTraces, dotsTrace], {
-    xaxis: { range: xRange },
-    yaxis: { range: yRange },
-    layout: {
-      font: { color: resolveCssValue("var(--sol-base03)") }
-    },
-    shapes: [{
-      type: 'line',
-      x0: currentX, y0: yRange[0], x1: currentX, y1: yRange[1],
-      line: { color: resolveCssValue('var(--sol-magenta, #d33682)'), width: 1.5, dash: 'dash' }
-    }]
+  createSimulatorPlot(chartEl, lineData, activeDots, currentX, {
+    xRange,
+    yRange
   });
 }
 

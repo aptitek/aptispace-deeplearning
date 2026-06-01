@@ -22,7 +22,7 @@ La résolution des problèmes de gradient a été un tournant majeur qui a permi
 
 Ces différentes innovations sont ce qui a permis de transformer des modèles purement théoriques en véritables outils de production, capables aujourd'hui de révolutionner le traitement du langage naturel ou des domaines complexes comme la planification urbaine à l'échelle planétaire [@Socher2018; @Wang2023; @AgilityEffect2025; @BaraudSerfaty2019; @Daoudi2018].
 
-```mermaid
+``` {mermaid}
 graph LR
     %% Thème Solarized
     classDef bg fill:#002b36,stroke:#586e75,stroke-width:2px,color:#839496;
