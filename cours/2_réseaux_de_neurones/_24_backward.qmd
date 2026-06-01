@@ -31,51 +31,51 @@ La rétropropagation est véritablement le moteur algorithmique de l'apprentissa
 ::::: {.row}
 
 :::::: {.col-md-6}
-::: {.input-sol-blue}
+::::::: {.input-sol-blue}
 ```{ojs}
 //| echo: false
 viewof trafficA = Inputs.range([0, 500],    {value: 300, step: 10,  label: "Zone A (x₁)"})
 ```
-:::
-::: {.input-sol-grey}
+:::::::
+::::::: {.input-sol-grey}
 ```{ojs}
 //| echo: false
 viewof weightA  = Inputs.range([0, 3],      {value: 1.5, step: 0.1, label: "Route A (w₁)"})
 ```
-:::
-::: {.input-sol-blue}
+:::::::
+::::::: {.input-sol-blue}
 ```{ojs}
 //| echo: false
 viewof trafficB = Inputs.range([0, 500],    {value: 150, step: 10,  label: "Zone B (x₂)"})
 ```
-:::
-::: {.input-sol-grey}
+:::::::
+::::::: {.input-sol-grey}
 ```{ojs}
 //| echo: false
 viewof weightB  = Inputs.range([0, 3],      {value: 0.5, step: 0.1, label: "Route B (w₂)"})
 ```
-:::
-::: {.input-sol-magenta}
+:::::::
+::::::: {.input-sol-magenta}
 ```{ojs}
 //| echo: false
 viewof bias     = Inputs.range([-300, 300], {value: 100, step: 10,  label: "Piétons (b)"})
 ```
-:::
+:::::::
 ::::::
 
 :::::: {.col-md-6}
-::: {.input-sol-red}
+::::::: {.input-sol-red}
 ```{ojs}
 //| echo: false
 viewof bp_target = Inputs.range([20000, 50000], {value: 35000, step: 1000, label: "Objectif (€)"})
 ```
-:::
-::: {.input-sol-green}
+:::::::
+::::::: {.input-sol-green}
 ```{ojs}
 //| echo: false
 viewof bp_lr     = Inputs.range([0.01, 0.2],    {value: 0.05,  step: 0.01,  label: "Taux (lr)"})
 ```
-:::
+:::::::
 ::::::
 
 :::::
@@ -281,4 +281,3 @@ layoutAdjust = {
   return true;
 }
 ```
-

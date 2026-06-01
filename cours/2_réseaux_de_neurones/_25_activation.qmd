@@ -9,7 +9,7 @@ Les fonctions d'activation agissent comme des interrupteurs ou des variateurs, d
 
 * **Softmax :** Utilisée majoritairement sur la couche de sortie, elle est réservée aux classifications où les classes sont mutuellement exclusives, contrairement à la Sigmoïde qui traite les étiquettes de manière indépendante. Elle transforme les scores bruts en une distribution de probabilités [@Ultralytics_Softmax].
 
-::: {.card .card-window .mb-4}
+::: {.card .card-window .mb-4 .activation-simulator}
 
 :::: {.card-header}
 ⚡ Simulateur des Fonctions d'Activation Classiques
@@ -31,7 +31,7 @@ viewof x_classic = Inputs.range([-5, 5], { value: 0, step: 0.1, label: "Valeur d
 ::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
 📈 Courbes d'Activation
 :::::::
-::::::: {#classic-plotly-container .card-body .p-2}
+::::::: {#classic-plotly-container .card-body .p-2 .activation-chart-wrapper}
 :::::::
 ::::::
 :::::
@@ -63,7 +63,7 @@ _updateClassic = {
 * **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, elle permet aux réseaux très profonds de converger sans nécessiter de couches de normalisation externes complexes [@PlanificationLR; @Stanford_CS230].
 * **Swish :** Développée pour lisser l'activation mathématique ($f(x) = x \cdot \text{sigmoid}(x)$), elle permet à de petites valeurs négatives de passer, ce qui surpasse souvent ReLU dans les architectures très profondes en évitant les coupures d'information abruptes [@Lim2026].
 
-::: {.card .card-window .mb-4}
+::: {.card .card-window .mb-4 .activation-simulator}
 
 :::: {.card-header}
 ✨ Simulateur des Fonctions d'Activation Modernes
@@ -85,7 +85,7 @@ viewof x_modern = Inputs.range([-3, 3], { value: 0, step: 0.1, label: "Valeur de
 ::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
 📈 Courbes d'Activation (Modernes)
 :::::::
-::::::: {#modern-plotly-container .card-body .p-2}
+::::::: {#modern-plotly-container .card-body .p-2 .activation-chart-wrapper}
 :::::::
 ::::::
 :::::
