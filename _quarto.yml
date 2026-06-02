@@ -52,6 +52,9 @@ book:
       chapters:
         - cours/4_cnn/index.qmd
     # DYNAMIC_CHAPTERS_END
+    - part: "📝 Projet"
+      chapters:
+        - project/index.qmd
     - part: "📚 Annexes"
       chapters:
         - glossaire.qmd

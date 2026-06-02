@@ -36,6 +36,75 @@ function evaluate(val, ...args) {
   return typeof val === "function" ? val(...args) : val;
 }
 
+// Private: helper to dynamically calculate the maximum node radius in the graph
+function getMaxNodeRadius(graph, options) {
+  const data = typeof graph.graphData === "function" ? graph.graphData() : null;
+  if (!data || !data.nodes || data.nodes.length === 0) {
+    const rVal = typeof options.nodeRadius === "function" ? 16 : (options.nodeRadius || 16);
+    return rVal;
+  }
+  let maxR = 16;
+  for (const node of data.nodes) {
+    let r = 16;
+    if (typeof options.nodeRadius === "function") {
+      r = options.nodeRadius(node);
+    } else if (options.nodeRadius !== undefined) {
+      r = options.nodeRadius;
+    }
+    if (node.nodeRadius !== undefined) {
+      r = node.nodeRadius;
+    }
+    if (r > maxR) maxR = r;
+  }
+  return maxR;
+}
+
+// Private: helper to synchronously zoom the graph to fit the specified nodes
+function zoomToFitSync(graph, options, transitionMs = 0) {
+  try {
+    const data = typeof graph.graphData === "function" ? graph.graphData() : null;
+    if (!data || !data.nodes || data.nodes.length === 0) return;
+
+    const w = graph.width();
+    const h = graph.height();
+    if (w <= 0 || h <= 0) return;
+
+    const maxR = getMaxNodeRadius(graph, options);
+    const padding = options.zoomToFitPadding !== undefined ? options.zoomToFitPadding : 50;
+    const safetyPadding = Math.max(padding, maxR * 1.5);
+
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    data.nodes.forEach(n => {
+      const nx = n.fx !== undefined ? n.fx : (n.x !== undefined ? n.x : 0);
+      const ny = n.fy !== undefined ? n.fy : (n.y !== undefined ? n.y : 0);
+      const nr = n.nodeRadius !== undefined ? n.nodeRadius : (typeof options.nodeRadius === "function" ? options.nodeRadius(n) : (options.nodeRadius || 16));
+      
+      if (nx - nr < minX) minX = nx - nr;
+      if (nx + nr > maxX) maxX = nx + nr;
+      if (ny - nr < minY) minY = ny - nr;
+      if (ny + nr > maxY) maxY = ny + nr;
+    });
+
+    const contentW = maxX - minX;
+    const contentH = maxY - minY;
+
+    if (contentW > 0 && contentH > 0) {
+      const scaleX = (w - 2 * safetyPadding) / contentW;
+      const scaleY = (h - 2 * safetyPadding) / contentH;
+      const k = Math.min(scaleX, scaleY);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+
+      graph.zoom(k, transitionMs);
+      graph.centerAt(cx, cy, transitionMs);
+    }
+  } catch (err) {
+    console.warn("zoomToFitSync error:", err);
+  }
+}
+
 // Private: helper to setup automatic ResizeObserver for responsiveness
 function setupResponsiveResize(graph, targetEl, options) {
   let resizeObserver;
@@ -53,12 +122,8 @@ function setupResponsiveResize(graph, targetEl, options) {
           if (!options.width) graph.width(w);
           if (!options.height) graph.height(h);
 
-          if (options.zoomToFit && typeof graph.zoomToFit === "function") {
-            try { 
-              const safetyPadding = Math.max(options.zoomToFitPadding, (options.nodeRadius || 16) * 1.5);
-              graph.zoomToFit(isFirstResize ? 400 : 0, safetyPadding); 
-            }
-            catch (err) { console.warn("zoomToFit error:", err); }
+          if (options.zoomToFit) {
+            zoomToFitSync(graph, options, isFirstResize ? 400 : 0);
           }
 
           isFirstResize = false;
@@ -124,13 +189,8 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
       existingGraph.__activeReferences = (existingGraph.__activeReferences || 0) + 1;
       existingGraph.graphData(graphData);
 
-      const padding = customOptions.zoomToFitPadding !== undefined ? customOptions.zoomToFitPadding : 50;
-      if (customOptions.zoomToFit && typeof existingGraph.zoomToFit === "function") {
-        try { 
-          const safetyPadding = Math.max(padding, (customOptions.nodeRadius || 16) * 1.5);
-          existingGraph.zoomToFit(0, safetyPadding); 
-        }
-        catch (err) { console.warn("zoomToFit error:", err); }
+      if (customOptions.zoomToFit) {
+        zoomToFitSync(existingGraph, customOptions, 0);
       }
       return existingGraph;
     } else {
@@ -298,6 +358,13 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
         ctx.rect(x - w / 2, y - h / 2, w, h);
         break;
       }
+      case "sheet": {
+        const w = radius * 2.0;
+        const h = radius * 2.8;
+        const cr = 4;
+        drawRoundedRect(ctx, x - w / 2, y - h / 2, w, h, cr);
+        break;
+      }
       case "rounded rect": {
         const w = radius * 2.6;
         const h = radius * 1.5;
@@ -364,12 +431,16 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
 
     // Opaque background backing path to hide the link lines underneath
     defineNodePath(ctx, node.x, node.y, shape, r, 1.0);
-    ctx.fillStyle = resolveColor("var(--sol-base3)", "#fdf6e3");
+    if (shape === "sheet") {
+      ctx.fillStyle = "rgba(253, 246, 227, 0.25)";
+    } else {
+      ctx.fillStyle = resolveColor("var(--sol-base3)", "#fdf6e3");
+    }
     ctx.fill();
 
     // Main shape Background
     defineNodePath(ctx, node.x, node.y, shape, r, 1.0);
-    ctx.fillStyle = nodeBg;
+    ctx.fillStyle = shape === "sheet" ? utils.rgba(nodeBg, 0.25) : nodeBg;
     ctx.fill();
 
     // Node Border Outline
@@ -378,30 +449,110 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     ctx.strokeStyle = nodeBorder;
     ctx.stroke();
 
+    // Ruled lines and header for sheet shape (Calendar block)
+    if (shape === "sheet") {
+      const w = r * 2.0;
+      const h = r * 2.8;
+      const headerH = h * 0.22;
+      const hY = node.y - h/2;
+
+      // Draw Red Header Bar
+      ctx.save();
+      ctx.fillStyle = "rgba(224, 76, 76, 0.9)"; // Warm calendar red
+      ctx.beginPath();
+      ctx.moveTo(node.x - w/2 + 4, hY);
+      ctx.lineTo(node.x + w/2 - 4, hY);
+      ctx.quadraticCurveTo(node.x + w/2, hY, node.x + w/2, hY + 4);
+      ctx.lineTo(node.x + w/2, hY + headerH);
+      ctx.lineTo(node.x - w/2, hY + headerH);
+      ctx.lineTo(node.x - w/2, hY + 4);
+      ctx.quadraticCurveTo(node.x - w/2, hY, node.x - w/2 + 4, hY);
+      ctx.closePath();
+      ctx.fill();
+
+      // Ruled notebook lines in the calendar body
+      ctx.strokeStyle = utils.rgba(nodeBorder, 0.12);
+      ctx.lineWidth = 1 / Math.min(1, globalScale);
+      const bodyH = h - headerH;
+      const step = bodyH / 5;
+      const startLineY = node.y - h/2 + headerH;
+      for (let i = 1; i <= 4; i++) {
+        ctx.beginPath();
+        ctx.moveTo(node.x - w * 0.42, startLineY + i * step);
+        ctx.lineTo(node.x + w * 0.42, startLineY + i * step);
+        ctx.stroke();
+      }
+
+      // Draw two spiral ring binder loops
+      ctx.strokeStyle = resolveColor("var(--sol-base01)", "#586e75");
+      ctx.lineWidth = 2;
+      const ringOffset = w * 0.25;
+
+      // Left ring
+      ctx.beginPath();
+      ctx.ellipse(node.x - ringOffset, hY, 2.5, 6, 0, 0, 2 * Math.PI);
+      ctx.fillStyle = resolveColor("var(--sol-base2)", "#eee8d5");
+      ctx.fill();
+      ctx.stroke();
+
+      // Right ring
+      ctx.beginPath();
+      ctx.ellipse(node.x + ringOffset, hY, 2.5, 6, 0, 0, 2 * Math.PI);
+      ctx.fillStyle = resolveColor("var(--sol-base2)", "#eee8d5");
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
+
     // Text Label inside Node
     const label = options.getNodeLabel(node);
     if (label) {
-      const fSize = options.fontSize;
-      ctx.font = `bold ${fSize}px ${options.fontFamily}`;
+      const baseFontSize = options.fontSize;
       ctx.textAlign = "center";
       const labelPos = node.labelPosition || "center";
       const isBottom = labelPos === "bottom";
-      ctx.textBaseline = isBottom ? "top" : "middle";
-      ctx.fillStyle = nodeText;
+      const isTop = labelPos === "top";
+      ctx.fillStyle = shape === "sheet" ? "#fdf6e3" : nodeText;
       
-      let maxTextWidth = isBottom ? r * 5.0 : r * 1.8;
+      let maxTextWidth = isBottom ? r * 5.0 : r * 1.85;
       if (!isBottom) {
         if (shape === "rect" || shape === "rounded rect") maxTextWidth = r * 2.3;
         if (shape === "pill") maxTextWidth = r * 2.6;
         if (shape === "oval") maxTextWidth = r * 2.2;
+        if (shape === "sheet") maxTextWidth = r * 1.85;
+        if (shape === "circle" || shape === "diamond") maxTextWidth = r * 1.95;
       }
       
       const lines = label.split("\n");
-      const lineHeight = fSize + 2;
+
+      // Dynamically calculate font size to fit all text lines inside the node boundaries
+      let currentFontSize = baseFontSize;
+      for (let f = baseFontSize; f >= 4.0; f -= 0.5) {
+        currentFontSize = f;
+        ctx.font = `bold ${currentFontSize}px ${options.fontFamily}`;
+        let allLinesFit = true;
+        for (const lineText of lines) {
+          if (ctx.measureText(lineText).width > maxTextWidth) {
+            allLinesFit = false;
+            break;
+          }
+        }
+        if (allLinesFit) break;
+      }
+
+      ctx.font = `bold ${currentFontSize}px ${options.fontFamily}`;
+      ctx.textBaseline = isBottom ? "top" : (isTop || shape === "sheet" ? "top" : "middle");
+      const lineHeight = currentFontSize + 2;
       const totalHeight = lines.length * lineHeight;
-      const startY = isBottom
-        ? node.y + r + 4
-        : node.y - (totalHeight - lineHeight) / 2;
+      
+      let startY;
+      if (isBottom) {
+        startY = node.y + r + 4;
+      } else if (isTop || shape === "sheet") {
+        startY = node.y - r * 1.25;
+      } else {
+        startY = node.y - (totalHeight - lineHeight) / 2;
+      }
 
       lines.forEach((lineText, index) => {
         let text = lineText;
@@ -551,16 +702,11 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     });
   }
 
-  // Zoom to Fit
   if (options.zoomToFit) {
+    zoomToFitSync(graph, options, 0);
     setTimeout(() => {
-      try {
-        const safetyPadding = Math.max(options.zoomToFitPadding, options.nodeRadius * 1.5);
-        graph.zoomToFit(400, safetyPadding);
-      } catch (err) {
-        console.warn("zoomToFit error:", err);
-      }
-    }, 150);
+      zoomToFitSync(graph, options, 400);
+    }, 100);
   }
 
   graph.is3D = false;

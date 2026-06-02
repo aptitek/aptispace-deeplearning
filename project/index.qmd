@@ -1,0 +1,53 @@
+---
+title: "📝 Projet"
+number-sections: false
+---
+
+## 🚫 Critères Éliminatoires Communs (Go / No-Go)
+
+::: {.callout-warning}
+## Attention
+Si l'une des cases ci-dessous est cochée "NON", le projet n'est pas corrigé (Note = 0 ou rattrapage).
+:::
+
+| **Critère**                                                             | **OUI** | **NON** |
+| :---------------------------------------------------------------------- | :-----: | :-----: |
+| Présence du fichier `README.md` à la racine                             |    ☐    |    ☐    |
+| Noms et Prénoms clairs dans l'en-tête du README                         |    ☐    |    ☐    |
+| Le Dataset **n'est pas** versionné/inclus dans le dépôt Git             |    ☐    |    ☐    |
+| Le code métier est modulaire (fichiers `.py` importés dans le `.ipynb`) |    ☐    |    ☐    |
+
+## 📊 NOTE 1 : Data Science & Baseline ML ( / 20 )
+
+*Cette note évalue votre capacité à préparer le terrain, comprendre vos données et établir une base de référence solide.*
+
+| **Jalon / Critère**             | **Détail des Attentes**                                                                                                                            | **Points** |
+| :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- | :--------: |
+| **📍 Jalon 1 : Data**            | Choix du dataset pertinent et bien justifié selon les contraintes du sujet.                                                                        |  **/ 2**   |
+| **📍 Jalon 2 : EDA**             | Nettoyage robuste, statistiques descriptives pertinentes, détection des anomalies, augmentation de données si applicable. Visualisations soignées. |  **/ 5**   |
+| **📍 Jalon 3 : ML Classique**    | Baseline ML fonctionnelle. Utilisation et compréhension démontrée de la régularisation (Ridge, Lasso, ElasticNet).                                 |  **/ 5**   |
+| **📍 Jalon 4 : Éval ML**         | Évaluation correcte du modèle classique. Analyse approfondie du compromis Biais/Variance (surapprentissage/sous-apprentissage).                    |  **/ 5**   |
+| **🌐 Points Globaux (Partie 1)** | Respect des labels Git (`data`, `eda`, `ml`, `eval-ml`). Propreté du code d'exploration et clarté des commentaires dans le notebook.               |  **/ 3**   |
+
+## 📊 NOTE 2 : Deep Learning Fondamental ( / 20 )
+
+*Cette note sanctionne la maîtrise des architectures de base, des mathématiques sous-jacentes (optimisation) et la rigueur de la démarche comparative.*
+
+| **Jalon / Critère**             | **Détail des Attentes**                                                                                                                                                              | **Points** |
+| :------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------: |
+| **📍 Jalon 5 : Architecture**    | Conception du réseau claire. Justification solide du choix entre MLP, CNN (spatialité, filtres) ou RNN (séquences).                                                                  |  **/ 6**   |
+| **📍 Jalon 6 : Optimisation**    | Recherche des hyperparamètres pertinentes. Choix justifié de l'optimiseur. Stratégie explicite pour contrer le Vanishing/Exploding Gradient (fonctions d'activation, normalisation). |  **/ 6**   |
+| **📍 Jalon 7 : Comparaison**     | Analyse critique et argumentée comparant les performances, limites et temps de calcul entre la baseline ML et l'approche DL.                                                         |  **/ 5**   |
+| **🌐 Points Globaux (Partie 2)** | Respect des labels Git (`dl`, `opti-dl`, `eval-dl`). Modularité du code (architecture des réseaux placée dans des fichiers `.py` externes).                                          |  **/ 3**   |
+
+## 📊 NOTE 3 : Deep Learning Avancé & Ingénierie ( / 20 )
+
+*Cette dernière note valorise votre curiosité technique (état de l'art), vos compétences en MLOps/déploiement et la qualité de votre rendu final.*
+
+| **Jalon / Critère**         | **Détail des Attentes**                                                                                                                            |    **Points**   |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------: |
+| **📍 Jalon 8 : DL Avancé**   | Choix et implémentation réussie d'une technologie de pointe (GAN, VAE, Transformateur, GNN, Transfer Learning). Justification du besoin technique. |     **/ 6**     |
+| **📍 Jalon 9 : Déploiement** | Dashboard interactif (Streamlit/Dash) ergonomique et fonctionnel pour exploiter le modèle.                                                         |     **/ 5**     |
+| **🌐 README & Transparence** | Qualité du rapport écrit. Transparence IA explicite détaillant les outils utilisés et les limites rencontrées.                                     |     **/ 4**     |
+| **🌐 Reproductibilité**      | Le fichier `requirements.txt` ou l'environnement `uv` permet une installation sans erreur.                                                         |     **/ 3**     |
+| **⭐ Bonus : CI/CD**         | Automatisation des tests ou déploiement continu du dashboard (GitHub Pages, Cloudflare, etc.).                                                     | **/ 2 (Bonus)** |

@@ -394,34 +394,56 @@ import { createGraph as createRNNGraph } from "../../assets/js/networks.js"
 
 renderRNNUnrolled = {
   const T = rnn_t;
-  const spacing = 130;
+  const spacing = 135;
   const nodes = [];
   const links = [];
 
-  // Input x_t, hidden h_t, output y_t for each step
+  // 1. First add all calendar page nodes (drawn in the background)
   for (let t = 0; t < T; t++) {
     const cx = (t - (T-1)/2) * spacing;
-    nodes.push({ id:`x${t}`, label:`x${t+1}\n(Flux)`, fx:cx, fy: 100, shape:"pill",   status:"rnnInput" });
-    nodes.push({ id:`h${t}`, label:`h${t+1}\n(Trésor)`, fx:cx, fy:   0, shape:"circle", status:"rnnHidden" });
-    nodes.push({ id:`y${t}`, label:`y${t+1}\n(Vente)`, fx:cx, fy:-100, shape:"diamond",status:"rnnOutput" });
+    nodes.push({
+      id: `page${t}`,
+      label: `JOUR ${t+1}`,
+      fx: cx,
+      fy: 0,
+      shape: "sheet",
+      status: "calendarPage"
+    });
+  }
+
+  // 2. Then add the neuron nodes (drawn on top of the pages)
+  for (let t = 0; t < T; t++) {
+    const cx = (t - (T-1)/2) * spacing;
+    nodes.push({ id:`x${t}`, label:`x${t+1}\n(Flux)`, fx:cx, fy: 42, shape:"pill",   status:"rnnInput" });
+    nodes.push({ id:`h${t}`, label:`h${t+1}\n(Trésor)`, fx:cx, fy: -7, shape:"circle", status:"rnnHidden" });
+    nodes.push({ id:`y${t}`, label:`y${t+1}\n(Vente)`, fx:cx, fy:-52, shape:"diamond",status:"rnnOutput" });
+
     links.push({ source:`x${t}`, target:`h${t}`, status:"fwdIn" });
     links.push({ source:`h${t}`, target:`y${t}`, status:"fwdOut" });
     if (t > 0) {
       links.push({ source:`h${t-1}`, target:`h${t}`, label:"Wₕ", status:"recurrent" });
     }
   }
+
   // h0 init marker
   if (T > 0) {
-    nodes.unshift({ id:"h_init", label:"h₀\n(init)", fx:(-T/2)*spacing - 60, fy:0, shape:"circle", status:"init" });
+    const h0_x = (0 - (T-1)/2) * spacing;
+    nodes.unshift({ id:"h_init", label:"h₀\n(init)", fx: h0_x - 85, fy: -7, shape:"circle", status:"init" });
     links.unshift({ source:"h_init", target:"h0", status:"recurrent" });
   }
 
   const g = createRNNGraph("#plot-rnn-unrolled", {nodes, links}, {
-    nodeRadius: 22, fontSize: 9,
-    height: 280 + (T > 3 ? (T - 3) * 10 : 0),
+    nodeRadius: d => d.shape === "sheet" ? 52 : 14.5,
+    fontSize: 9,
+    height: 280,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 35,
     styles: {
+      calendarPage: {
+        nodeBg:"var(--sol-base3)",
+        nodeBorder:"var(--sol-base01)",
+        nodeText:"var(--sol-base01)"
+      },
       rnnInput:  { nodeBg:"rgba(var(--sol-blue-rgb),0.15)",   nodeBorder:"var(--sol-blue)",   nodeText:"var(--sol-blue)" },
       rnnHidden: { nodeBg:"rgba(var(--sol-yellow-rgb),0.15)", nodeBorder:"var(--sol-yellow)", nodeText:"var(--sol-yellow)" },
       rnnOutput: { nodeBg:"rgba(var(--sol-green-rgb),0.15)",  nodeBorder:"var(--sol-green)",  nodeText:"var(--sol-green)" },
