@@ -72,9 +72,7 @@ Plot.plot({
   marginLeft: 60,
   y: {
     grid: true,
-    type: "log", // Échelle log pour bien voir l'exponentielle
-    domain: [0.00000001, 10000], // Fixé pour stabiliser l'animation du graphique
-    label: "Amplitude cumulée du Gradient (log)"
+    label: "Amplitude cumulée du Gradient"
   },
   x: {
     label: "Profondeur du réseau (Couches)",

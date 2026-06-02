@@ -18,17 +18,20 @@ $$
 
 La stabilité de ce produit est dictée par le **rayon spectral** $\rho(\mathbf{W}_h)$ (la valeur propre dominante de $\mathbf{W}_h$) [@Pascanu2013; @Franck2024].
 
-### Disparition et explosion du gradient
+### Disparition et explosion du gradient (version temporelle)
 
-Deux pathologies symétriques émergent de ce produit sur de longues séquences [@SuperDataScience2018; @Grosse2017; @Weber2017] :
+Le problème de la disparition et de l'explosion du gradient — introduit au chapitre 2 sous l'angle de la profondeur spatiale — prend ici une forme **temporelle** particulièrement sévère.
 
-* **Disparition du gradient** (*Vanishing Gradient*) : Si $\rho(\mathbf{W}_h) < 1$, ou si la dérivée de la fonction d'activation $\sigma'$ est systématiquement inférieure à $1$ (comme pour la sigmoïde ou tanh aux extrema), le produit converge exponentiellement vers zéro. Le gradient devient numériquement indistinguable de zéro après quelques dizaines de pas, rendant impossible l'apprentissage de dépendances à long terme.
+Alors que dans un réseau *feedforward* standard le gradient est multiplié à travers les différentes couches physiques du modèle, dans un RNN, la rétropropagation à travers le temps (BPTT) force la multiplication répétée du gradient par la **matrice de récurrence** $\mathbf{W}_h$ à chaque pas de temps [@SuperDataScience2018; @Grosse2017; @Weber2017]. La longueur de la séquence $T$ agit ainsi comme une profondeur virtuelle extrême.
 
-* **Explosion du gradient** (*Exploding Gradient*) : Si $\rho(\mathbf{W}_h) > 1$, le produit croît exponentiellement, générant des mises à jour de poids instables qui divergent l'entraînement.
+L'évolution de la norme du gradient est directement gouvernée par la valeur propre dominante (le rayon spectral $\rho(\mathbf{W}_h)$) de cette matrice :
 
 $$
-\left\|\frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i}\right\| \approx \begin{cases} \to 0 & \text{si } \rho(\mathbf{W}_h) < 1 \text{ (disparition)} \\ \to \infty & \text{si } \rho(\mathbf{W}_h) > 1 \text{ (explosion)} \end{cases}
+\left\|\frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i}\right\| \approx \begin{cases} \to 0 & \text{si } \rho(\mathbf{W}_h) < 1 \text{ (disparition dans les dépendances lointaines)} \\ \to \infty & \text{si } \rho(\mathbf{W}_h) > 1 \text{ (explosion chaotique des poids)} \end{cases}
 $$
+
+* **La disparition :** Si $\rho(\mathbf{W}_h) < 1$, ou si l'activation sature (dérivée $\sigma' < 1$), le gradient s'évanouit exponentiellement en remontant le temps. Le réseau perd toute mémoire à long terme.
+* **L'explosion :** Si $\rho(\mathbf{W}_h) > 1$, le gradient croît exponentiellement vers l'infini, provoquant des sauts de paramètres incontrôlés qui déstabilisent complètement l'entraînement.
 
 ::: {.card .card-window .mb-4}
 

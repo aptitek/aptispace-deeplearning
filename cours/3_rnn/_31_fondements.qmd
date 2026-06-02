@@ -28,6 +28,17 @@ $$
 
 où $\mathbf{W}_h$ est la matrice de récurrence (poids sur l'état précédent), $\mathbf{W}_x$ est la matrice d'entrée, et $\mathbf{b}$ est le biais. Le même jeu de poids $(\mathbf{W}_h, \mathbf{W}_x, \mathbf{b})$ est partagé à **tous les pas de temps** — c'est ce partage qui confère aux RNN leur capacité à traiter des séquences de longueur variable [@Wang2023; @Grosse2017].
 
+::: {.callout-note appearance="simple" icon="false"}
+## 🏪 Analogie : La Trésorerie du Magasin Connecté
+Pour comprendre comment le réseau se souvient du passé, reprenons l'analogie du **magasin connecté** (chapitre 2) :
+* **Le flux quotidien ($\mathbf{x}_t$) :** Chaque jour (pas de temps $t$), le magasin fait face à un flux d'activité extérieure (clients, livraisons, météo).
+* **La trésorerie ($\mathbf{h}_t$) :** Au lieu de vider la caisse enregistreuse chaque soir, le gérant conserve le solde de la veille ($\mathbf{h}_{t-1}$). Ce solde représente la **mémoire cumulée** de l'activité passée.
+* **La mise à jour ($\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}$) :** Le matin, le nouveau solde ($\mathbf{h}_t$) est calculé en combinant une partie de l'argent de la veille ($\mathbf{W}_h \mathbf{h}_{t-1}$), les recettes du jour ($\mathbf{W}_x \mathbf{x}_t$), et un biais de roulement structurel ($\mathbf{b}$). La fonction $\tanh$ compresse le tout pour éviter que la trésorerie ne tombe à sec ou n'explose vers l'infini.
+* **La différence avec l'Époque (Epoch) :** 
+  - **Le jour après jour (Temps $t$) :** C'est le déroulement d'une année financière. La trésorerie s'accumule et évolue de façon séquentielle jour après jour.
+  - **L'inventaire de l'Époque (Epoch) :** À la fin de l'année, le siège de l'entreprise fait un inventaire complet (l'époque). Il analyse les pertes, calcule les ajustements à faire et met à jour les consignes de gestion (les matrices de poids $\mathbf{W}_h, \mathbf{W}_x$ et le biais $\mathbf{b}$) pour optimiser l'année suivante.
+:::
+
 ### Topologies fondamentales : Elman et Jordan
 
 Deux architectures fondamentales définissent le comportement de la récurrence [@Modelisation2024; @Franck2024] :
