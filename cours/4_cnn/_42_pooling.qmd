@@ -20,10 +20,12 @@ Chaque opération de pooling parcourt la carte de caractéristiques avec une fen
 mutable poolGroup = -1;
 ```
 
-<div class="row g-4 align-items-center justify-content-center px-3 pt-3">
-  <div class="col-md-5">
-    <div class="pooling-grid-container">
-      <div class="pooling-grid-title">Image d'Entrée (4x4)</div>
+::::: {.row .g-4 .align-items-center .justify-content-center .px-3 .pt-3}
+:::::: {.col-md-5}
+::::::: {.pooling-grid-container}
+:::::::: {.pooling-grid-title}
+Image d'Entrée (4x4)
+::::::::
 ```{ojs}
 //| echo: false
 renderInputGrid = {
@@ -50,16 +52,20 @@ renderInputGrid = {
   return container;
 }
 ```
-    </div>
-  </div>
+:::::::
+::::::
 
-  <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-    <div class="pooling-separator">➡️</div>
-  </div>
+:::::: {.col-md-2 .text-center .d-flex .justify-content-center .align-items-center}
+::::::: {.pooling-separator}
+➡️
+:::::::
+::::::
 
-  <div class="col-md-5">
-    <div class="pooling-grid-container">
-      <div class="pooling-grid-title">Sortie Pooled (2x2)</div>
+:::::: {.col-md-5}
+::::::: {.pooling-grid-container}
+:::::::: {.pooling-grid-title}
+Sortie Pooled (2x2)
+::::::::
 ```{ojs}
 //| echo: false
 renderOutputGrid = {
@@ -76,11 +82,11 @@ renderOutputGrid = {
   return container;
 }
 ```
-    </div>
-  </div>
-</div>
+:::::::
+::::::
+:::::
 
-<div class="px-3 pb-3 pt-2">
+::::: {.px-3 .pb-3 .pt-2}
 ```{ojs}
 //| echo: false
 renderExplanation = {
@@ -116,7 +122,7 @@ renderExplanation = {
   </div>`;
 }
 ```
-</div>
+:::::
 ::::
 
 :::
@@ -169,38 +175,43 @@ pool_demo = {
     }
   }
 
-  const cellStyle = v => {
-    const maxV = 9;
-    const alpha = (v / maxV * 0.5 + 0.1).toFixed(2);
-    return `background:rgba(var(--sol-yellow-rgb),${alpha});padding:6px 10px;text-align:center;font-family:monospace;`;
+  const getValClass = v => {
+    const intVal = Math.min(9, Math.max(0, Math.floor(v)));
+    return `val-level-${intVal}`;
   };
 
-  const makeTable = (data, title) => {
-    const rows = data.map(row =>
-      `<tr>${row.map(v => `<td style="${cellStyle(parseFloat(v))}">${v}</td>`).join('')}</tr>`
-    ).join('');
-    return `<div class="me-3">
+  const renderTable = (data, title) => {
+    return html`<div class="me-3">
       <p class="text-muted small mb-1">${title}</p>
-      <table class="table table-bordered table-sm mb-0" style="width:auto;">${rows}</table>
+      <table class="table table-bordered table-sm mb-0 pooling-comparison-table">
+        <tbody>
+          ${data.map(row => html`<tr>
+            ${row.map(v => html`<td class="${getValClass(parseFloat(v))}">${v}</td>`)}
+          </tr>`)}
+        </tbody>
+      </table>
     </div>`;
   };
 
-  const makeInputTable = () => {
-    const rows = fm.map(row =>
-      `<tr>${row.map(v => `<td style="${cellStyle(v)}">${v}</td>`).join('')}</tr>`
-    ).join('');
-    return `<div class="me-3">
+  const renderInputTable = () => {
+    return html`<div class="me-3">
       <p class="text-muted small mb-1">Carte d'entrée (6×6)</p>
-      <table class="table table-bordered table-sm mb-0" style="width:auto;">${rows}</table>
+      <table class="table table-bordered table-sm mb-0 pooling-comparison-table">
+        <tbody>
+          ${fm.map(row => html`<tr>
+            ${row.map(v => html`<td class="${getValClass(v)}">${v}</td>`)}
+          </tr>`)}
+        </tbody>
+      </table>
     </div>`;
   };
 
-  return html`<div class="px-3 pb-3 pt-2">
+  return html`<div class="px-3 pb-3 pt-2 pooling-simulator">
     <div class="d-flex flex-wrap align-items-start gap-2">
-      ${ {innerHTML: makeInputTable()} }
+      ${renderInputTable()}
       <div class="d-flex align-items-center fs-4 mt-4">→</div>
-      ${ {innerHTML: makeTable(maxPool, `Max Pooling ${p}×${p} → ${out}×${out}`)} }
-      ${ {innerHTML: makeTable(avgPool, `Avg Pooling ${p}×${p} → ${out}×${out}`)} }
+      ${renderTable(maxPool, `Max Pooling ${p}×${p} → ${out}×${out}`)}
+      ${renderTable(avgPool, `Avg Pooling ${p}×${p} → ${out}×${out}`)}
     </div>
     <p class="text-muted small mt-2 mb-0">
       Max pooling retient la valeur maximale (traits saillants) ;

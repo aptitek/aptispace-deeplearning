@@ -2,6 +2,152 @@
 
 Le passage du traitement de données tabulaires aux grilles de pixels 2D a imposé un saut paradigmatique majeur dans l'histoire du deep learning. Un MLP appliqué à une image traite chaque pixel comme une dimension indépendante, ignorant totalement la structure spatiale intrinsèque : deux pixels voisins ne sont pas distingués de deux pixels aux antipodes. Cette approche est non seulement inefficace computationnellement, mais fondamentalement inadaptée à la nature des données visuelles [@CS231n2026; @WikipediaCNN2026; @BINUS2017].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+⚖️ Le Fléau de la Dimensionnalité : MLP vs CNN
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+import { createPremiumSlider } from "../../assets/js/core.js"
+resolutions = [28, 250, 1080, 3840];
+viewof res_idx = createPremiumSlider({
+  label: "Résolution d'Entrée",
+  labels: ["28x28 (MNIST)", "250x250 (Standard)", "1920x1080 (Full HD)", "3840x2160 (4K UHD)"],
+  value: 1,
+  min: 0,
+  max: 3,
+  step: 1
+})
+```
+::::
+
+```{ojs}
+//| echo: false
+dim_comparison = {
+  const res = resolutions[res_idx];
+  // MLP layer with 100 hidden neurons, input size is res * res * 3 channels
+  const mlp_params = res * res * 3 * 100;
+  // CNN layer with 100 filters of size 3x3x3 channels
+  const cnn_params = 3 * 3 * 3 * 100;
+
+  // 1. Calculate cube sizes based on parameter ratio
+  const fixed_cnn_size = 20;
+  const weight_ratio = mlp_params / cnn_params;
+  const size_ratio = Math.pow(weight_ratio, 1/6);
+
+  const s_cnn = fixed_cnn_size;
+  const s_mlp = Math.min(180, s_cnn * size_ratio);
+
+  const mlp_color = mlp_params > 10000000 ? "var(--sol-red)" : (mlp_params > 1000000 ? "var(--sol-orange)" : "var(--sol-yellow)");
+  const cnn_color = "var(--sol-green)";
+
+  const cube_html = (size, color, label) => {
+    const offset = size * 0.35;
+    const darken = (c, amt) => `color-mix(in srgb, ${c}, black ${amt}%)`;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "d-flex flex-column align-items-center gap-2";
+
+    const cube = document.createElement("div");
+    cube.className = "cube-container";
+    cube.style.setProperty("--size", size + "px");
+    cube.style.setProperty("--offset", offset + "px");
+    cube.style.setProperty("--color", color);
+    cube.style.setProperty("--color-top", darken(color, 15));
+    cube.style.setProperty("--color-right", darken(color, 30));
+
+    cube.innerHTML = `
+      <div class="cube-face-top"></div>
+      <div class="cube-face-right"></div>
+      <div class="cube-face-front"></div>
+    `;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "small fw-bold text-muted";
+    labelSpan.innerText = label;
+
+    wrapper.appendChild(cube);
+    wrapper.appendChild(labelSpan);
+    return wrapper;
+  };
+
+  // 2. Self-contained monitor generator using Bootstrap 5 utility classes
+  const createArchitectureMonitor = (mlp, cnn, memoryAnalysis, memoryState) => {
+    const total = mlp + cnn;
+    const pctCnn = ((cnn / total) * 100).toFixed(1);
+    const pctMlp = (100 - parseFloat(pctCnn)).toFixed(1);
+
+    const levelColors = {
+      danger: "var(--sol-red)",
+      warning: "var(--sol-orange)",
+      success: "var(--sol-green)",
+      info: "var(--sol-blue)"
+    };
+    const resolvedStateColor = levelColors[memoryState] || "var(--sol-blue)";
+
+    return html`
+      <div class="card bg-transparent border-0 w-100">
+        <div class="card-body p-0 d-flex flex-column gap-3">
+          <!-- Parameter comparison -->
+          <div class="p-3 rounded border" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important;">
+            <div class="small fw-bold text-muted mb-2">Poids du Réseau (Paramètres)</div>
+            <div class="d-flex justify-content-between mb-1 font-monospace small">
+              <span style="color: var(--sol-red);">MLP (Full) : ${mlp.toLocaleString()}</span>
+              <span style="color: var(--sol-green);">CNN (Filtres) : ${cnn.toLocaleString()}</span>
+            </div>
+            <div class="progress" style="height: 8px; background: rgba(var(--sol-base1-rgb), 0.15);">
+              <div class="progress-bar" style="width: ${pctMlp}%; background-color: var(--sol-red);"></div>
+              <div class="progress-bar" style="width: ${pctCnn}%; background-color: var(--sol-green);"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-1 text-muted extra-small font-monospace">
+              <span>${pctMlp}%</span>
+              <span>${pctCnn}%</span>
+            </div>
+          </div>
+
+          <!-- Memory status -->
+          <div class="p-3 rounded border d-flex align-items-center justify-content-between" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important; border-left: 4px solid ${resolvedStateColor} !important;">
+            <div>
+              <div class="small fw-bold text-muted">État de la Mémoire</div>
+              <div class="small mt-1 text-muted font-monospace">Empreinte RAM</div>
+            </div>
+            <div class="badge font-monospace" style="background-color: ${resolvedStateColor}; color: var(--sol-base3); font-size: 0.8rem; padding: 6px 12px;">
+              ${memoryAnalysis}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const analysis = mlp_params > 100000000 ? "Incalculable sur PC (Saturation)" : mlp_params > 1000000 ? "Lent et Inefficace" : "Stable et Léger";
+  const state = mlp_params > 100000000 ? "danger" : mlp_params > 1000000 ? "warning" : "success";
+
+  const monitor = createArchitectureMonitor(mlp_params, cnn_params, analysis, state);
+
+  // 3. Combine both into a side-by-side Bootstrap layout
+  const container = html`<div class="row g-4 align-items-center px-3 pb-3">
+    <div class="col-md-6 d-flex justify-content-center align-items-end" style="min-height: 250px;">
+      <div class="d-flex gap-5 justify-content-center align-items-end w-100 pb-2">
+        ${cube_html(s_cnn, cnn_color, `CNN (${cnn_params.toLocaleString()})`)}
+        ${cube_html(s_mlp, mlp_color, `MLP (${mlp_params.toLocaleString()})`)}
+      </div>
+    </div>
+    <div class="col-md-6 monitor-container">
+    </div>
+  </div>`;
+
+  container.querySelector(".monitor-container").appendChild(monitor);
+
+  return container;
+}
+```
+
+:::
+
 ### Le Principe de Responsabilité Unique Spatiale
 
 La solution réside dans l'application du **Principe de Responsabilité Unique** (SRP) à l'extraction de caractéristiques : chaque neurone n'est responsable que d'une région locale de l'image, son **champ récepteur** (*receptive field*). Cette contrainte architecturale repose sur deux piliers fondamentaux [@CS231n2026; @ParadigmShift2026] :
@@ -234,105 +380,6 @@ renderLocalFilterNetwork = {
 
 En traitement du signal classique, les filtres de Sobel ou Gaussien sont définis à la main pour détecter des bords ou lisser l'image. Le CNN **apprend** ses propres noyaux directement depuis les données, optimisant automatiquement l'équilibre entre lissage et différentiation pour la tâche cible.
 
-::: {.card .card-window .mb-4 .convolution-simulator}
-
-:::: {.card-header}
-👁️ Couche de Convolution : Connectivité Locale et Activations
-::::
-
-:::: {.card-control-row .sim-controls-row}
-```{ojs}
-//| echo: false
-viewof conv_stride = Inputs.radio([1, 2], { value: 1, label: "Stride S" })
-viewof conv_padding = Inputs.radio([0, 1], { value: 0, label: "Padding P" })
-viewof conv_preset = Inputs.select(
-  new Map([
-    ["Sobel Vertical (Bords)", "sobel_v"],
-    ["Sobel Horizontal (Bords)", "sobel_h"],
-    ["Netteté (Sharpen)", "sharpen"],
-    ["Flou (Box Blur)", "blur"],
-    ["Identité", "identity"]
-  ]),
-  { value: "sobel_v", label: "Noyau W" }
-)
-viewof conv_activation = Inputs.radio(
-  new Map([
-    ["ReLU", "relu"],
-    ["Linéaire (Aucune)", "linear"]
-  ]),
-  { value: "relu", label: "Activation f" }
-)
-viewof conv_play = Inputs.toggle({ label: "Scan Automatique", value: true })
-viewof conv_speed = Inputs.range([200, 2000], { value: 1000, step: 100, label: "Vitesse (ms)" })
-```
-::::
-
-:::: {.row .g-3 .px-3 .pb-3 .align-items-stretch}
-
-::::: {.col-lg-4 .col-md-6}
-:::::: {.card .border .m-0 .h-100}
-::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-🖥️ Entrée X (7×7) - Cliquez pour dessiner
-:::::::
-::::::: {.card-body .d-flex .flex-column .justify-content-center}
-:::::::: {#conv-input-grid .conv-grid .conv-grid-input}
-::::::::
-:::::::
-::::::
-:::::
-
-::::: {.col-lg-4 .col-md-6}
-:::::: {.card .border .m-0 .h-100}
-::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-⚙️ Poids Noyau W (3×3) & Calculs
-:::::::
-::::::: {.card-body .d-flex .flex-column .gap-3}
-:::::::: {#conv-kernel-grid .conv-grid .conv-grid-kernel}
-::::::::
-:::::::: {#conv-math-details}
-::::::::
-:::::::
-::::::
-:::::
-
-::::: {.col-lg-4 .col-md-12}
-:::::: {.card .border .m-0 .h-100}
-::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-📊 Carte d'Activations Y
-:::::::
-::::::: {.card-body .d-flex .flex-column .justify-content-center}
-:::::::: {#conv-output-grid .conv-grid .conv-grid-output}
-::::::::
-:::::::
-::::::
-:::::
-
-::::
-
-:::
-
-```{ojs}
-//| echo: false
-import { updateConvolutionSimulator } from "../../assets/js/custom/convolution.js"
-
-renderConv = {
-  updateConvolutionSimulator({
-    stride: conv_stride,
-    padding: conv_padding,
-    speed: conv_speed,
-    kernelPreset: conv_preset,
-    activation: conv_activation,
-    isPlaying: conv_play,
-    containers: {
-      inputEl: document.getElementById("conv-input-grid"),
-      kernelEl: document.getElementById("conv-kernel-grid"),
-      outputEl: document.getElementById("conv-output-grid"),
-      mathEl: document.getElementById("conv-math-details")
-    }
-  });
-}
-```
-
 ### L'opération de convolution et ses dimensions
 
 L'opération de convolution transforme un volume d'entrée $W_1 \times H_1 \times D_1$ (largeur × hauteur × profondeur/canaux) en un volume de sortie $W_2 \times H_2 \times D_2$ via $K$ filtres de taille $F \times F$ [@CS231n2026] :
@@ -342,138 +389,6 @@ W_2 = \frac{W_1 - F + 2P}{S} + 1 \qquad H_2 = \frac{H_1 - F + 2P}{S} + 1 \qquad 
 $$
 
 où $P$ est le **padding** (remplissage avec des zéros pour contrôler la taille de sortie) et $S$ est la **stride** (pas de déplacement du filtre). Chaque filtre produit une **carte de caractéristiques** (*feature map*) de taille $W_2 \times H_2$.
-
-::: {.card .card-window .mb-4}
-
-:::: {.card-header}
-🔢 Calculateur de Dimensions de Convolution
-::::
-
-:::: {.card-control-row}
-```{ojs}
-//| echo: false
-viewof conv_W = Inputs.range([8, 224],  { value: 32, step: 1, label: "Entrée W₁ = H₁ (px)" })
-viewof conv_F = Inputs.range([1, 11],   { value:  3, step: 2, label: "Taille filtre F" })
-viewof conv_P = Inputs.range([0, 5],    { value:  1, step: 1, label: "Padding P" })
-viewof conv_S = Inputs.range([1, 4],    { value:  1, step: 1, label: "Stride S" })
-viewof conv_K = Inputs.range([1, 512],  { value: 32, step: 1, label: "Nombre de filtres K" })
-```
-::::
-
-```{ojs}
-//| echo: false
-conv_dims = {
-  const W2 = Math.floor((conv_W - conv_F + 2 * conv_P) / conv_S) + 1;
-  const H2 = W2;
-  const params_per_filter = conv_F * conv_F + 1; // + biais
-  const total_params = conv_K * params_per_filter;
-  const mlp_params = conv_W * conv_W * (W2 * H2 * conv_K);
-
-  const ok = W2 > 0;
-  if (!ok) {
-    return html`<div class="px-3 pb-3 text-danger">Paramètres invalides — la sortie aurait une taille négative.</div>`;
-  }
-
-  // 1. Calculate cube sizes
-  const fixed_cnn_size = 20;
-  const weight_ratio = mlp_params / total_params;
-  const size_ratio = Math.pow(weight_ratio, 1/6);
-
-  const s_cnn = fixed_cnn_size;
-  const s_mlp = Math.min(180, s_cnn * size_ratio);
-
-  const mlp_color = mlp_params > 10000000 ? "var(--sol-red)" : (mlp_params > 1000000 ? "var(--sol-orange)" : "var(--sol-yellow)");
-  const cnn_color = "var(--sol-green)";
-
-  const cube_html = (size, color, label) => {
-    const offset = size * 0.35;
-    const darken = (c, amt) => `color-mix(in srgb, ${c}, black ${amt}%)`;
-    return `
-      <div class="d-flex flex-column align-items-center" style="gap: 8px;">
-        <div style="position: relative; width: ${size + offset}px; height: ${size + offset}px; transition: all 0.5s ease;">
-          <div style="position: absolute; left: 0; top: 0; width: ${size}px; height: ${offset}px; background: ${darken(color, 15)}; border: 1px solid rgba(0,0,0,0.1); transform: skewX(-45deg); transform-origin: bottom;"></div>
-          <div style="position: absolute; left: ${size}px; top: ${offset}px; width: ${offset}px; height: ${size}px; background: ${darken(color, 30)}; border: 1px solid rgba(0,0,0,0.1); transform: skewY(-45deg); transform-origin: left;"></div>
-          <div style="position: absolute; left: 0; top: ${offset}px; width: ${size}px; height: ${size}px; background: ${color}; border: 1px solid rgba(0,0,0,0.1); box-shadow: 2px 2px 10px rgba(0,0,0,0.1);"></div>
-        </div>
-        <span class="small fw-bold text-muted">${label}</span>
-      </div>
-    `;
-  };
-
-  // 2. Self-contained monitor generator using Bootstrap 5 utility classes
-  const createArchitectureMonitor = (mlp, cnn, memoryAnalysis, memoryState) => {
-    const total = mlp + cnn;
-    const pctCnn = ((cnn / total) * 100).toFixed(1);
-    const pctMlp = (100 - parseFloat(pctCnn)).toFixed(1);
-
-    const levelColors = {
-      danger: "var(--sol-red)",
-      warning: "var(--sol-orange)",
-      success: "var(--sol-green)",
-      info: "var(--sol-blue)"
-    };
-    const resolvedStateColor = levelColors[memoryState] || "var(--sol-blue)";
-
-    return html`
-      <div class="card bg-transparent border-0 w-100">
-        <div class="card-body p-0 d-flex flex-column gap-3">
-          <!-- Parameter comparison -->
-          <div class="p-3 rounded border" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important;">
-            <div class="small fw-bold text-muted mb-2">Poids du Réseau (Paramètres)</div>
-            <div class="d-flex justify-content-between mb-1 font-monospace small">
-              <span style="color: var(--sol-red);">MLP (Full) : ${mlp.toLocaleString()}</span>
-              <span style="color: var(--sol-green);">CNN (Filtres) : ${cnn.toLocaleString()}</span>
-            </div>
-            <div class="progress" style="height: 8px; background: rgba(var(--sol-base1-rgb), 0.15);">
-              <div class="progress-bar" style="width: ${pctMlp}%; background-color: var(--sol-red);"></div>
-              <div class="progress-bar" style="width: ${pctCnn}%; background-color: var(--sol-green);"></div>
-            </div>
-            <div class="d-flex justify-content-between mt-1 text-muted extra-small font-monospace">
-              <span>${pctMlp}%</span>
-              <span>${pctCnn}%</span>
-            </div>
-          </div>
-
-          <!-- Memory status -->
-          <div class="p-3 rounded border d-flex align-items-center justify-content-between" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important; border-left: 4px solid ${resolvedStateColor} !important;">
-            <div>
-              <div class="small fw-bold text-muted">État de la Mémoire</div>
-              <div class="small mt-1 text-muted font-monospace">Empreinte RAM</div>
-            </div>
-            <div class="badge font-monospace" style="background-color: ${resolvedStateColor}; color: var(--sol-base3); font-size: 0.8rem; padding: 6px 12px;">
-              ${memoryAnalysis}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  };
-
-  const analysis = mlp_params > 100000000 ? "Incalculable sur PC (Saturation)" : mlp_params > 1000000 ? "Lent et Inefficace" : "Stable et Léger";
-  const state = mlp_params > 100000000 ? "danger" : mlp_params > 1000000 ? "warning" : "success";
-
-  const monitor = createArchitectureMonitor(mlp_params, total_params, analysis, state);
-
-  // 3. Combine both into a side-by-side Bootstrap layout
-  const container = html`<div class="row g-4 align-items-center px-3 pb-3">
-    <div class="col-md-6 d-flex justify-content-center align-items-end" style="min-height: 250px;">
-      <div class="d-flex gap-5 justify-content-center align-items-end w-100">
-        ${html`${cube_html(s_cnn, cnn_color, `CNN (${total_params.toLocaleString()})`)}`}
-        ${html`${cube_html(s_mlp, mlp_color, `MLP (${mlp_params.toLocaleString()})`)}`}
-      </div>
-    </div>
-    <div class="col-md-6 monitor-container">
-    </div>
-  </div>`;
-
-  container.querySelector(".monitor-container").appendChild(monitor);
-
-  return container;
-}
-
-```
-
-:::
 
 ### Optimisation GPU : l'algorithme im2col et GEMM
 

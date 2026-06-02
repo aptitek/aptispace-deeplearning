@@ -236,4 +236,28 @@
     &.group-color-2 { border-left: 4px solid var(--sol-green) !important; }
     &.group-color-3 { border-left: 4px solid var(--sol-yellow) !important; }
   }
+
+  // Comparison Matrix styles
+  .pooling-comparison-table {
+    width: auto;
+    font-family: var(--font-code);
+    text-align: center;
+    border-collapse: collapse;
+
+    td {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1.5px solid rgba(var(--sol-base1-rgb), 0.15);
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    @for $i from 0 through 9 {
+      .val-level-#{$i} {
+        background-color: rgba(var(--sol-yellow-rgb), #{$i * 0.05 + 0.1}) !important;
+        color: if($i > 5, var(--sol-base3), var(--sol-base00)) !important;
+      }
+    }
+  }
 }

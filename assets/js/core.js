@@ -630,3 +630,60 @@ export class SimulationController {
     if (this.resetBtn) this.resetBtn.removeEventListener("click", this._resetHandler);
   }
 }
+
+/**
+ * 🎚️ Custom Premium Slider component.
+ * Builds a styled range slider with a data-state colored indicator and layout ticks.
+ */
+export function createPremiumSlider({ label, labels, value = 0, min = 0, max = 3, step = 1, state }) {
+  const container = document.createElement("div");
+  container.className = "premium-slider-container";
+
+  const colorState = state !== undefined ? state : value;
+  container.setAttribute("data-state", colorState);
+
+  const header = document.createElement("div");
+  header.className = "slider-header";
+
+  const labelEl = document.createElement("label");
+  labelEl.innerText = label;
+
+  const badgeEl = document.createElement("span");
+  badgeEl.className = "badge font-monospace";
+  badgeEl.innerText = labels ? labels[value] : value;
+
+  header.appendChild(labelEl);
+  header.appendChild(badgeEl);
+
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = min;
+  input.max = max;
+  input.step = step;
+  input.value = value;
+  input.className = "slider-input";
+
+  container.appendChild(header);
+  container.appendChild(input);
+
+  if (labels) {
+    const ticks = document.createElement("div");
+    ticks.className = "slider-ticks";
+    labels.forEach(l => {
+      const span = document.createElement("span");
+      span.innerText = l;
+      ticks.appendChild(span);
+    });
+    container.appendChild(ticks);
+  }
+
+  input.oninput = () => {
+    container.setAttribute("data-state", state !== undefined ? state : input.value);
+    badgeEl.innerText = labels ? labels[input.value] : input.value;
+    container.value = step % 1 === 0 ? parseInt(input.value) : parseFloat(input.value);
+    container.dispatchEvent(new CustomEvent("input"));
+  };
+
+  container.value = value;
+  return container;
+}

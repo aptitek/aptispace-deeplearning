@@ -1,234 +1,45 @@
-.org-monitor {
-    background: $sol-base2;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
-    padding: 6px;
-    margin: 10px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+/* ==========================================================================
+   MONITOR & 3D CUBE STYLES
+   ========================================================================== */
 
-    .monitor-header {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 4px 8px;
-        margin-bottom: 2px;
-        display: flex;
-        align-items: center;
+.cube-container {
+  position: relative;
+  width: calc(var(--size) + var(--offset));
+  height: calc(var(--size) + var(--offset));
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
-        .monitor-title {
-            font-family: $font-family-base;
-            font-size: 0.9em;
-            font-weight: 800;
-            color: $sol-base01;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-    }
+  .cube-face-top {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--size);
+    height: var(--offset);
+    background: var(--color-top);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transform: skewX(-45deg);
+    transform-origin: bottom;
+  }
 
-    .monitor-grid {
-        padding: 2px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-        gap: 6px;
-        overflow-y: visible;
-    }
-}
+  .cube-face-right {
+    position: absolute;
+    left: var(--size);
+    top: var(--offset);
+    width: var(--offset);
+    height: var(--size);
+    background: var(--color-right);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transform: skewY(-45deg);
+    transform-origin: left;
+  }
 
-.mol-stat-card {
-    background: $sol-base3;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    padding: 5px 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 3px;
-        background: var(--card-color, $sol-blue);
-        opacity: 0.7;
-    }
-
-    .stat-label {
-        font-family: $font-family-code;
-        font-size: 0.65em;
-        text-transform: uppercase;
-        color: $sol-base01;
-        margin-bottom: 1px;
-        font-weight: 800;
-        letter-spacing: 0.3px;
-    }
-
-    .stat-value {
-        font-size: 1.4em;
-        font-weight: 900;
-        line-height: 1.1;
-        margin-bottom: 1px;
-        color: var(--card-color, $sol-blue);
-    }
-
-    .stat-comment {
-        font-size: 0.7em;
-        color: $sol-base1;
-        font-style: normal;
-        font-weight: 500;
-    }
-}
-
-.mol-versus-card {
-    background: $sol-base3;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-
-    .versus-header {
-        font-family: $font-family-code;
-        font-size: 0.8em;
-        text-transform: uppercase;
-        color: $sol-base1;
-        font-weight: bold;
-        text-align: center;
-    }
-
-    .versus-values {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-
-        .v-left,
-        .v-right {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .v-left {
-            align-items: flex-start;
-        }
-
-        .v-right {
-            align-items: flex-end;
-        }
-
-        .v-val {
-            font-size: 1.8em;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .v-lbl {
-            font-size: 0.7em;
-            text-transform: uppercase;
-            font-weight: bold;
-            opacity: 0.7;
-        }
-    }
-
-    .versus-bar {
-        height: 6px;
-        background: $sol-base2;
-        border-radius: 3px;
-        display: flex;
-        overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-
-        .v-fill-a,
-        .v-fill-b {
-            height: 100%;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-    }
-}
-
-.mol-status-card {
-    background: $sol-base3;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 8px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-
-    &::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 4px;
-        background: $sol-base1;
-        transition: background-color 0.3s ease;
-    }
-
-    .status-label {
-        font-family: $font-family-code;
-        font-size: 0.75em;
-        text-transform: uppercase;
-        color: $sol-base1;
-        font-weight: bold;
-    }
-
-    .status-text {
-        font-size: 1.2em;
-        font-weight: 700;
-        color: $sol-base1;
-        line-height: 1.2;
-    }
-
-    &.is-info {
-        &::before {
-            background: $sol-blue;
-        }
-
-        .status-text {
-            color: $sol-blue;
-        }
-    }
-
-    &.is-success {
-        &::before {
-            background: $sol-green;
-        }
-
-        .status-text {
-            color: $sol-green;
-        }
-    }
-
-    &.is-warning {
-        &::before {
-            background: $sol-yellow;
-        }
-
-        .status-text {
-            color: $sol-yellow;
-        }
-    }
-
-    &.is-danger {
-        &::before {
-            background: $sol-red;
-        }
-
-        .status-text {
-            color: $sol-red;
-        }
-    }
+  .cube-face-front {
+    position: absolute;
+    left: 0;
+    top: var(--offset);
+    width: var(--size);
+    height: var(--size);
+    background: var(--color);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
+  }
 }
