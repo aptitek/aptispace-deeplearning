@@ -20,23 +20,22 @@ Imaginez que votre jeu de données est une **pièce mécanique** complexe (avec 
 Simulation de Presse
 ::::
 
-:::: {.card-control-row .sim-controls-row}
+:::: {.card-body .card-vslider-layout}
 
 ```{ojs}
 //| echo: false
-// Contrôle réactif : L'Époque (Force de pression)
-viewof epoch = Inputs.range([0, 100], {
+viewof epoch = aptitek.createVerticalSlider({
+  label: "Pression",
+  min: 0, max: 100, step: 1,
   value: 0,
-  step: 1,
-  label: "Pression appliquée"
+  direction: "down",
+  height: 200
 })
 ```
 
-::::
-
-:::: {.card-body}
-::::: {#d3-graph-1-container .w-100 .text-center}
+::::: {#d3-graph-1-container .text-center}
 :::::
+
 ::::
 :::
 
@@ -136,31 +135,33 @@ Mathématiquement, le calcul basique d'un neurone peut s'exprimer par $y = w \cd
 Anatomie de la Déformation : Poids (w) & Biais (b)
 ::::
 
-:::: {.card-control-row .sim-controls-row}
+:::: {.card-body .card-vslider-layout}
 
 ```{ojs}
 //| echo: false
-viewof bias = Inputs.range([-40, 40], {
+viewof bias = aptitek.createVerticalSlider({
+  label: "Biais (b)",
+  min: -40, max: 40, step: 1,
   value: 0,
-  step: 1,
-  label: "Biais (Tension / Décalage)"
+  direction: "down",
+  height: 200
 })
 ```
+
+::::: {#d3-graph-2-container .text-center}
+:::::
 
 ```{ojs}
 //| echo: false
-viewof weight = Inputs.range([0, 1.5], {
+viewof weight = aptitek.createVerticalSlider({
+  label: "Poids (w)",
+  min: 0, max: 1.5, step: 0.1,
   value: 0.2,
-  step: 0.1,
-  label: "Poids (Amplitude)"
+  direction: "down",
+  height: 200
 })
 ```
 
-::::
-
-:::: {.card-body}
-::::: {#d3-graph-2-container .w-100 .text-center}
-:::::
 ::::
 :::
 
@@ -306,22 +307,22 @@ Pour savoir comment ajuster notre moule, nous devons mesurer nos erreurs.
 Optimisation : Évaluation de la Perte (Loss) & Direction du Gradient
 ::::
 
-:::: {.card-control-row .sim-controls-row}
+:::: {.card-body .card-vslider-layout}
+
+::::: {#d3-graph-3-container .text-center}
+:::::
 
 ```{ojs}
 //| echo: false
-viewof epochG3 = Inputs.range([0, 100], {
+viewof epochG3 = aptitek.createVerticalSlider({
+  label: "Époques",
+  min: 0, max: 100, step: 1,
   value: 0,
-  step: 1,
-  label: "Ajustement de la Presse (Époques)"
+  direction: "down",
+  height: 270
 })
 ```
 
-::::
-
-:::: {.card-body}
-::::: {#d3-graph-3-container .w-100 .text-center}
-:::::
 ::::
 :::
 
@@ -686,8 +687,10 @@ viewof optParam = {
 //| echo: false
 import { createGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
 
-render3DDescent = {
-  const sm = createGradientSimulation(optType, optParam, {
+// Reinitialises the Plotly chart only when the optimizer type changes.
+// Does NOT depend on optParam — slider changes are handled by _gradPath below.
+_gradSim = {
+  const sm = createGradientSimulation({
     containerId: "gradient-descent-container",
     metrics: {
       cost:   "grad-3d-cost",
@@ -696,13 +699,20 @@ render3DDescent = {
       speed:  "grad-3d-speed"
     }
   });
-  if (!sm) return aptitek.noop();
+  if (!sm) return null;
   const controller = new aptitek.SimulationController(sm, {
     play:  "#btn-grad-play",
     pause: "#btn-grad-pause",
     reset: "#btn-grad-reset"
   });
   invalidation.then(() => controller.destroy());
+  return sm;
+}
+
+// Updates the descent path whenever optParam (or optType) changes.
+// No chart re-initialisation — just recomputes the trajectory and resets the ball.
+_gradPath = {
+  if (_gradSim) _gradSim.updatePath(optType, optParam);
   return aptitek.noop();
 }
 ```

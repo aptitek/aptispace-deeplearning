@@ -279,47 +279,46 @@ output {
     }
 }
 
-/* --- Sim Slider component --- */
+/* --- Sim Slider component (horizontal) --- */
 .sim-slider {
     width: 100%;
     padding: 8px 36px 16px 36px;
     box-sizing: border-box;
     overflow: visible;
-    
-    &[data-state="0"] {
-        --current-color: var(--sol-blue);
-    }
-    &[data-state="1"] {
-        --current-color: var(--sol-green);
-    }
-    &[data-state="2"] {
-        --current-color: var(--sol-yellow);
-    }
-    &[data-state="3"] {
-        --current-color: var(--sol-red);
-    }
+
+    &[data-state="0"] { --current-color: var(--sol-blue); }
+    &[data-state="1"] { --current-color: var(--sol-green); }
+    &[data-state="2"] { --current-color: var(--sol-yellow); }
+    &[data-state="3"] { --current-color: var(--sol-red); }
 
     .slider-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 8px;
+        /* badge styling comes from shared .slider-v-badge class */
+    }
 
-        span.badge {
-            background-color: var(--current-color) !important;
-            color: var(--sol-base3) !important;
-            font-size: 0.8rem;
-            padding: 4px 8px;
+    .slider-track-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .slider-input {
+            flex: 1;
+            min-width: 0;
+            height: 6px;
+            border-radius: 5px;
+            cursor: pointer;
+            accent-color: var(--current-color);
+            transition: accent-color 0.3s ease;
         }
     }
 
-    .slider-input {
-        width: 100%;
-        height: 6px;
-        border-radius: 5px;
-        cursor: pointer;
-        accent-color: var(--current-color);
-        transition: accent-color 0.3s ease;
+    /* Horizontal arrow: smaller glyph, no width expansion */
+    .slider-h-arrow {
+        font-size: 0.6em;
+        flex: 0 0 auto;
     }
 
     .slider-ticks {
@@ -350,4 +349,106 @@ output {
     }
 }
 
+
+/* --- Vertical Slider component (sim-slider-v) --- */
+.sim-slider-v {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 8px;
+    box-sizing: border-box;
+
+    &[data-state="0"] { --current-color: var(--sol-blue); }
+    &[data-state="1"] { --current-color: var(--sol-green); }
+    &[data-state="2"] { --current-color: var(--sol-yellow); }
+    &[data-state="3"] { --current-color: var(--sol-red); }
+
+    .slider-v-input {
+        writing-mode: vertical-lr;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        width: 20px !important;
+        height: var(--slider-v-height, 160px) !important;
+        background: var(--control-bg, #eee8d5) !important;
+        border-radius: 5px !important;
+        accent-color: var(--current-color, var(--accent-primary, #268bd2)) !important;
+        transition: accent-color 0.3s ease !important;
+        cursor: pointer !important;
+        flex-shrink: 0;
+    }
+
+    /* "up" direction: scaleY(-1) flips the track so dragging up increases value */
+    &.sim-slider-v--up .slider-v-input {
+        transform: scaleY(-1) !important;
+    }
+
+    .slider-v-arrow {
+        font-size: 0.65em;
+        color: var(--current-color, var(--accent-primary, #268bd2));
+        line-height: 1;
+        opacity: 0.85;
+        filter: drop-shadow(0 0 3px var(--current-color, var(--accent-primary, #268bd2)));
+        transition: color 0.3s ease;
+    }
+
+    .slider-v-badge {
+        background-color: var(--current-color, var(--accent-primary, #268bd2)) !important;
+        color: var(--sol-base3, #fdf6e3) !important;
+        font-size: 0.68rem;
+        padding: 2px 5px;
+        min-width: 34px;
+        text-align: center;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    .slider-v-label {
+        font-family: var(--font-code, monospace);
+        font-size: 0.55em;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--scrollbar-thumb, #93a1a1);
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+        white-space: nowrap;
+        max-height: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1;
+        opacity: 0.8;
+    }
+}
+
+/* --- Card layout helper: vertical sliders on the sides of a graph --- */
+.card-vslider-layout {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 4px 0 !important;
+    gap: 0 !important;
+
+    /* OJS cell wrappers: take their natural (slider) width only */
+    > .cell,
+    > .observablehq,
+    > .observablehq-viewof {
+        flex: 0 0 auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Graph containers: expand to fill remaining space */
+    > div[id] {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px 0 !important;
+    }
+}
 

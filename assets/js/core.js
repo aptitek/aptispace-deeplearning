@@ -151,13 +151,16 @@ function _applyTemplate(htmlString, data) {
 }
 
 /**
- * Labeled range slider with state-colored badge and optional tick labels.
+ * Horizontal range slider with state-colored badge, direction arrow, and optional tick labels.
+ * direction "right" → increase end is on the right (▶), default
+ * direction "left"  → increase end is on the left  (◀)
  * Dispatches a standard "input" event; read `el.value` for the current number.
  */
-export function createSlider({ label, labels, value = 0, min = 0, max = 3, step = 1, state } = {}) {
+export function createSlider({ label, labels, value = 0, min = 0, max = 3, step = 1, state, direction = "right" } = {}) {
   const container = document.createElement("div");
   container.className = "sim-slider";
   container.setAttribute("data-state", state ?? value);
+  container.setAttribute("data-direction", direction);
 
   const header = document.createElement("div");
   header.className = "slider-header";
@@ -166,7 +169,7 @@ export function createSlider({ label, labels, value = 0, min = 0, max = 3, step 
   labelEl.textContent = label;
 
   const badge = document.createElement("span");
-  badge.className = "badge font-monospace";
+  badge.className = "badge font-monospace slider-v-badge";
   badge.textContent = labels ? labels[value] : value;
 
   header.append(labelEl, badge);
@@ -175,7 +178,20 @@ export function createSlider({ label, labels, value = 0, min = 0, max = 3, step 
   input.type = "range";
   Object.assign(input, { min, max, step, value, className: "slider-input" });
 
-  container.append(header, input);
+  const arrow = document.createElement("div");
+  arrow.className = "slider-v-arrow slider-h-arrow";
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.innerHTML = direction === "right" ? "&#9654;" : "&#9664;"; // ▶ or ◀
+
+  const trackRow = document.createElement("div");
+  trackRow.className = "slider-track-row";
+  if (direction === "right") {
+    trackRow.append(input, arrow);
+  } else {
+    trackRow.append(arrow, input);
+  }
+
+  container.append(header, trackRow);
 
   if (labels) {
     const ticks = document.createElement("div");
@@ -196,6 +212,76 @@ export function createSlider({ label, labels, value = 0, min = 0, max = 3, step 
   };
 
   container.value = value;
+  return container;
+}
+
+/**
+ * Vertical range slider for placement on the sides of graphs.
+ * direction "up"   → dragging up increases the value (max at top)
+ * direction "down" → dragging down increases the value (max at bottom)
+ * Dispatches a standard "input" event; read .value for the current number.
+ */
+export function createVerticalSlider({
+  label = "",
+  value = 0,
+  min = 0,
+  max = 100,
+  step = 1,
+  direction = "up",
+  height = 160,
+  state
+} = {}) {
+  const decimals = step.toString().includes(".")
+    ? step.toString().split(".")[1].length
+    : 0;
+  const fmt = v => decimals === 0 ? parseInt(v) : parseFloat(v).toFixed(decimals);
+
+  const container = document.createElement("div");
+  container.className = `sim-slider-v sim-slider-v--${direction}`;
+  container.setAttribute("data-state", state ?? 0);
+
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = min;
+  input.max = max;
+  input.step = step;
+  input.value = value;
+  input.className = "slider-v-input";
+  input.style.setProperty("--slider-v-height", `${height}px`);
+
+  const badge = document.createElement("span");
+  badge.className = "badge font-monospace slider-v-badge";
+  badge.textContent = fmt(value);
+
+  const labelEl = document.createElement("span");
+  labelEl.className = "slider-v-label";
+  labelEl.textContent = label;
+
+  const arrow = document.createElement("div");
+  arrow.className = "slider-v-arrow";
+  arrow.setAttribute("aria-hidden", "true");
+  arrow.innerHTML = direction === "up" ? "&#9650;" : "&#9660;";
+
+  // "up":   [▲ arrow] [input, CSS-flipped] [badge] [label]  — increase end is top
+  // "down": [label] [badge] [input] [▼ arrow]                — increase end is bottom
+  if (direction === "up") {
+    container.append(arrow, input, badge, labelEl);
+  } else {
+    container.append(labelEl, badge, input, arrow);
+  }
+
+  input.addEventListener("input", () => {
+    const numVal = decimals === 0 ? parseInt(input.value) : parseFloat(input.value);
+    badge.textContent = fmt(input.value);
+    container.value = numVal;
+    if (state === undefined) {
+      const normalized = (parseFloat(input.value) - min) / (max - min);
+      container.setAttribute("data-state", Math.min(3, Math.floor(normalized * 4)));
+    }
+    container.dispatchEvent(new CustomEvent("input"));
+  });
+
+  container.value = decimals === 0 ? parseInt(value) : parseFloat(value);
   return container;
 }
 
