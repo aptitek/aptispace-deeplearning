@@ -262,6 +262,23 @@ output {
     }
 }
 
+/* --- Sim controller visibility helpers --- */
+.sim-hidden {
+    display: none !important;
+}
+
+/* Icon-only buttons: zero out text, keep ::before Bootstrap icon */
+.btn.btn-icon-only {
+    font-size: 0 !important;
+    padding: 5px 8px !important;
+    gap: 0 !important;
+    min-width: 0 !important;
+
+    &::before {
+        font-size: 0.9rem !important;
+    }
+}
+
 /* --- Sim Slider component --- */
 .sim-slider {
     width: 100%;

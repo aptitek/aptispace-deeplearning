@@ -254,41 +254,63 @@ export function createTabsetWatcher(tabsetSelector, labelMap, onChange) {
     });
   }
 
+  let currentVal;
+
   function syncActive() {
     const active = document.querySelector(`${tabsetSelector} .nav-link.active`);
     if (!active) return;
     const label = active.textContent.replace(/�/g, "").trim();
     const val = labelMap[label];
-    if (val !== undefined) onChange(val);
+    // Guard: skip onChange if the value hasn't actually changed.
+    // Without this, sim-control buttons living in the same nav bar have their
+    // classes toggled every animation frame, which fires this MutationObserver
+    // and triggers spurious mutable assignments that cascade into OJS re-runs.
+    if (val !== undefined && val !== currentVal) {
+      currentVal = val;
+      onChange(val);
+    }
   }
 
   syncActive();
   const nav = document.querySelector(`${tabsetSelector} .nav-tabs`);
-  const observer = nav ? new MutationObserver(syncActive) : null;
+  // Narrow the observer: only react when an actual .nav-link element's class changes,
+  // not when sim-control buttons inside the same nav bar are shown/hidden.
+  const observer = nav ? new MutationObserver(mutations => {
+    if (mutations.some(m => m.target.classList?.contains("nav-link"))) syncActive();
+  }) : null;
   if (observer) observer.observe(nav, { subtree: true, attributeFilter: ["class"] });
   return { destroy: () => observer?.disconnect() };
 }
 
 /**
- * Moves `.btn-tab-action` buttons from `.tab-actions` divs into their parent tabset's nav bar.
- * Call once on page load; targets all `.tab-actions` containers in the DOM.
+ * Moves all `.btn` elements from `.tab-actions` divs into their parent tabset's nav bar,
+ * grouped in a single `<li>` pushed to the right via `ms-auto`.
+ * Called automatically on DOMContentLoaded; safe to call again (idempotent via `d-none` guard).
  */
 export function setupTabActions() {
-  document.querySelectorAll('.tab-actions').forEach(container => {
+  document.querySelectorAll('.tab-actions:not(.d-none)').forEach(container => {
     const tabset = container.closest('.panel-tabset')
       ?? container.previousElementSibling?.closest('.panel-tabset')
       ?? container.parentElement?.querySelector('.panel-tabset');
-    if (!tabset) { console.warn("setupTabActions: tabset not found for", container); return; }
+    if (!tabset) return;
     const navTabs = tabset.querySelector('.nav-tabs');
-    if (!navTabs) { console.warn("setupTabActions: nav-tabs not found"); return; }
-    container.querySelectorAll('.btn-tab-action').forEach(btn => {
-      const li = document.createElement('li');
-      li.className = 'nav-item ms-auto d-flex align-items-center';
-      li.appendChild(btn);
-      navTabs.appendChild(li);
-    });
+    if (!navTabs) return;
+    const btns = container.querySelectorAll('.btn');
+    if (!btns.length) return;
+    const li = document.createElement('li');
+    li.className = 'nav-item ms-auto d-flex align-items-center gap-1';
+    btns.forEach(btn => li.appendChild(btn));
+    navTabs.appendChild(li);
     container.classList.add("d-none");
   });
+}
+
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupTabActions);
+  } else {
+    setupTabActions();
+  }
 }
 
 // ─────────────────────────────────────────
@@ -342,6 +364,14 @@ export class StateMachine {
 /**
  * Binds play/pause/reset buttons to a StateMachine and keeps their active states in sync.
  * Elements can be CSS selectors or DOM references. Call `destroy()` on OJS invalidation.
+ *
+ * Visibility rules:
+ *   - play:  always visible
+ *   - pause: visible only while running (isPlaying)
+ *   - reset: visible once something has happened (currentIndex > 0 or isPlaying)
+ *
+ * Options:
+ *   - compact: true  → icon-only buttons (adds .btn-icon-only class)
  */
 export class SimulationController {
   constructor(stateMachine, elements = {}, options = {}) {
@@ -355,6 +385,12 @@ export class SimulationController {
     this.onPlay   = options.onPlay   ?? (() => {});
     this.onPause  = options.onPause  ?? (() => {});
     this.onReset  = options.onReset  ?? (() => {});
+
+    if (options.compact) {
+      this.playBtn?.classList.add("btn-icon-only");
+      this.pauseBtn?.classList.add("btn-icon-only");
+      this.resetBtn?.classList.add("btn-icon-only");
+    }
 
     const prev = this.sm.onStateChange;
     this.sm.onStateChange = (state, index) => {
@@ -377,8 +413,13 @@ export class SimulationController {
   }
 
   _sync() {
-    this.playBtn?.classList.toggle("active", this.sm.isPlaying);
-    this.pauseBtn?.classList.toggle("active", !this.sm.isPlaying && this.sm.currentIndex > 0);
+    const playing = this.sm.isPlaying;
+    const started = playing || this.sm.currentIndex > 0;
+
+    this.playBtn?.classList.toggle("active", playing);
+    this.pauseBtn?.classList.toggle("sim-hidden", !playing);
+    this.resetBtn?.classList.toggle("sim-hidden", !started);
+
     if (this.descBox) {
       this.descBox.textContent = this.sm.states[this.sm.currentIndex]?.description ?? "";
     }

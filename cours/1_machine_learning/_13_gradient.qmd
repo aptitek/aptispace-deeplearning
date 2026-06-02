@@ -551,6 +551,14 @@ Visualisez de manière interactive comment le choix de l'optimiseur et ses param
 🏔️ Simulateur 3D de la Descente de Gradient et Optimiseurs Modernes
 ::::
 
+:::: {.tab-actions}
+
+* [Lancer]{#btn-grad-play .bi-play-fill .btn .btn-outline-primary .btn-sm}
+* [Pause]{#btn-grad-pause .bi-pause-fill .btn .btn-outline-secondary .btn-sm}
+* [Reset]{#btn-grad-reset .bi-arrow-counterclockwise .btn .btn-outline-danger .btn-sm}
+
+::::
+
 :::: {.panel-tabset .opt-type-tabset}
 
 ##### Momentum
@@ -619,18 +627,6 @@ viewof optParam = {
 }
 ```
 
-```{ojs}
-//| echo: false
-viewof triggerBtn = {
-  const btn = html`<button class="btn btn-danger btn-sm d-flex align-items-center gap-2"><span>🔴</span> Lâcher la Balle</button>`;
-  btn.value = 0;
-  btn.onclick = () => {
-    btn.value++;
-    btn.dispatchEvent(new Event("input", { bubbles: true }));
-  };
-  return btn;
-}
-```
 
 ::::
 
@@ -688,17 +684,25 @@ viewof triggerBtn = {
 
 ```{ojs}
 //| echo: false
-import { runGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
+import { createGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
 
 render3DDescent = {
-  runGradientSimulation(optType, optParam, triggerBtn, {
+  const sm = createGradientSimulation(optType, optParam, {
     containerId: "gradient-descent-container",
     metrics: {
-      cost: "grad-3d-cost",
+      cost:   "grad-3d-cost",
       theta1: "grad-3d-theta1",
       theta2: "grad-3d-theta2",
-      speed: "grad-3d-speed"
+      speed:  "grad-3d-speed"
     }
   });
+  if (!sm) return aptitek.noop();
+  const controller = new aptitek.SimulationController(sm, {
+    play:  "#btn-grad-play",
+    pause: "#btn-grad-pause",
+    reset: "#btn-grad-reset"
+  });
+  invalidation.then(() => controller.destroy());
+  return aptitek.noop();
 }
 ```
