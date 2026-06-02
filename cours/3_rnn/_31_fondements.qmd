@@ -31,13 +31,336 @@ où $\mathbf{W}_h$ est la matrice de récurrence (poids sur l'état précédent)
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🏪 Analogie : La Trésorerie du Magasin Connecté
 Pour comprendre comment le réseau se souvient du passé, reprenons l'analogie du **magasin connecté** (chapitre 2) :
+
 * **Le flux quotidien ($\mathbf{x}_t$) :** Chaque jour (pas de temps $t$), le magasin fait face à un flux d'activité extérieure (clients, livraisons, météo).
 * **La trésorerie ($\mathbf{h}_t$) :** Au lieu de vider la caisse enregistreuse chaque soir, le gérant conserve le solde de la veille ($\mathbf{h}_{t-1}$). Ce solde représente la **mémoire cumulée** de l'activité passée.
 * **La mise à jour ($\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}$) :** Le matin, le nouveau solde ($\mathbf{h}_t$) est calculé en combinant une partie de l'argent de la veille ($\mathbf{W}_h \mathbf{h}_{t-1}$), les recettes du jour ($\mathbf{W}_x \mathbf{x}_t$), et un biais de roulement structurel ($\mathbf{b}$). La fonction $\tanh$ compresse le tout pour éviter que la trésorerie ne tombe à sec ou n'explose vers l'infini.
-* **La différence avec l'Époque (Epoch) :** 
+* **La différence avec l'Époque (Epoch) :**
   - **Le jour après jour (Temps $t$) :** C'est le déroulement d'une année financière. La trésorerie s'accumule et évolue de façon séquentielle jour après jour.
   - **L'inventaire de l'Époque (Epoch) :** À la fin de l'année, le siège de l'entreprise fait un inventaire complet (l'époque). Il analyse les pertes, calcule les ajustements à faire et met à jour les consignes de gestion (les matrices de poids $\mathbf{W}_h, \mathbf{W}_x$ et le biais $\mathbf{b}$) pour optimiser l'année suivante.
 :::
+
+::: {.card .card-window .rnn-card-window .mb-4}
+
+:::: {.card-header}
+🔄 Mise à jour de la Trésorerie (Cellule RNN) [Somme Pondérée & ReLU]{.badge .bg-success .float-end}
+::::
+
+:::: {.card-control-row .rnn-control-row .flex-column}
+
+::::: {.row}
+
+:::::: {.col-md-6}
+::::::: {.input-sol-blue}
+```{ojs}
+//| echo: false
+viewof rnn_trafficA = Inputs.range([0, 500], {value: 300, step: 10, label: "Zone A (x₁)"})
+```
+:::::::
+::::::: {.input-sol-grey}
+```{ojs}
+//| echo: false
+viewof rnn_weightA = Inputs.range([0, 3], {value: 1.5, step: 0.1, label: "Route A (w₁)"})
+```
+:::::::
+::::::: {.input-sol-blue}
+```{ojs}
+//| echo: false
+viewof rnn_trafficB = Inputs.range([0, 500], {value: 150, step: 10, label: "Zone B (x₂)"})
+```
+:::::::
+::::::: {.input-sol-grey}
+```{ojs}
+//| echo: false
+viewof rnn_weightB = Inputs.range([0, 3], {value: 0.5, step: 0.1, label: "Route B (w₂)"})
+```
+:::::::
+::::::: {.input-sol-magenta}
+```{ojs}
+//| echo: false
+viewof rnn_bias = Inputs.range([-300, 300], {value: 100, step: 10, label: "Piétons (b)"})
+```
+:::::::
+::::::
+
+:::::: {.col-md-6}
+::::::: {.input-sol-yellow}
+```{ojs}
+//| echo: false
+viewof rnn_h_prev = Inputs.range([-200, 500], {value: 100, step: 10, label: "Trésor Veille (h_t-1)"})
+```
+:::::::
+::::::: {.input-sol-grey}
+```{ojs}
+//| echo: false
+viewof rnn_w_h = Inputs.range([0, 3], {value: 0.8, step: 0.1, label: "Poids Trésor (w_h)"})
+```
+:::::::
+::::::: {.input-sol-red}
+```{ojs}
+//| echo: false
+viewof rnn_target = Inputs.range([10000, 40000], {value: 20000, step: 1000, label: "Objectif (€)"})
+```
+:::::::
+::::::: {.input-sol-green}
+```{ojs}
+//| echo: false
+viewof rnn_lr = Inputs.range([0.01, 0.2], {value: 0.05, step: 0.01, label: "Taux (lr)"})
+```
+:::::::
+::::::
+
+:::::
+
+::::
+
+:::: {.panel-tabset .rnn-panel-tabset}
+
+#### ➡️ Propagation Avant
+
+::::: {.px-3 .pt-2 .text-muted .small}
+Les entrées Zone A, Zone B, les Piétons, et la Trésorerie de la veille ($h_{t-1}$) sont sommées (Σ), puis filtrées par ReLU. La trésorerie boucle vers l'entrée.
+:::::
+
+::::: {#plot-rnn-forward .plot-wrapper}
+:::::
+
+#### 🔍 Rétropropagation (BPTT)
+
+::::: {.px-3 .pt-2 .text-muted .small}
+L'erreur de fin de journée remonte à l'envers : elle distribue la responsabilité aux routes, aux piétons, et à la gestion de la trésorerie.
+:::::
+
+::::: {#plot-rnn-backprop .plot-wrapper}
+:::::
+
+#### 🚧 Descente de Gradient
+
+::::: {.px-3 .pt-2 .text-muted .small}
+Le "Budget Travaux" corrige proportionnellement les poids des routes ($w_1, w_2$) et le poids de la trésorerie ($w_h$).
+:::::
+
+::::: {#plot-rnn-gradient .plot-wrapper}
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph } from "../../assets/js/networks.js"
+
+// Calculs RNN réactifs
+rnn_Z = (rnn_trafficA * rnn_weightA) + (rnn_trafficB * rnn_weightB) + rnn_bias + (rnn_h_prev * rnn_w_h)
+rnn_isActive = rnn_Z >= 500
+rnn_revenus = rnn_isActive ? (rnn_Z - 500) * 50 : 0
+
+rnn_bp_error = rnn_target - rnn_revenus
+rnn_d_Z = rnn_isActive ? 50 : 0
+rnn_grad_Z = rnn_bp_error * rnn_d_Z
+
+rnn_grad_w1 = (rnn_grad_Z / 5000) * (rnn_trafficA / 100)
+rnn_grad_w2 = (rnn_grad_Z / 5000) * (rnn_trafficB / 100)
+rnn_grad_wh = (rnn_grad_Z / 5000) * (rnn_h_prev / 100)
+rnn_grad_b  = (rnn_grad_Z / 5000)
+
+rnn_new_w1 = Math.max(0, Math.min(3, rnn_weightA + (rnn_lr * rnn_grad_w1)))
+rnn_new_w2 = Math.max(0, Math.min(3, rnn_weightB + (rnn_lr * rnn_grad_w2)))
+rnn_new_wh = Math.max(0, Math.min(3, rnn_w_h + (rnn_lr * rnn_grad_wh)))
+rnn_new_b  = Math.max(-300, Math.min(300, rnn_bias + (rnn_lr * rnn_grad_b * 100)))
+
+// Mise à jour de l'état global de la simulation
+rnnUpdateState = {
+  window.rnnSimState = {
+    trafficA: rnn_trafficA,
+    trafficB: rnn_trafficB,
+    weightA: rnn_weightA,
+    weightB: rnn_weightB,
+    bias: rnn_bias,
+    h_prev: rnn_h_prev,
+    w_h: rnn_w_h,
+    target_h: rnn_target,
+    Z: rnn_Z,
+    revenus: rnn_revenus,
+    isActive: rnn_isActive,
+    bp_error: rnn_bp_error,
+    grad_w1: rnn_grad_w1,
+    grad_w2: rnn_grad_w2,
+    grad_wh: rnn_grad_wh,
+    grad_b: rnn_grad_b,
+    new_w1: rnn_new_w1,
+    new_w2: rnn_new_w2,
+    new_wh: rnn_new_wh,
+    new_b: rnn_new_b
+  };
+  if (typeof renderRNNForward?.refresh === "function") renderRNNForward.refresh();
+  if (typeof renderRNNBackprop?.refresh === "function") renderRNNBackprop.refresh();
+  if (typeof renderRNNGradient?.refresh === "function") renderRNNGradient.refresh();
+  return html``;
+}
+
+// Graphique 1 : Propagation Avant
+renderRNNForward = {
+  const nodes = [
+    { id: "A",      label: () => `Zone A\n(${window.rnnSimState?.trafficA ?? 300})`,        fx: -160, fy: -60,  status: "input",  shape: "pill" },
+    { id: "B",      label: () => `Zone B\n(${window.rnnSimState?.trafficB ?? 150})`,        fx: -160, fy:  60,  status: "input",  shape: "pill" },
+    { id: "Bias",   label: () => `Piétons\n(b = ${window.rnnSimState?.bias ?? 100})`,       fx:    0, fy: -110, status: "bias",   shape: "circle" },
+    { id: "Neuron", label: () => `Magasin (Σ)\nZ = ${window.rnnSimState?.Z ?? 500}`,        fx:    0, fy:    0, status: "neuron", shape: "rounded rect" },
+    { id: "Output", label: () => `Revenus\n${window.rnnSimState?.revenus ?? 0} €`,          fx:  160, fy:    0,
+      status: () => window.rnnSimState?.isActive ? "active" : "inactive", shape: "diamond" }
+  ];
+
+  const links = [
+    { source: "A",      target: "Neuron", label: () => `w₁ = ${(window.rnnSimState?.weightA ?? 1.5).toFixed(1)}`, status: "flow",     width: () => 1 + (window.rnnSimState?.weightA ?? 1.5) * 2.5 },
+    { source: "B",      target: "Neuron", label: () => `w₂ = ${(window.rnnSimState?.weightB ?? 0.5).toFixed(1)}`, status: "flow",     width: () => 1 + (window.rnnSimState?.weightB ?? 0.5) * 2.5 },
+    { source: "Bias",   target: "Neuron", label: "Biais",                                                       status: "biasLink", width: () => 1 + Math.abs(window.rnnSimState?.bias ?? 100) / 100 },
+    {
+      source: "Neuron", target: "Output", label: "ReLU",
+      status: () => window.rnnSimState?.isActive ? "activeFlow" : "inactiveFlow",
+      width: () => window.rnnSimState?.isActive ? 2.5 + Math.min(6, (window.rnnSimState?.revenus ?? 0) / 5000) : 1,
+      condition: () => {
+        const active = window.rnnSimState?.isActive ?? true;
+        return { value: active, label: active ? "Z ≥ 500" : "Z < 500", labelPosition: "right" };
+      }
+    },
+    {
+      source: "Output", target: "Neuron", label: () => `Trésor (w_h = ${(window.rnnSimState?.w_h ?? 0.8).toFixed(1)})`,
+      status: "recurrentFlow",
+      curvature: 0.6,
+      particles: 3,
+      width: () => 1 + (window.rnnSimState?.w_h ?? 0.8) * 2.5
+    }
+  ];
+
+  const graph = createGraph("#plot-rnn-forward", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      input:          { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
+      bias:           { nodeBg: "rgba(var(--sol-magenta-rgb), 0.15)", nodeBorder: "var(--sol-magenta)", nodeText: "var(--sol-magenta)" },
+      neuron:         { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
+      active:         { nodeBg: "rgba(var(--sol-green-rgb), 0.15)",   nodeBorder: "var(--sol-green)",   nodeText: "var(--sol-green)" },
+      inactive:       { nodeBg: "rgba(var(--sol-red-rgb), 0.15)",     nodeBorder: "var(--sol-red)",     nodeText: "var(--sol-red)" },
+      flow:           { linkStroke: "var(--sol-blue)",     linkText: "var(--sol-base01)", particles: 3, particleColor: "var(--sol-blue)" },
+      recurrentFlow:  { linkStroke: "var(--sol-yellow)",   linkText: "var(--sol-yellow)", particles: 3, particleColor: "var(--sol-yellow)" },
+      biasLink:       { linkStroke: "var(--sol-magenta)",  linkText: "var(--sol-magenta)", particles: 1, particleColor: "var(--sol-magenta)", particleSpeed: 0.005 },
+      activeFlow:     { linkStroke: "var(--sol-green)",    linkText: "var(--sol-green)",   particles: 5, particleColor: "var(--sol-green)",   particleSpeed: 0.02 },
+      inactiveFlow:   { linkStroke: "var(--sol-red)",      linkText: "var(--sol-red)",     particles: 0 }
+    }
+  });
+
+  graph.linkCurvature(link => link.curvature || 0);
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+
+// Graphique 2 : Rétropropagation
+renderRNNBackprop = {
+  const nodes = [
+    { id: "A",      label: () => `Zone A\n(Trafic: ${window.rnnSimState?.trafficA ?? 300})`,          fx: -160, fy: -60,  status: "auditInput",  shape: "pill" },
+    { id: "B",      label: () => `Zone B\n(Trafic: ${window.rnnSimState?.trafficB ?? 150})`,          fx: -160, fy:  60,  status: "auditInput",  shape: "pill" },
+    { id: "Bias",   label: () => `Piétons`,                                                          fx:  -70, fy: -110, status: "auditBias",   shape: "circle" },
+    { id: "Neuron", label: () => `Magasin\nCA = ${window.rnnSimState?.revenus ?? 0}€`,                 fx:    0, fy:    0, status: "auditNeuron", shape: "rounded rect" },
+    { id: "Output", label: () => `Siège Social\nObjectif: ${window.rnnSimState?.target_h ?? 20000}€`, fx:  170, fy:    0, status: "errorNode",   shape: "square" }
+  ];
+
+  const links = [
+    { source: "Output", target: "Neuron", label: () => `Perte : ${(window.rnnSimState?.bp_error ?? 0) > 0 ? "+" : ""}${(window.rnnSimState?.bp_error ?? 0).toFixed(0)} €`, status: "errorFlow" },
+    { source: "Neuron", target: "A",      label: () => `Resp. Route A (Δ: ${(window.rnnSimState?.grad_w1 ?? 0).toFixed(1)})`,                             status: "errorFlow" },
+    { source: "Neuron", target: "B",      label: () => `Resp. Route B (Δ: ${(window.rnnSimState?.grad_w2 ?? 0).toFixed(1)})`,                             status: "errorFlow" },
+    { source: "Neuron", target: "Bias",   label: () => `Resp. Biais`,                                                                                       status: "errorFlow" },
+    {
+      source: "Neuron", target: "Output", label: () => `Resp. Trésor (Δ: ${(window.rnnSimState?.grad_wh ?? 0).toFixed(1)})`,
+      status: "recurrentBackFlow",
+      curvature: 0.6,
+      particles: 3
+    }
+  ];
+
+  const graph = createGraph("#plot-rnn-backprop", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      errorNode:   { nodeBg: "rgba(var(--sol-red-rgb), 0.15)",    nodeBorder: "var(--sol-red)",    nodeText: "var(--sol-red)" },
+      auditNeuron: { nodeBg: "rgba(var(--sol-orange-rgb), 0.15)", nodeBorder: "var(--sol-orange)", nodeText: "var(--sol-orange)" },
+      auditInput:  { nodeBg: "var(--sol-base2)",  nodeBorder: "var(--sol-base00)", nodeText: "var(--sol-base01)" },
+      auditBias:   { nodeBg: "var(--sol-base2)",  nodeBorder: "var(--sol-base00)", nodeText: "var(--sol-base01)" },
+      errorFlow:   { linkStroke: "var(--sol-red)", linkText: "var(--sol-red)", particles: 4, particleColor: "var(--sol-red)", particleSpeed: 0.015 },
+      recurrentBackFlow: { linkStroke: "var(--sol-yellow)", linkText: "var(--sol-yellow)", particles: 4, particleColor: "var(--sol-yellow)", particleSpeed: 0.015 }
+    }
+  });
+
+  graph.linkCurvature(link => link.curvature || 0);
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+
+// Graphique 3 : Descente de Gradient
+renderRNNGradient = {
+  const nodes = [
+    { id: "A",      label: `Zone A`,            fx: -160, fy: -60,  status: "input",  shape: "pill" },
+    { id: "B",      label: `Zone B`,            fx: -160, fy:  60,  status: "input",  shape: "pill" },
+    { id: "Bias",   label: `Piétons`,           fx:  -70, fy: -110, status: "bias",   shape: "circle" },
+    { id: "Neuron", label: `Magasin`,   fx:    0, fy:    0, status: "neuron", shape: "rounded rect" },
+    { id: "Output", label: `Prêt pour\nJour t+1`, fx:  160, fy:    0, status: "active", shape: "diamond" }
+  ];
+
+  const links = [
+    { source: "A",      target: "Neuron", label: () => `w₁ : ${(window.rnnSimState?.weightA ?? 1.5).toFixed(1)} ➔ ${(window.rnnSimState?.new_w1 ?? 1.5).toFixed(2)}`, status: "updateFlow" },
+    { source: "B",      target: "Neuron", label: () => `w₂ : ${(window.rnnSimState?.weightB ?? 0.5).toFixed(1)} ➔ ${(window.rnnSimState?.new_w2 ?? 0.5).toFixed(2)}`, status: "updateFlow" },
+    { source: "Bias",   target: "Neuron", label: () => `b : ${(window.rnnSimState?.bias ?? 100).toFixed(0)} ➔ ${(window.rnnSimState?.new_b ?? 100).toFixed(0)}€`,        status: "biasFlow" },
+    { source: "Neuron", target: "Output", label: "Nouveau Potentiel",                                   status: "activeFlow" },
+    {
+      source: "Output", target: "Neuron", label: () => `w_h : ${(window.rnnSimState?.w_h ?? 0.8).toFixed(1)} ➔ ${(window.rnnSimState?.new_wh ?? 0.8).toFixed(2)}`,
+      status: "recurrentUpdateFlow",
+      curvature: 0.6,
+      particles: 2
+    }
+  ];
+
+  const graph = createGraph("#plot-rnn-gradient", { nodes, links }, {
+    nodeRadius: 25, fontSize: 9, height: 300,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      input:      { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
+      bias:       { nodeBg: "rgba(var(--sol-magenta-rgb), 0.15)", nodeBorder: "var(--sol-magenta)", nodeText: "var(--sol-magenta)" },
+      neuron:     { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
+      active:     { nodeBg: "rgba(var(--sol-green-rgb), 0.15)",   nodeBorder: "var(--sol-green)",   nodeText: "var(--sol-green)" },
+      updateFlow: { linkStroke: "var(--sol-green)",   linkText: "var(--sol-green)",   particles: 2, particleColor: "var(--sol-green)",   particleWidth: 4 },
+      activeFlow: { linkStroke: "var(--sol-base1)",   linkText: "var(--sol-base01)",  particles: 1 },
+      biasFlow:   { linkStroke: "var(--sol-magenta)", linkText: "var(--sol-magenta)", particles: 1 },
+      recurrentUpdateFlow: { linkStroke: "var(--sol-yellow)", linkText: "var(--sol-yellow)", particles: 2, particleColor: "var(--sol-yellow)" }
+    }
+  });
+
+  graph.linkCurvature(link => link.curvature || 0);
+
+  invalidation.then(() => { if (graph?.destroy) graph.destroy(); });
+  return graph;
+}
+
+layoutAdjustRNN = {
+  const card = document.querySelector('.rnn-card-window');
+  if (card) {
+    const controls = card.querySelector('.rnn-control-row');
+    const tabset = card.querySelector('.rnn-panel-tabset');
+    if (controls && tabset) {
+      const navTabs = tabset.querySelector('.nav-tabs');
+      const tabContent = tabset.querySelector('.tab-content');
+      if (navTabs && tabContent) {
+        tabset.insertBefore(controls, tabContent);
+      }
+    }
+  }
+  return true;
+}
+```
 
 ### Topologies fondamentales : Elman et Jordan
 
@@ -78,9 +401,9 @@ renderRNNUnrolled = {
   // Input x_t, hidden h_t, output y_t for each step
   for (let t = 0; t < T; t++) {
     const cx = (t - (T-1)/2) * spacing;
-    nodes.push({ id:`x${t}`, label:`x${t+1}`, fx:cx, fy: 100, shape:"pill",   status:"rnnInput" });
-    nodes.push({ id:`h${t}`, label:`h${t+1}`, fx:cx, fy:   0, shape:"circle", status:"rnnHidden" });
-    nodes.push({ id:`y${t}`, label:`y${t+1}`, fx:cx, fy:-100, shape:"diamond",status:"rnnOutput" });
+    nodes.push({ id:`x${t}`, label:`x${t+1}\n(Flux)`, fx:cx, fy: 100, shape:"pill",   status:"rnnInput" });
+    nodes.push({ id:`h${t}`, label:`h${t+1}\n(Trésor)`, fx:cx, fy:   0, shape:"circle", status:"rnnHidden" });
+    nodes.push({ id:`y${t}`, label:`y${t+1}\n(Vente)`, fx:cx, fy:-100, shape:"diamond",status:"rnnOutput" });
     links.push({ source:`x${t}`, target:`h${t}`, status:"fwdIn" });
     links.push({ source:`h${t}`, target:`y${t}`, status:"fwdOut" });
     if (t > 0) {

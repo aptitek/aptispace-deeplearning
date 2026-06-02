@@ -495,8 +495,21 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
         const linkText = resolveColor(style.linkText, "#657b83");
         const labelBg = resolveColor("var(--sol-base3)", "#fdf6e3");
 
-        const x = source.x + (target.x - source.x) * 0.5;
-        const y = source.y + (target.y - source.y) * 0.5;
+        let x = source.x + (target.x - source.x) * 0.5;
+        let y = source.y + (target.y - source.y) * 0.5;
+
+        const curvature = evaluate(link.curvature, link);
+        let oy = 0;
+        if (curvature) {
+          const dx = target.x - source.x;
+          const dy = target.y - source.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > 0) {
+            x += (-dy / dist) * dist * curvature * 0.5;
+            oy = (dx / dist) * dist * curvature * 0.5;
+            y += oy;
+          }
+        }
 
         ctx.save();
         
@@ -510,6 +523,10 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
         const paddingY = 2;
         const rectW = textWidth + paddingX * 2;
         const rectH = fSize + paddingY * 2;
+
+        if (oy !== 0) {
+          y += Math.sign(oy) * (rectH / 2 + 5);
+        }
 
         ctx.fillStyle = labelBg;
         ctx.strokeStyle = resolveColor(style.linkStroke, "#586e75");
