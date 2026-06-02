@@ -206,6 +206,7 @@ renderMorphologyNetwork = {
     nodeRadius: 22, fontSize: 9, height: 320,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 45,
+    cooldownTicks: Infinity,
     styles: {
       activeInput:  { nodeBg: "rgba(var(--sol-blue-rgb), 0.15)",    nodeBorder: "var(--sol-blue)",    nodeText: "var(--sol-blue)" },
       activeHidden: { nodeBg: "rgba(var(--sol-yellow-rgb), 0.15)",  nodeBorder: "var(--sol-yellow)",  nodeText: "var(--sol-yellow)" },
