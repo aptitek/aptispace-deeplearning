@@ -1,0 +1,117 @@
+## Fondements des RNN : Mémoire et Récurrence
+
+Le passage des architectures *feedforward* (MLP) aux réseaux de neurones récurrents (RNN) représente une **rupture paradigmatique** nécessaire pour le traitement des dépendances temporelles. Contrairement aux modèles statiques qui postulent l'indépendance de chaque observation, les RNN intègrent une dimension séquentielle où l'ordre des données est constitutif de leur signification. Un mot n'a de sens que dans son contexte phrastique ; une valeur boursière n'est informative que par rapport à sa trajectoire passée [@Franck2024; @AWS2024; @DATAROCKSTARS2025].
+
+### La limite de l'hypothèse markovienne
+
+Dans les systèmes dynamiques réels, l'hypothèse markovienne de premier ordre — selon laquelle l'état futur ne dépend que de l'état immédiatement précédent — s'avère structurellement insuffisante. Prédire la prochaine occurrence d'une séquence exige que le modèle estime la **loi de probabilité conditionnelle** :
+
+$$
+P(\mathbf{x}_t \mid \mathbf{x}_1, \dots, \mathbf{x}_{t-1})
+$$
+
+Un MLP standard traite chaque vecteur $\mathbf{x}_t$ de façon indépendante, ignorant l'historique $(\mathbf{x}_1, \dots, \mathbf{x}_{t-1})$. Il est donc structurellement aveugle aux dépendances inter-temporelles. En traitement du signal, l'état caché d'un RNN agit comme un **filtre temporel** : il moyenne et stabilise l'information utile contre le bruit aléatoire à travers les trames, de la même façon qu'une moyenne mobile réduit la variance d'un signal parasite [@Franck2024; @Modelisation2024].
+
+### Le vecteur d'état caché $\mathbf{h}_t$
+
+Le pivot de l'architecture RNN est le **vecteur latent** $\mathbf{h}_t$, ou état caché, qui compresse l'historique des entrées passées. Il transforme une séquence de taille variable en un flux de sortie :
+
+$$
+\mathbf{y}_t = f_\theta(\mathbf{x}_t, \mathbf{h}_{t-1})
+$$
+
+L'état caché est mis à jour à chaque pas de temps selon la récurrence :
+
+$$
+\mathbf{h}_t = \tanh\!\left(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}\right)
+$$
+
+où $\mathbf{W}_h$ est la matrice de récurrence (poids sur l'état précédent), $\mathbf{W}_x$ est la matrice d'entrée, et $\mathbf{b}$ est le biais. Le même jeu de poids $(\mathbf{W}_h, \mathbf{W}_x, \mathbf{b})$ est partagé à **tous les pas de temps** — c'est ce partage qui confère aux RNN leur capacité à traiter des séquences de longueur variable [@Wang2023; @Grosse2017].
+
+### Topologies fondamentales : Elman et Jordan
+
+Deux architectures fondamentales définissent le comportement de la récurrence [@Modelisation2024; @Franck2024] :
+
+* **Réseau d'Elman :** L'état latent $\mathbf{h}_t$ dépend de l'entrée actuelle $\mathbf{x}_t$ et de l'état latent précédent $\mathbf{h}_{t-1}$. C'est la topologie standard, privilégiant la continuité de la dynamique interne.
+
+* **Réseau de Jordan :** La mise à jour de $\mathbf{h}_t$ s'appuie sur la **sortie précédente** $\mathbf{y}_{t-1}$ plutôt que sur l'état caché. Configuration pertinente lorsque les performances observées sont les meilleurs prédicteurs de l'état futur (ex. : commande de robot boucle fermée).
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔁 RNN Déroulé dans le Temps (*Unrolled*)
+::::
+
+:::: {.card-control-row .flex-column}
+```{ojs}
+//| echo: false
+viewof rnn_t = Inputs.range([1, 5], { value: 3, step: 1, label: "Pas de temps T affiché" })
+```
+::::
+
+:::: {#plot-rnn-unrolled .plot-wrapper}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph as createRNNGraph } from "../../assets/js/networks.js"
+
+renderRNNUnrolled = {
+  const T = rnn_t;
+  const spacing = 130;
+  const nodes = [];
+  const links = [];
+
+  // Input x_t, hidden h_t, output y_t for each step
+  for (let t = 0; t < T; t++) {
+    const cx = (t - (T-1)/2) * spacing;
+    nodes.push({ id:`x${t}`, label:`x${t+1}`, fx:cx, fy: 100, shape:"pill",   status:"rnnInput" });
+    nodes.push({ id:`h${t}`, label:`h${t+1}`, fx:cx, fy:   0, shape:"circle", status:"rnnHidden" });
+    nodes.push({ id:`y${t}`, label:`y${t+1}`, fx:cx, fy:-100, shape:"diamond",status:"rnnOutput" });
+    links.push({ source:`x${t}`, target:`h${t}`, status:"fwdIn" });
+    links.push({ source:`h${t}`, target:`y${t}`, status:"fwdOut" });
+    if (t > 0) {
+      links.push({ source:`h${t-1}`, target:`h${t}`, label:"Wₕ", status:"recurrent" });
+    }
+  }
+  // h0 init marker
+  if (T > 0) {
+    nodes.unshift({ id:"h_init", label:"h₀\n(init)", fx:(-T/2)*spacing - 60, fy:0, shape:"circle", status:"init" });
+    links.unshift({ source:"h_init", target:"h0", status:"recurrent" });
+  }
+
+  const g = createRNNGraph("#plot-rnn-unrolled", {nodes, links}, {
+    nodeRadius: 22, fontSize: 9,
+    height: 280 + (T > 3 ? (T - 3) * 10 : 0),
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 35,
+    styles: {
+      rnnInput:  { nodeBg:"rgba(var(--sol-blue-rgb),0.15)",   nodeBorder:"var(--sol-blue)",   nodeText:"var(--sol-blue)" },
+      rnnHidden: { nodeBg:"rgba(var(--sol-yellow-rgb),0.15)", nodeBorder:"var(--sol-yellow)", nodeText:"var(--sol-yellow)" },
+      rnnOutput: { nodeBg:"rgba(var(--sol-green-rgb),0.15)",  nodeBorder:"var(--sol-green)",  nodeText:"var(--sol-green)" },
+      init:      { nodeBg:"rgba(var(--sol-base1-rgb),0.1)",   nodeBorder:"var(--sol-base1)",  nodeText:"var(--sol-base1)" },
+      fwdIn:     { linkStroke:"var(--sol-blue)",   particles:1, particleColor:"var(--sol-blue)",   particleSpeed:0.03 },
+      fwdOut:    { linkStroke:"var(--sol-green)",  particles:1, particleColor:"var(--sol-green)",  particleSpeed:0.03 },
+      recurrent: { linkStroke:"var(--sol-yellow)", particles:2, particleColor:"var(--sol-yellow)", particleSpeed:0.025,
+                   linkText:"var(--sol-yellow)" },
+    }
+  });
+  invalidation.then(() => g?.destroy?.());
+  return g;
+}
+```
+
+### Topologies séquentielles : modes d'entrée-sortie
+
+Les RNN s'adaptent à quatre configurations principales selon la relation entre la séquence d'entrée et la séquence de sortie [@maurock2020] :
+
+| Mode                      | Description                        | Application                          |
+| :------------------------ | :--------------------------------- | :----------------------------------- |
+| **Un-à-Un**               | Pas de récurrence (MLP classique)  | Classification d'image               |
+| **Un-à-Plusieurs**        | Une entrée, une séquence de sortie | Génération de texte, légende d'image |
+| **Plusieurs-à-Un**        | Séquence d'entrée, une sortie      | Classification de sentiment          |
+| **Plusieurs-à-Plusieurs** | Séquences en entrée et sortie      | Traduction, étiquetage de séquence   |
+
+Cette flexibilité architecturale est fondamentale : elle explique pourquoi les RNN ont dominé le traitement du langage naturel pendant une décennie, avant d'être supplantés par les Transformers.

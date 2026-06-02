@@ -1,0 +1,12 @@
+---
+title: "👁️ Réseaux de Neurones Convolutionnels (CNN)"
+part: "👁️ Réseaux de Neurones Convolutionnels (CNN)"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include _51_convolution.qmd >}}
+{{< include _52_pooling.qmd >}}
+{{< include _53_architectures.qmd >}}
+{{< include _54_detection.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

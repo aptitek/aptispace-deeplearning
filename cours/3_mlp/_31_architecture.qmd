@@ -1,0 +1,149 @@
+## Architecture du Perceptron Multicouche
+
+Le Perceptron Multicouche (MLP) constitue le socle fondamental de l'apprentissage profond moderne. Successeur structurel du perceptron simple de Rosenblatt — dont les limites face aux problèmes non linéairement séparables furent mises en évidence par la célèbre impasse du OU exclusif (XOR) — le MLP introduit une architecture *feedforward* acyclique intégrant des couches cachées. Sa puissance réside dans le **théorème d'approximation universelle** : un MLP avec au moins une couche cachée de taille suffisante peut approcher n'importe quelle fonction continue à précision arbitraire [@Nielsen_2019; @Traite_nd; @ResearchGate_MLP1_2026].
+
+* **La structure en strates :**
+  * **Couche d'entrée :** Réceptionne le vecteur de caractéristiques brut $\mathbf{x} \in \mathbb{R}^{n_0}$. Chaque neurone correspond à une dimension de l'espace d'entrée.
+  * **Couches cachées :** Ce sont les couches intermédiaires où s'opère l'extraction hiérarchique de représentations. La première couche détecte des primitives simples ; les couches suivantes les combinent en concepts de plus en plus abstraits [@ResearchGate_MLP2_2026].
+  * **Couche de sortie :** Produit la prédiction finale — une probabilité via *Softmax* pour la classification multi-classe, un scalaire pour la régression.
+
+* **La connectivité totale (fully connected) :**
+  * Chaque neurone d'une couche est connecté à **tous** les neurones de la couche précédente. C'est à la fois la force et la faiblesse du MLP : une expressivité maximale mais un coût paramétrique croissant de manière quadratique avec la largeur des couches.
+  * Pour une couche $l$ recevant $n_{l-1}$ entrées et émettant $n_l$ activations, le nombre de paramètres est $n_l \times n_{l-1} + n_l$ (poids + biais).
+
+### Poids synaptiques et biais
+
+L'unité de calcul fondamentale est le **neurone artificiel**, qui effectue une transformation affine suivie d'une non-linéarité. Deux familles de paramètres apprenables pilotent ce calcul [@Rougier_nd; @Traite_nd] :
+
+* **Les poids synaptiques $w_{jk}^l$ :** Le poids $w_{jk}^l$ module l'influence de l'activation $a_k^{l-1}$ du neurone $k$ (couche $l-1$) sur le neurone $j$ (couche $l$). Une valeur absolue élevée indique une forte dépendance ; une valeur proche de zéro indique une quasi-indépendance.
+* **Le biais $b_j^l$ :** Terme additif permettant de décaler le seuil d'activation indépendamment des entrées. Sans biais, un neurone ne peut être actif que lorsque ses entrées sont non nulles, ce qui limite drastiquement la capacité d'expression du réseau.
+
+L'activation d'un neurone $j$ dans la couche $l$ est donnée par :
+
+$$
+a_j^l = \sigma\!\left(\sum_k w_{jk}^l \, a_k^{l-1} + b_j^l\right) = \sigma(z_j^l)
+$$
+
+où $z_j^l$ est la **pré-activation** (combinaison linéaire avant l'application de la non-linéarité).
+
+### Formalisme vectoriel et vectorisation
+
+Pour tirer parti de l'accélération matérielle des GPU, on reformule ce calcul en opérations matricielles. L'ensemble de la couche $l$ se calcule en une seule multiplication de matrices [@Nielsen_2019] :
+
+$$
+\mathbf{a}^l = \sigma\!\left(\mathbf{W}^l \mathbf{a}^{l-1} + \mathbf{b}^l\right)
+$$
+
+où $\mathbf{W}^l \in \mathbb{R}^{n_l \times n_{l-1}}$ est la matrice des poids, et la non-linéarité $\sigma$ est appliquée élément par élément. Ce passage de la vue scalaire à la vue matricielle est fondamental : un GPU peut effectuer des milliers de ces multiplications en parallèle, ce qui rend l'entraînement de réseaux profonds computationnellement faisable.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔗 Simulateur — Architecture Feedforward du MLP
+::::
+
+:::: {.card-control-row .flex-column}
+```{ojs}
+//| echo: false
+viewof mlp_action = {
+  const states = [
+    { phase: "idle",        description: "Réseau au repos — cliquez sur Lancer pour observer le flux d'information." },
+    { phase: "input",       description: "Étape 1 : Le vecteur d'entrée x est injecté dans la couche d'entrée." },
+    { phase: "hidden1_in",  description: "Étape 2 : Les signaux pondérés se propagent vers la 1ère couche cachée." },
+    { phase: "hidden1_act", description: "Étape 3 : Activation σ(Wx + b) — les neurones cachés s'allument sélectivement." },
+    { phase: "hidden2_in",  description: "Étape 4 : Les représentations abstraites se propagent vers la 2ème couche cachée." },
+    { phase: "hidden2_act", description: "Étape 5 : Représentations de plus haut niveau — extraction de concepts complexes." },
+    { phase: "output",      description: "Étape 6 : La couche de sortie produit la prédiction finale ŷ." }
+  ];
+  if (!window.mlpSimState) window.mlpSimState = states[0];
+
+  const sm = new MLPStateMachine({ states, interval: 1800, loop: true,
+    onStateChange: (state) => {
+      window.mlpSimState = state;
+      if (window.mlpGraphInstance?.refresh) window.mlpGraphInstance.refresh();
+      const d = container.querySelector(".mlp-desc");
+      if (d) d.textContent = state.description;
+    }
+  });
+
+  const container = html`<div class="d-flex flex-column align-items-center gap-2 w-100">
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn btn-outline-primary btn-sm btn-play">▶️ Lancer</button>
+      <button class="btn btn-outline-secondary btn-sm btn-pause">⏸️ Pause</button>
+      <button class="btn btn-outline-danger btn-sm btn-reset">🔄 Reset</button>
+    </div>
+    <div class="text-muted fst-italic text-center my-1 small mlp-desc" style="min-height:20px;">
+      ${window.mlpSimState?.description ?? "Réseau au repos."}
+    </div>
+  </div>`;
+
+  const upd = () => {
+    container.querySelector(".btn-play").classList.toggle("active", sm.isPlaying);
+    container.querySelector(".btn-pause").classList.toggle("active", !sm.isPlaying && sm.currentIndex > 0);
+  };
+  container.querySelector(".btn-play").onclick  = () => { sm.start(); upd(); };
+  container.querySelector(".btn-pause").onclick = () => { sm.stop();  upd(); };
+  container.querySelector(".btn-reset").onclick = () => { sm.reset(); upd(); };
+  upd();
+  return container;
+}
+```
+::::
+
+:::: {#plot-mlp-arch .plot-wrapper}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph as createMLPGraph } from "../../assets/js/networks.js"
+import { StateMachine as MLPStateMachine } from "../../assets/js/core.js"
+
+renderMLPArch = {
+  const p = (ph) => window.mlpSimState?.phase === ph;
+  const anyHidden1 = () => ["hidden1_in","hidden1_act","hidden2_in","hidden2_act","output"].includes(window.mlpSimState?.phase);
+  const anyHidden2 = () => ["hidden2_in","hidden2_act","output"].includes(window.mlpSimState?.phase);
+  const anyOutput  = () => window.mlpSimState?.phase === "output";
+
+  const nodes = [
+    { id:"x1", label:"x₁", fx:-200, fy:-60,  shape:"pill",   status: () => p("idle") ? "default" : "activeInput" },
+    { id:"x2", label:"x₂", fx:-200, fy:  0,  shape:"pill",   status: () => p("idle") ? "default" : "activeInput" },
+    { id:"x3", label:"x₃", fx:-200, fy: 60,  shape:"pill",   status: () => p("idle") ? "default" : "activeInput" },
+    { id:"h11", label:"h₁¹", fx:-60, fy:-90, shape:"circle", status: () => anyHidden1() ? "activeHidden" : "default" },
+    { id:"h12", label:"h₂¹", fx:-60, fy:-30, shape:"circle", status: () => anyHidden1() ? "activeHidden" : "default" },
+    { id:"h13", label:"h₃¹", fx:-60, fy: 30, shape:"circle", status: () => anyHidden1() ? "activeHidden" : "default" },
+    { id:"h14", label:"h₄¹", fx:-60, fy: 90, shape:"circle", status: () => anyHidden1() ? "activeHidden" : "default" },
+    { id:"h21", label:"h₁²", fx: 80, fy:-60, shape:"circle", status: () => anyHidden2() ? "activeHidden2" : "default" },
+    { id:"h22", label:"h₂²", fx: 80, fy:  0, shape:"circle", status: () => anyHidden2() ? "activeHidden2" : "default" },
+    { id:"h23", label:"h₃²", fx: 80, fy: 60, shape:"circle", status: () => anyHidden2() ? "activeHidden2" : "default" },
+    { id:"y",   label:"ŷ",   fx:200, fy:  0, shape:"diamond",status: () => anyOutput()  ? "activeOutput"  : "default" },
+  ];
+
+  const addLinks = (srcs, tgts, active) => srcs.flatMap(s => tgts.map(t => ({
+    source: s, target: t, status: () => active() ? "activeFlow" : "default"
+  })));
+
+  const links = [
+    ...addLinks(["x1","x2","x3"], ["h11","h12","h13","h14"], () => ["hidden1_in","hidden1_act"].includes(window.mlpSimState?.phase)),
+    ...addLinks(["h11","h12","h13","h14"], ["h21","h22","h23"], () => ["hidden2_in","hidden2_act"].includes(window.mlpSimState?.phase)),
+    ...addLinks(["h21","h22","h23"], ["y"], () => anyOutput()),
+  ];
+
+  const g = createMLPGraph("#plot-mlp-arch", {nodes, links}, {
+    nodeRadius: 20, fontSize: 9, height: 320,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 40,
+    styles: {
+      activeInput:   { nodeBg:"rgba(var(--sol-blue-rgb),0.15)",    nodeBorder:"var(--sol-blue)",    nodeText:"var(--sol-blue)" },
+      activeHidden:  { nodeBg:"rgba(var(--sol-yellow-rgb),0.15)",  nodeBorder:"var(--sol-yellow)",  nodeText:"var(--sol-yellow)" },
+      activeHidden2: { nodeBg:"rgba(var(--sol-orange-rgb),0.15)",  nodeBorder:"var(--sol-orange)",  nodeText:"var(--sol-orange)" },
+      activeOutput:  { nodeBg:"rgba(var(--sol-green-rgb),0.15)",   nodeBorder:"var(--sol-green)",   nodeText:"var(--sol-green)" },
+      activeFlow:    { linkStroke:"var(--sol-cyan)", particles:2, particleColor:"var(--sol-cyan)", particleSpeed:0.02 }
+    }
+  });
+  window.mlpGraphInstance = g;
+  invalidation.then(() => g?.destroy?.());
+  return g;
+}
+```

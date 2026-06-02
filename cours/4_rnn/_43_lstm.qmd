@@ -1,0 +1,125 @@
+## La Cellule LSTM : Long Short-Term Memory
+
+La cellule LSTM (*Long Short-Term Memory*), introduite par Hochreiter et Schmidhuber en 1997, constitue la réponse architecturale au problème de disparition du gradient. Son innovation fondamentale est l'introduction d'un **état de cellule** $\mathbf{c}_t$, distinct de l'état caché $\mathbf{h}_t$, qui fonctionne comme une autoroute de l'information à travers le temps [@DATAROCKSTARS2025; @Habbou2022; @Xu2024].
+
+### Le principe : dynamique additive vs multiplicative
+
+Dans un RNN simple, la mise à jour de l'état caché est entièrement **multiplicative** : $\mathbf{h}_t = \tanh(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t)$. Lors de la rétropropagation, cette multiplicativité engendre des produits de dérivées exponentiellement instables.
+
+L'état de cellule $\mathbf{c}_t$ de la LSTM subit des mises à jour principalement **additives** :
+
+$$
+\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
+$$
+
+Cette addition garantit que le gradient peut remonter le temps sans être multiplié par de nombreux petits coefficients : $\frac{\partial \mathbf{c}_t}{\partial \mathbf{c}_{t-1}} = \mathbf{f}_t$, qui est directement contrôlé par la porte d'oubli [@zosoyyz2016; @TheWalkingCube2015; @Weber2017].
+
+### Les trois portes et leurs équations
+
+Trois portes (*gates*), chacune implémentée comme une couche sigmoïde, régulent sélectivement le flux d'information [@Zhang2021; @LDSTeam2025] :
+
+**Porte d'oubli $\mathbf{f}_t$** — Que faut-il effacer de la mémoire passée ?
+$$
+\mathbf{f}_t = \sigma(\mathbf{W}_f \mathbf{h}_{t-1} + \mathbf{U}_f \mathbf{x}_t + \mathbf{b}_f)
+$$
+
+**Porte d'entrée $\mathbf{i}_t$** — Quelle nouvelle information mérite d'être stockée ?
+$$
+\mathbf{i}_t = \sigma(\mathbf{W}_i \mathbf{h}_{t-1} + \mathbf{U}_i \mathbf{x}_t + \mathbf{b}_i)
+$$
+
+**Candidat $\tilde{\mathbf{c}}_t$** — Quelle information proposée ajouter à la cellule ?
+$$
+\tilde{\mathbf{c}}_t = \tanh(\mathbf{W}_c \mathbf{h}_{t-1} + \mathbf{U}_c \mathbf{x}_t + \mathbf{b}_c)
+$$
+
+**Mise à jour de la cellule** :
+$$
+\mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
+$$
+
+**Porte de sortie $\mathbf{o}_t$** — Quelle partie de la cellule expose-t-on en état caché ?
+$$
+\mathbf{o}_t = \sigma(\mathbf{W}_o \mathbf{h}_{t-1} + \mathbf{U}_o \mathbf{x}_t + \mathbf{b}_o)
+\qquad
+\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)
+$$
+
+```{mermaid}
+graph LR
+    classDef input  fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
+    classDef gate   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
+    classDef cell   fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
+    classDef output fill:#002b36,stroke:#2aa198,stroke-width:2px,color:#2aa198;
+
+    Xt["xₜ"]:::input
+    Hprev["hₜ₋₁"]:::input
+    Cprev["cₜ₋₁\n(Autoroute)"]:::cell
+
+    Xt & Hprev --> Forget["Porte d'Oubli\nfₜ = σ(...)"]:::gate
+    Xt & Hprev --> Input["Porte d'Entrée\niₜ = σ(...)"]:::gate
+    Xt & Hprev --> Cand["Candidat\nc̃ₜ = tanh(...)"]:::gate
+    Xt & Hprev --> Out["Porte de Sortie\noₜ = σ(...)"]:::gate
+
+    Forget --> Update(["cₜ = fₜ⊙cₜ₋₁ + iₜ⊙c̃ₜ"]):::cell
+    Input  --> Update
+    Cand   --> Update
+    Cprev  --> Update
+
+    Update --> Ct["cₜ\n(nouvelle cellule)"]:::cell
+    Ct & Out --> Ht["hₜ = oₜ⊙tanh(cₜ)"]:::output
+```
+
+### Nombre de paramètres de la LSTM
+
+Pour une LSTM avec une dimension d'entrée $d_x$ et une dimension d'état caché $d_h$, chaque porte requiert $d_h \times (d_h + d_x) + d_h$ paramètres. Avec quatre sous-réseaux (f, i, c, o), le total est [@ArsenalFanatic2016; @Karakaya2020; @wabbit2016] :
+
+$$
+N_{\text{LSTM}} = 4 \times \left[d_h (d_h + d_x) + d_h\right] = 4 d_h (d_h + d_x + 1)
+$$
+
+À titre d'exemple, pour $d_h = 128$ et $d_x = 64$, la LSTM possède $4 \times 128 \times 193 = 98\,816$ paramètres.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔢 Calculateur de Paramètres — LSTM vs RNN Simple
+::::
+
+:::: {.card-control-row}
+```{ojs}
+//| echo: false
+viewof lstm_dh = Inputs.range([8, 512], { value: 128, step: 8,  label: "Dimension cachée dₕ" })
+viewof lstm_dx = Inputs.range([4, 256], { value:  64, step: 4,  label: "Dimension entrée dₓ" })
+```
+::::
+
+```{ojs}
+//| echo: false
+lstm_stats = {
+  const dh = lstm_dh, dx = lstm_dx;
+  const rnn   = dh * (dh + dx) + dh;
+  const lstm  = 4 * dh * (dh + dx + 1);
+  const ratio = (lstm / rnn).toFixed(1);
+  return html`<div class="px-3 pb-3">
+    <table class="table table-sm table-borderless mb-0">
+      <thead><tr>
+        <th>Architecture</th><th>Paramètres</th><th>Ratio</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>RNN simple</td>
+            <td><strong>${rnn.toLocaleString()}</strong></td>
+            <td>1×</td></tr>
+        <tr><td>LSTM</td>
+            <td><strong>${lstm.toLocaleString()}</strong></td>
+            <td>${ratio}×</td></tr>
+      </tbody>
+    </table>
+    <p class="text-muted small mb-0 mt-2">
+      dₕ = ${dh}, dₓ = ${dx} — Formule LSTM : 4 × dₕ × (dₕ + dₓ + 1)
+    </p>
+  </div>`;
+}
+```
+
+:::

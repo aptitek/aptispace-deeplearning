@@ -1,1 +1,12 @@
-Fait un cours magistral sur le sujet complet et détaillé. Utilise les citations au format Pandoc et suis le plan :
+---
+title: "🔗 Le Perceptron Multicouche (MLP)"
+part: "🔗 Le Perceptron Multicouche (MLP)"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include _31_architecture.qmd >}}
+{{< include _32_activation.qmd >}}
+{{< include _33_apprentissage.qmd >}}
+{{< include _34_limites.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

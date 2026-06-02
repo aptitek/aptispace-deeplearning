@@ -1,0 +1,13 @@
+---
+title: "🔁 Réseaux de Neurones Récurrents (RNN)"
+part: "🔁 Réseaux de Neurones Récurrents (RNN)"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include _41_fondements.qmd >}}
+{{< include _42_gradient.qmd >}}
+{{< include _43_lstm.qmd >}}
+{{< include _44_gru.qmd >}}
+{{< include _45_applications.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

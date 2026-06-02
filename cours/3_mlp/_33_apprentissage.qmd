@@ -1,0 +1,126 @@
+## Dynamique d'Apprentissage : Rétropropagation
+
+La rétropropagation du gradient est le moteur algorithmique de l'apprentissage dans le MLP. Fondée sur la règle de dérivation en chaîne, elle permet de calculer, en un seul passage arrière (*backward pass*), le gradient de la fonction de coût par rapport à chacun des paramètres du réseau [@Nielsen_2019; @Meeden_nd; @Bergmann_Stryker_nd]. Ce calcul, qui semblait autrefois prohibitif par sa complexité, est en réalité linéaire en le nombre de paramètres.
+
+### Les quatre équations fondamentales de Nielsen
+
+Michael Nielsen a synthétisé la rétropropagation en quatre équations élégantes qui gouvernent la propagation de l'erreur $\boldsymbol{\delta}^l$ — l'erreur locale attribuée à la pré-activation $\mathbf{z}^l$ de la couche $l$ [@Nielsen_2019; @CodeSignal_Backprop_2025] :
+
+**BP1 — Erreur de la couche de sortie :**
+$$
+\boldsymbol{\delta}^L = \nabla_{\mathbf{a}} C \odot \sigma'(\mathbf{z}^L)
+$$
+Le gradient de la perte par rapport aux activations de sortie, modulé par la dérivée de la fonction d'activation. Le symbole $\odot$ désigne le **produit de Hadamard** (multiplication élément par élément).
+
+**BP2 — Rétropropagation de l'erreur :**
+$$
+\boldsymbol{\delta}^l = \left((\mathbf{W}^{l+1})^\top \boldsymbol{\delta}^{l+1}\right) \odot \sigma'(\mathbf{z}^l)
+$$
+L'erreur est redistribuée en amont via la transposée de la matrice de poids, puis pondérée par la sensibilité locale $\sigma'(\mathbf{z}^l)$.
+
+**BP3 — Gradient du biais :**
+$$
+\frac{\partial C}{\partial b_j^l} = \delta_j^l
+$$
+Le gradient du biais est directement l'erreur locale du neurone.
+
+**BP4 — Gradient du poids :**
+$$
+\frac{\partial C}{\partial w_{jk}^l} = a_k^{l-1} \cdot \delta_j^l
+$$
+Le gradient d'un poids est le produit de l'activation en amont et de l'erreur du neurone en aval : un poids appris activement par une entrée forte contribuera proportionnellement à l'ajustement.
+
+Le produit de Hadamard $\odot$ dans BP1 et BP2 est crucial : il permet de moduler l'erreur transmise par la sensibilité locale de la non-linéarité, en vectorisant efficacement l'ensemble du calcul sans boucle explicite.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔄 Flux du Gradient — Propagation Avant et Arrière
+::::
+
+:::: {.card-control-row .flex-column}
+```{ojs}
+//| echo: false
+viewof bp_mode = Inputs.select(["Propagation Avant ➡️", "Rétropropagation ⬅️"], {
+  label: "Sens du flux"
+})
+```
+::::
+
+:::: {#plot-bp-flow .plot-wrapper}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createGraph as createBPGraph } from "../../assets/js/networks.js"
+
+renderBPFlow = {
+  const isForward = bp_mode === "Propagation Avant ➡️";
+
+  const nodes = [
+    { id:"x",  label:"Entrée\nx",   fx:-180, fy:0,  shape:"pill",
+      status: () => isForward ? "activeInput" : "default" },
+    { id:"h1", label:"Couche\nCachée 1",  fx:-60,  fy:0,  shape:"circle",
+      status: () => isForward ? "activeHidden" : "errorNode" },
+    { id:"h2", label:"Couche\nCachée 2",  fx: 60,  fy:0,  shape:"circle",
+      status: () => isForward ? "activeHidden" : "errorNode" },
+    { id:"y",  label:"Sortie\nŷ",   fx:180, fy:0,  shape:"diamond",
+      status: () => isForward ? "activeOutput" : "errorSource" },
+  ];
+
+  const fwdLink = (s, t, lbl) => ({
+    source: s, target: t, label: lbl,
+    status: () => isForward ? "fwdFlow" : "default"
+  });
+  const bwdLink = (s, t, lbl) => ({
+    source: s, target: t, label: lbl,
+    status: () => !isForward ? "bwdFlow" : "default"
+  });
+
+  const links = [
+    fwdLink("x",  "h1", "W¹x + b¹"),
+    fwdLink("h1", "h2", "W²a¹ + b²"),
+    fwdLink("h2", "y",  "W³a² + b³"),
+    bwdLink("y",  "h2", "δᴸ = ∇C ⊙ σ'"),
+    bwdLink("h2", "h1", "δ² = Wᵀδᴸ ⊙ σ'"),
+    bwdLink("h1", "x",  "δ¹ = Wᵀδ² ⊙ σ'"),
+  ];
+
+  const g = createBPGraph("#plot-bp-flow", {nodes, links}, {
+    nodeRadius: 30, fontSize: 8.5, height: 220,
+    enableZoom: false, enablePan: false, enableDrag: false,
+    zoomToFit: true, zoomToFitPadding: 55,
+    styles: {
+      activeInput:  { nodeBg:"rgba(var(--sol-blue-rgb),0.15)",    nodeBorder:"var(--sol-blue)",    nodeText:"var(--sol-blue)" },
+      activeHidden: { nodeBg:"rgba(var(--sol-yellow-rgb),0.15)",  nodeBorder:"var(--sol-yellow)",  nodeText:"var(--sol-yellow)" },
+      activeOutput: { nodeBg:"rgba(var(--sol-green-rgb),0.15)",   nodeBorder:"var(--sol-green)",   nodeText:"var(--sol-green)" },
+      errorSource:  { nodeBg:"rgba(var(--sol-red-rgb),0.15)",     nodeBorder:"var(--sol-red)",     nodeText:"var(--sol-red)" },
+      errorNode:    { nodeBg:"rgba(var(--sol-orange-rgb),0.15)",  nodeBorder:"var(--sol-orange)",  nodeText:"var(--sol-orange)" },
+      fwdFlow:      { linkStroke:"var(--sol-cyan)",   particles:3, particleColor:"var(--sol-cyan)",   particleSpeed:0.025 },
+      bwdFlow:      { linkStroke:"var(--sol-red)",    particles:3, particleColor:"var(--sol-red)",    particleSpeed:0.025 },
+    }
+  });
+  invalidation.then(() => g?.destroy?.());
+  return g;
+}
+```
+
+### Batch Normalization : stabiliser le paysage d'optimisation
+
+La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmschenk_2016] est une technique introduite par Ioffe et Szegedy (2015) pour stabiliser et accélérer l'apprentissage. Elle répond au problème du **glissement de covariable interne** (*Internal Covariate Shift*) : au fil des mises à jour des poids, la distribution des activations d'une couche change continuellement, forçant les couches suivantes à s'adapter en permanence.
+
+Pour un mini-lot de pré-activations $\{z_1, \dots, z_m\}$, la BN effectue :
+
+$$
+\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}
+\qquad \text{puis} \qquad
+\tilde{z}_i = \gamma \hat{z}_i + \beta
+$$
+
+où $\mu_{\mathcal{B}}$ et $\sigma_{\mathcal{B}}^2$ sont la moyenne et la variance du mini-lot, $\epsilon$ est un terme de stabilisation numérique, et $\gamma$, $\beta$ sont des **paramètres apprenables** permettant au réseau de retrouver la distribution optimale pour chaque couche.
+
+* **L'ordre stratégique :** La pratique standard place la BN entre la transformation linéaire et la fonction d'activation : $\text{Linear} \to \text{BN} \to \text{Activation}$. Cet ordre assure que les entrées de la non-linéarité sont normalisées avant leur application, maximisant la région de sensibilité de la fonction d'activation.
+
+* **Effets bénéfiques :** La BN permet d'utiliser des taux d'apprentissage plus élevés sans divergence, réduit la dépendance à l'initialisation des poids, et agit comme un régularisateur implicite en introduisant du bruit à travers la variabilité des mini-lots.

@@ -1,0 +1,114 @@
+## Évolution des Architectures de Vision
+
+L'histoire des CNN est une quête continue pour surmonter les obstacles de la profondeur : comment entraîner des réseaux de plus en plus profonds sans que le gradient ne disparaisse ? Cette quête a produit trois architectures fondatrices qui définissent encore l'état de l'art [@Liu2025; @Radecic2026; @Adaloglou2020].
+
+### VGG : la puissance des petits filtres
+
+VGG (Simonyan & Zisserman, 2014) a démontré qu'un **empilement de filtres $3 \times 3$** surpasse l'utilisation de grands filtres. Deux couches consécutives de $3 \times 3$ ont le même champ récepteur effectif qu'une couche de $5 \times 5$, mais avec moins de paramètres ($2 \times 3^2 = 18$ vs $5^2 = 25$) et deux applications de non-linéarité au lieu d'une.
+
+Cependant, au-delà de 20 couches, VGG souffre du problème classique de **dégradation** : l'exactitude sur l'ensemble d'entraînement commence à se dégrader lorsque la profondeur augmente trop, même en l'absence de sur-apprentissage. Ce phénomène paradoxal (un réseau plus profond est théoriquement plus expressif, donc ne devrait pas faire pire) a motivé l'invention des connexions résiduelles.
+
+### ResNet : l'autoroute du gradient
+
+ResNet (He et al., 2016) résout la dégradation par les **connexions résiduelles** (*skip connections* ou *shortcut connections*) [@Kak2025; @Simon2017; @Panigrahi2018] :
+
+$$
+\mathbf{y} = \mathcal{F}(\mathbf{x}, \{\mathbf{W}_i\}) + \mathbf{x}
+$$
+
+Au lieu d'apprendre directement la transformation $\mathcal{H}(\mathbf{x})$, le réseau apprend le **résidu** $\mathcal{F}(\mathbf{x}) = \mathcal{H}(\mathbf{x}) - \mathbf{x}$. Si la transformation optimale est proche de l'identité (ce qui est courant dans les couches profondes), apprendre $\mathcal{F} \approx 0$ est beaucoup plus facile qu'apprendre $\mathcal{H} \approx \mathbf{x}$.
+
+L'effet sur la rétropropagation est décisif. Le gradient s'écrit :
+
+$$
+\frac{\partial \mathcal{L}}{\partial \mathbf{x}} = \frac{\partial \mathcal{L}}{\partial \mathbf{y}} \left(\frac{\partial \mathcal{F}}{\partial \mathbf{x}} + \mathbf{I}\right)
+$$
+
+Le terme $+\mathbf{I}$ crée une **autoroute directe** pour le gradient : même si $\frac{\partial \mathcal{F}}{\partial \mathbf{x}} \approx 0$ (gradient vanescent), le gradient global reste $\frac{\partial \mathcal{L}}{\partial \mathbf{y}}$. Les connexions résiduelles permettent ainsi d'entraîner des réseaux de 150+ couches.
+
+```{mermaid}
+graph TD
+    classDef layer fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
+    classDef skip  fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
+    classDef sum   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
+
+    X["Entrée x"]:::layer
+    C1["Conv 3×3 + BN + ReLU"]:::layer
+    C2["Conv 3×3 + BN"]:::layer
+    Skip["Identité (skip)"]:::skip
+    Add["⊕ Somme\nF(x) + x"]:::sum
+    Act["ReLU"]:::layer
+    Y["Sortie y"]:::layer
+
+    X --> C1 --> C2 --> Add
+    X --> Skip --> Add
+    Add --> Act --> Y
+```
+
+**L'interaction ResNet + Batch Normalization :** La BN et les connexions résiduelles travaillent en synergie [@Panigrahi2018; @Kak2025]. Sans BN, la variance du gradient peut exploser dans les branches résiduelles même avec les skip connections. Avec BN, la variance est maintenue dans une plage stable à chaque couche, ce qui permet d'aller encore plus profond.
+
+### Vision Transformer (ViT) : l'attention globale
+
+Le Vision Transformer [@LightlyViT2026; @Alka2025; @Mehra2025] rompt avec le paradigme de la localité convolutionnelle. L'image de taille $H \times W$ est découpée en $N$ **patchs** de taille $P \times P$ (avec $N = HW/P^2$), chacun déroulé en un vecteur et projeté linéairement en un *embedding* de dimension $D$.
+
+Deux composants sont critiques pour la compréhension globale [@LightlyViT2026] :
+
+* **Token de classification [CLS] :** Un vecteur appris ajouté à la séquence de patchs. À la fin du Transformer, c'est l'état de ce token qui est utilisé pour la classification — il agrège l'information globale de tous les patchs via les couches d'attention.
+
+* **Encodages positionnels 1D :** Le mécanisme d'attention est par nature invariant à la permutation — il ne sait pas si le patch 7 est adjacent au patch 8. Les encodages positionnels injectent cette information structurelle, permettant au ViT de comprendre la topologie spatiale de l'image.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📊 Comparaison des Architectures de Vision
+::::
+
+```{ojs}
+//| echo: false
+arch_compare = html`<div class="px-3 pb-3 pt-2">
+  <table class="table table-sm table-striped">
+    <thead><tr>
+      <th>Architecture</th><th>Innovation</th><th>Biais inductif</th>
+      <th>Données requises</th><th>Points forts</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>VGG</strong></td>
+        <td>Empilage 3×3</td>
+        <td>Fort (local)</td>
+        <td>Modéré</td>
+        <td>Simplicité, transfert learning</td>
+      </tr>
+      <tr>
+        <td><strong>ResNet</strong></td>
+        <td>Skip connections</td>
+        <td>Fort (local)</td>
+        <td>Modéré</td>
+        <td>Profondeur extrême, robustesse</td>
+      </tr>
+      <tr>
+        <td><strong>EfficientNet</strong></td>
+        <td>Compound scaling</td>
+        <td>Fort (local)</td>
+        <td>Modéré</td>
+        <td>Efficacité paramétrique</td>
+      </tr>
+      <tr>
+        <td><strong>ViT</strong></td>
+        <td>Attention globale</td>
+        <td>Faible</td>
+        <td>Très élevé (JFT-300M)</td>
+        <td>Scalabilité, compréhension globale</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="text-muted small mb-0">
+    Le ViT surpasse les CNN sur les grands datasets mais est
+    <em>data-hungry</em> sur les datasets restreints.
+  </p>
+</div>`;
+```
+
+:::
+
+**CNN vs ViT : un arbitrage biais inductif / données disponibles** — Le CNN possède un fort biais inductif (localité, équivariance par translation) qui lui permet d'apprendre efficacement avec peu de données. Le ViT doit tout apprendre depuis zéro, ce qui exige des dizaines de millions d'images pour battre les CNN — mais offre ensuite une meilleure scalabilité et une compréhension plus globale de la scène [@Amgadoz2025; @LightlyViT2026].

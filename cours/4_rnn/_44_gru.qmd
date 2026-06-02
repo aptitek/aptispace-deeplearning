@@ -1,0 +1,111 @@
+## La GRU : Efficacité et Compromis
+
+La *Gated Recurrent Unit* (GRU), proposée par Cho et al. en 2014, simplifie la cellule LSTM tout en préservant ses propriétés fondamentales de stabilité. Son idée directrice est d'**unifier les portes d'oubli et d'entrée** en une seule porte de mise à jour, et de fusionner l'état de cellule avec l'état caché [@Zhang2021; @Articsledge2024; @Pluralsight2024].
+
+### Architecture simplifiée
+
+La GRU opère avec seulement deux portes et ne possède pas d'état de cellule séparé — l'état caché $\mathbf{h}_t$ joue simultanément les rôles de mémoire courte et longue terme :
+
+**Porte de mise à jour $\mathbf{z}_t$** — Quel ratio de l'ancien état conserver vs. mettre à jour ?
+$$
+\mathbf{z}_t = \sigma(\mathbf{W}_z \mathbf{h}_{t-1} + \mathbf{U}_z \mathbf{x}_t + \mathbf{b}_z)
+$$
+
+**Porte de remise à zéro $\mathbf{r}_t$** — Quelle partie de l'état passé ignorer pour le candidat ?
+$$
+\mathbf{r}_t = \sigma(\mathbf{W}_r \mathbf{h}_{t-1} + \mathbf{U}_r \mathbf{x}_t + \mathbf{b}_r)
+$$
+
+**État candidat $\tilde{\mathbf{h}}_t$** :
+$$
+\tilde{\mathbf{h}}_t = \tanh\!\left(\mathbf{W}_h (\mathbf{r}_t \odot \mathbf{h}_{t-1}) + \mathbf{U}_h \mathbf{x}_t + \mathbf{b}_h\right)
+$$
+
+**Mise à jour finale de l'état caché** :
+$$
+\mathbf{h}_t = (1 - \mathbf{z}_t) \odot \mathbf{h}_{t-1} + \mathbf{z}_t \odot \tilde{\mathbf{h}}_t
+$$
+
+Cette équation finale révèle l'élégance de la GRU : $\mathbf{z}_t$ interpole linéairement entre l'ancien état $\mathbf{h}_{t-1}$ et le candidat $\tilde{\mathbf{h}}_t$. Lorsque $\mathbf{z}_t \approx 0$, l'état est presque inchangé (mémoire long terme) ; lorsque $\mathbf{z}_t \approx 1$, l'état est entièrement remplacé par le candidat (réactivité court terme).
+
+```{mermaid}
+graph LR
+    classDef input  fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
+    classDef gate   fill:#002b36,stroke:#d33682,stroke-width:2px,color:#d33682;
+    classDef cand   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
+    classDef output fill:#002b36,stroke:#2aa198,stroke-width:2px,color:#2aa198;
+
+    Xt["xₜ"]:::input
+    Hprev["hₜ₋₁"]:::input
+
+    Xt & Hprev --> Zt["Porte de MAJ\nzₜ = σ(...)"]:::gate
+    Xt & Hprev --> Rt["Porte de Reset\nrₜ = σ(...)"]:::gate
+
+    Rt & Hprev --> HCand["Candidat\nh̃ₜ = tanh(rₜ⊙hₜ₋₁, xₜ)"]:::cand
+    Xt --> HCand
+
+    Zt & HCand & Hprev --> Ht["hₜ = (1-zₜ)⊙hₜ₋₁ + zₜ⊙h̃ₜ"]:::output
+```
+
+### Nombre de paramètres de la GRU
+
+Avec trois sous-réseaux (z, r, h) au lieu de quatre pour la LSTM [@Sycorax2018; @Orucov2019] :
+
+$$
+N_{\text{GRU}} = 3 \times \left[d_h (d_h + d_x) + d_h\right] = 3 d_h (d_h + d_x + 1)
+$$
+
+Soit environ **25 % de paramètres en moins** que la LSTM pour les mêmes dimensions, avec un temps d'entraînement proportionnellement réduit.
+
+### Comparaison LSTM vs GRU
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+⚖️ LSTM vs GRU — Comparaison des Paramètres et Cas d'Usage
+::::
+
+:::: {.card-control-row}
+```{ojs}
+//| echo: false
+viewof gru_dh2 = Inputs.range([8, 512], { value: 128, step: 8, label: "Dimension cachée dₕ" })
+viewof gru_dx2 = Inputs.range([4, 256], { value:  64, step: 4, label: "Dimension entrée dₓ" })
+```
+::::
+
+```{ojs}
+//| echo: false
+gru_compare = {
+  const dh = gru_dh2, dx = gru_dx2;
+  const lstm = 4 * dh * (dh + dx + 1);
+  const gru  = 3 * dh * (dh + dx + 1);
+  const saving = (((lstm - gru) / lstm) * 100).toFixed(1);
+  return html`<div class="px-3 pb-3">
+    <table class="table table-sm mb-2">
+      <thead><tr><th>Architecture</th><th>Paramètres</th><th>Économie</th></tr></thead>
+      <tbody>
+        <tr><td>LSTM</td><td><strong>${lstm.toLocaleString()}</strong></td><td>—</td></tr>
+        <tr><td>GRU</td><td><strong>${gru.toLocaleString()}</strong></td>
+            <td class="text-success">-${saving}%</td></tr>
+      </tbody>
+    </table>
+    <p class="text-muted small mb-0">
+      La GRU est <strong>${saving}%</strong> plus légère que la LSTM pour dₕ=${dh}, dₓ=${dx}.
+    </p>
+  </div>`;
+}
+```
+
+:::
+
+Le tableau de décision pratique [@Articsledge2024; @Sonawane2016; @Pluralsight2024] :
+
+| Critère                        | LSTM                               | GRU                      |
+| :----------------------------- | :--------------------------------- | :----------------------- |
+| **Dépendances très longues**   | Supérieure (état de cellule dédié) | Légèrement inférieure    |
+| **Données limitées**           | Risque de sur-apprentissage        | Meilleure généralisation |
+| **Vitesse d'entraînement**     | Plus lente                         | Plus rapide (~25%)       |
+| **Implémentation**             | Plus complexe                      | Plus simple              |
+| **Séries temporelles courtes** | Équivalent                         | Équivalent               |
+
+La règle empirique est simple : commencer par la GRU et passer à la LSTM si les performances sont insuffisantes sur des séquences nécessitant une mémoire très longue. Dans la majorité des applications pratiques — séries temporelles financières, prédiction de capteurs, classification de textes courts — les deux architectures offrent des performances comparables.

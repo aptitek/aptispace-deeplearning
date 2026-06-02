@@ -2,9 +2,7 @@ Module 2 : Compréhension Spatiale et Vision par Ordinateur — Cours Magistral
 
 Bienvenue dans ce deuxième module. En tant que chercheurs, nous observons que l'évolution de la vision par ordinateur n'est pas une simple accumulation de couches, mais une quête structurelle visant à équilibrer l'expressivité sémantique et la fidélité spatiale. Ce cours analyse la transition des architectures locales vers les modèles globaux, en disséquant les fondements mathématiques qui permettent à l'intelligence artificielle de transformer le signal brut en compréhension géométrique.
 
-
 --------------------------------------------------------------------------------
-
 
 1. Introduction à la Responsabilité Spatiale : Du Séquentiel à la Grille de Pixels
 
@@ -19,11 +17,9 @@ Pour pallier ces limites, nous appliquons le Principe de Responsabilité Unique 
 
 Cette transition est essentielle pour transformer le déluge de pixels en une représentation compacte et structurée, socle des réseaux convolutionnels (CNN).
 
-
 --------------------------------------------------------------------------------
 
-
-2. L'Anatomie du CNN : De l'Extraction de Features à la Décision
+1. L'Anatomie du CNN : De l'Extraction de Features à la Décision
 
 Un CNN fonctionne comme un entonnoir informationnel structuré en trois phases : Convolution, Pooling et Classification.
 
@@ -45,11 +41,9 @@ La Classification : GAP vs FCN
 
 Le passage à une décision finale s'effectue soit par des couches denses (MLP), soit par une structure Fully Convolutional (FCN). Notons une distinction stratégique majeure : les FCN sont structurellement plus flexibles car ils conservent les dimensions spatiales et peuvent être entraînés à se comporter comme un GAP, alors que le GAP ne peut pas généraliser pour représenter le routage localisé d'un FCN [8].
 
-
 --------------------------------------------------------------------------------
 
-
-3. L'Évolution des Architectures de Vision : Profondeur et Attention
+1. L'Évolution des Architectures de Vision : Profondeur et Attention
 
 VGG et ResNet : Maîtrise de la Profondeur et du Gradient
 
@@ -62,11 +56,9 @@ Le ViT rompt avec la localité en traitant l'image comme une séquence de patchs
 1. Le token de classification [CLS] : Pris en entrée pour agréger l'information globale.
 2. Les Encodages Positionnels 1D : Puisque l'attention est par nature invariante à la permutation, ces encodages injectent la structure spatiale nécessaire à la compréhension de la topologie de l'image [25, 26]. Contrairement aux CNN qui possèdent un fort biais inductif (localité, équivariance), le ViT doit tout apprendre, ce qui le rend "data-hungry" et nécessite des pré-entraînements massifs (ex: JFT-300M) pour surpasser les CNN [25, 27].
 
-
 --------------------------------------------------------------------------------
 
-
-4. Applications Avancées et Alternatives de Rupture
+1. Applications Avancées et Alternatives de Rupture
 
 YOLO : La Détection comme Régression
 
@@ -79,11 +71,9 @@ Capsule Networks : Résoudre l'Équivariance
 
 Pour corriger le "Problème Picasso", les capsules utilisent des vecteurs dont l'orientation code les paramètres de pose. Le routage dynamique remplace le pooling par un mécanisme d'accord : une capsule de bas niveau vote pour une capsule parente si leurs prédictions concordent [38, 41]. Pour garantir que la longueur du vecteur représente une probabilité (0 à 1) tout en préservant son orientation, nous utilisons la fonction de "squashing" [38, 41] : \mathbf{v}_j = \frac{\|\mathbf{s}_j\|^2}{1 + \|\mathbf{s}_j\|^2} \frac{\mathbf{s}_j}{\|\mathbf{s}_j\|} Cette architecture assure une équivariance totale : si l'objet tourne, le vecteur d'activité tourne de concert dans l'espace des paramètres, préservant la fidélité spatiale que les CNN sacrifient pour l'invariance.
 
-
 --------------------------------------------------------------------------------
 
-
-5. Synthèse Stratégique et Perspectives
+1. Synthèse Stratégique et Perspectives
 
 Le choix architectural dépend d'un arbitrage rigoureux entre capacité de généralisation et ressources disponibles.
 

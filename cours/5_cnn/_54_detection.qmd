@@ -1,0 +1,155 @@
+## Détection d'Objets et Alternatives Architecturales
+
+La détection d'objets — localiser et classer simultanément des objets dans une image — constitue l'une des tâches les plus exigeantes de la vision par ordinateur. Elle a suscité deux lignes architecturales majeures : les détecteurs à **régression directe** (YOLO) et les architectures à **équivariance vectorielle** (Capsule Networks) [@Konyrev2023; @Sabour2017; @CS231n2026].
+
+### YOLO : la détection comme régression globale
+
+YOLO (*You Only Look Once*, Redmon et al., 2016) révolutionne la détection en la reformulant comme un **problème de régression unique** sur toute l'image, éliminant les pipelines en deux étapes (proposition de régions + classification) des approches R-CNN [@Konyrev2023; @Pawangfg2025; @Kili2023].
+
+**Principe :** L'image est divisée en une grille $S \times S$. Chaque cellule prédit $B$ boîtes englobantes (*bounding boxes*) avec leur score de confiance et $C$ probabilités de classe. La sortie est un tenseur de taille $S \times S \times (B \times 5 + C)$.
+
+**Fonction de perte SSE stratégiquement pondérée** — La perte combine plusieurs termes avec des poids distincts pour éviter l'instabilité d'apprentissage [@AraIntelligence2022; @Educative2026] :
+
+$$
+\mathcal{L} = \lambda_{\text{coord}} \sum_{\text{box}} \left[(x - \hat{x})^2 + (y - \hat{y})^2 + (\sqrt{w} - \sqrt{\hat{w}})^2 + (\sqrt{h} - \sqrt{\hat{h}})^2\right]
+
++ \lambda_{\text{obj}} \mathcal{L}_{\text{conf}} + \lambda_{\text{noobj}} \mathcal{L}_{\text{conf,vide}} + \mathcal{L}_{\text{classe}}
+$$
+
+avec $\lambda_{\text{coord}} = 5$ (sur-pondère la localisation) et $\lambda_{\text{noobj}} = 0{,}5$ (réduit l'impact des nombreuses cellules vides).
+
+**L'astuce de la racine carrée pour $w$ et $h$ :** Plutôt que de pénaliser directement $(w - \hat{w})^2$, YOLO pénalise $(\sqrt{w} - \sqrt{\hat{w}})^2$. Puisque $\frac{d}{dx}\sqrt{x} = \frac{1}{2\sqrt{x}}$, la pente est plus forte pour les petites valeurs de $x$. Ainsi, une erreur de 10 pixels sur une petite boîte est pénalisée bien plus sévèrement que sur une grande boîte — comportement souhaitable pour préserver la précision sur les petits objets [@AIknow2026].
+
+**NMS et IoU :** En post-traitement, le *Non-Maximum Suppression* (NMS) élimine les boîtes redondantes. Pour chaque paire de boîtes, l'*Intersection over Union* (IoU) est calculée :
+
+$$
+\text{IoU} = \frac{\text{Aire}(B_1 \cap B_2)}{\text{Aire}(B_1 \cup B_2)}
+$$
+
+Si l'IoU dépasse un seuil (typiquement 0,5), la boîte avec le score de confiance le plus faible est supprimée.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🎯 YOLO — Grille de Détection Interactive
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof yolo_S    = Inputs.range([2, 7], { value: 3, step: 1, label: "Grille S×S" })
+viewof yolo_iou  = Inputs.range([0.1, 0.9], { value: 0.5, step: 0.05, label: "Seuil IoU (NMS)" })
+```
+::::
+
+:::: {#plot-yolo-grid .plot-wrapper style="padding:1rem; min-height:280px;"}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+yolo_renderGrid = {
+  const el = document.getElementById("plot-yolo-grid");
+  if (!el) return;
+
+  const S = yolo_S;
+  const cellSize = Math.min(240, Math.floor(560 / S));
+  const totalSize = cellSize * S;
+  const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+  const bg    = isDark ? "#002b36" : "#fdf6e3";
+  const gridC = isDark ? "#073642" : "#eee8d5";
+
+  // Simulated detections
+  const detections = [
+    { r:0, c:0, conf:0.95, label:"Chien",   color:"#268bd2" },
+    { r:Math.floor(S/2), c:Math.floor(S/2), conf:0.87, label:"Voiture", color:"#dc322f" },
+    { r:S-1, c:S-1, conf:0.72, label:"Arbre",   color:"#859900" },
+  ].filter(d => d.r < S && d.c < S);
+
+  const svgLines = [];
+  for (let i = 0; i <= S; i++) {
+    svgLines.push(`<line x1="${i*cellSize}" y1="0" x2="${i*cellSize}" y2="${totalSize}" stroke="${gridC}" stroke-width="1"/>`);
+    svgLines.push(`<line x1="0" y1="${i*cellSize}" x2="${totalSize}" y2="${i*cellSize}" stroke="${gridC}" stroke-width="1"/>`);
+  }
+
+  const svgBoxes = detections.map(d => {
+    const x = d.c * cellSize + cellSize * 0.1;
+    const y = d.r * cellSize + cellSize * 0.1;
+    const w = cellSize * 1.8;
+    const h = cellSize * 1.8;
+    const shown = d.conf >= yolo_iou;
+    return `
+      <rect x="${x}" y="${y}" width="${w}" height="${h}"
+        fill="${shown ? d.color : 'none'}22"
+        stroke="${shown ? d.color : gridC}" stroke-width="${shown ? 2 : 1}" rx="3"/>
+      ${shown ? `<text x="${x+4}" y="${y+14}" fill="${d.color}" font-size="11" font-family="monospace">
+        ${d.label} ${(d.conf*100).toFixed(0)}%
+      </text>` : ''}
+      <circle cx="${d.c*cellSize + cellSize/2}" cy="${d.r*cellSize + cellSize/2}"
+        r="4" fill="${d.color}" opacity="${shown ? 1 : 0.3}"/>
+    `;
+  }).join('');
+
+  const fg = isDark ? "#839496" : "#657b83";
+  el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;">
+    <svg width="${totalSize}" height="${totalSize}" style="background:${bg};border:1px solid ${gridC};border-radius:4px;">
+      ${svgLines.join('')}
+      ${svgBoxes}
+      <text x="4" y="14" fill="${fg}" font-size="10" font-family="monospace">Grille ${S}×${S}</text>
+    </svg>
+    <p class="text-muted small mt-2 mb-0">
+      Chaque cellule prédit B boîtes + confiance + classes.
+      Les boîtes avec conf ≥ ${yolo_iou} sont retenues après NMS.
+    </p>
+  </div>`;
+}
+```
+
+### Capsule Networks : résoudre l'équivariance géométrique
+
+Les Capsule Networks (Sabour, Frosst & Hinton, 2017) constituent une réponse architecturale au Problème Picasso des CNN [@Sabour2017; @Pechyonkin2017; @Fritz2023]. Leur innovation fondamentale : remplacer les scalaires d'activation par des **vecteurs** dont la direction encode les paramètres de pose d'une entité (position, orientation, échelle, déformation).
+
+**La fonction de squashing** : Pour garantir que la longueur du vecteur capsule représente une probabilité (entre 0 et 1) tout en préservant son orientation :
+
+$$
+\mathbf{v}_j = \frac{\|\mathbf{s}_j\|^2}{1 + \|\mathbf{s}_j\|^2} \cdot \frac{\mathbf{s}_j}{\|\mathbf{s}_j\|}
+$$
+
+Le premier terme compresse la magnitude dans $[0,1)$ ; le second préserve la direction unitaire du vecteur. Contrairement à la sigmoïde appliquée à des scalaires, cette opération maintient l'information directionnelle.
+
+**Le routage dynamique** (*Dynamic Routing*) : Les capsules de bas niveau (détecteurs de primitives) "votent" pour les capsules de haut niveau (détecteurs de concepts complexes). Une capsule de bas niveau $i$ prédit l'état de la capsule parente $j$ via une transformation affine :
+
+$$
+\hat{\mathbf{u}}_{j|i} = \mathbf{W}_{ij} \mathbf{u}_i
+$$
+
+Le mécanisme d'accord itératif renforce les connexions entre capsules dont les prédictions concordent et affaiblit celles qui divergent. Ce routage remplace avantageusement le pooling en préservant les **relations spatiales** entre les parties.
+
+```{mermaid}
+graph LR
+    classDef low  fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
+    classDef high fill:#002b36,stroke:#d33682,stroke-width:2px,color:#d33682;
+    classDef rout fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
+
+    E1["Capsule Bord\n(bas niveau)"]:::low
+    E2["Capsule Courbe\n(bas niveau)"]:::low
+    E3["Capsule Angle\n(bas niveau)"]:::low
+
+    R["Routage Dynamique\n(accord par vote)"]:::rout
+
+    F1["Capsule Visage\n(haut niveau)"]:::high
+    F2["Capsule Main\n(haut niveau)"]:::high
+
+    E1 & E2 & E3 --> R --> F1 & F2
+```
+
+**Synthèse : invariance vs équivariance** — Les CNN avec pooling obtiennent une **invariance** : l'objet est détecté quelle que soit sa position, mais son emplacement précis est perdu. Les Capsule Networks obtiennent une **équivariance** : si l'objet tourne, le vecteur d'activité tourne de concert dans l'espace des paramètres, préservant la fidélité spatiale. Cette distinction est fondamentale pour des tâches où la géométrie des relations entre parties est critique (reconnaissance de poses, chirurgie robotique, robotique de manipulation).
+
+| Critère                   | CNN + Pooling | Capsule Networks    |
+| :------------------------ | :------------ | :------------------ |
+| Invariance spatiale       | ✅ Forte       | ✅ Contrôlée         |
+| Équivariance de pose      | ❌             | ✅                   |
+| Scalabilité               | ✅             | ❌ (coût de routage) |
+| Robustesse aux occlusions | Faible        | Meilleure           |
+| Données requises          | Modérées      | Élevées             |

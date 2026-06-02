@@ -1,0 +1,104 @@
+## Applications Modernes et Rigueur Méthodologique
+
+L'évolution des RNN vers des modèles hybrides permet d'atteindre une précision remarquable dans des domaines critiques. Deux directions de recherche marquent l'état de l'art : l'extension **bidirectionnelle** des architectures récurrentes, et l'intégration dans des frameworks multi-tâches. Mais leur puissance computationnelle est vaine sans une rigueur méthodologique absolue sur les données [@Zhu2024; @Ji2023; @Albelali2025].
+
+### Bi-LSTM : contexte bidirectionnel
+
+L'architecture Bi-LSTM (*Bidirectional LSTM*) traite la séquence simultanément dans les deux directions temporelles : une LSTM avance de $t=1$ vers $t=T$, une autre recule de $t=T$ vers $t=1$. Les états cachés des deux passes sont concaténés à chaque pas de temps :
+
+$$
+\mathbf{h}_t^{\text{Bi}} = \left[\overrightarrow{\mathbf{h}}_t \;\|\; \overleftarrow{\mathbf{h}}_t\right]
+$$
+
+Cette architecture capture des dépendances contextuelles que les modèles unidirectionnels manquent : pour la reconstruction de données de capteurs manquantes, la Bi-LSTM peut utiliser à la fois les mesures antérieures et les mesures postérieures d'une lacune pour l'interpoler avec précision [@Zhu2024].
+
+**Application : surveillance de santé structurelle (SHM)** — Le framework VMD-SSA-Bi-LSTM illustre la puissance de cette approche [@Zhu2024] :
+
+1. La **Décomposition en Modes Variationnels** (VMD) segmente les signaux périodiques irréguliers en fonctions de modes intrinsèques (IMF), séparant les composantes fréquentielles.
+2. L'algorithme **SSA** (*Sparrow Search Algorithm*) optimise automatiquement les hyperparamètres (unités cachées, taux d'apprentissage).
+3. La **Bi-LSTM** modélise les corrélations spatio-temporelles avec une fidélité bien supérieure aux méthodes d'interpolation classiques.
+
+### Apprentissage multi-tâches et Temporal Fusion Transformer
+
+L'apprentissage **multi-tâches** (*Multi-Task Learning*, MTL) impose au modèle de prédire simultanément plusieurs horizons temporels (court, moyen, long terme). Cette contrainte agit comme un puissant régularisateur en forçant l'extraction de caractéristiques robustes et généralisables [@Ji2023; @Arik2021].
+
+Le modèle **MTLTFT** (Multi-Task Learning + Temporal Fusion Transformer) pousse cette logique plus loin : le Transformer gère l'attention globale sur la séquence, tandis que le MTL optimise conjointement des têtes de prédiction sur plusieurs horizons. La génération multi-tâches force le modèle à extraire des représentations partagées invariantes à l'horizon temporel, ce qui améliore significativement les performances en situation de pénurie de données [@Ji2023].
+
+### Intégrité méthodologique : le danger du Data Leakage
+
+La puissance de calcul de ces architectures est vaine si elle repose sur un protocole d'évaluation biaisé. Le **Data Leakage** (fuite de données) constitue la faille méthodologique la plus insidieuse en séries temporelles [@Albelali2025; @PMC2024].
+
+**Le mécanisme du leakage :** Si les fenêtres glissantes (*sliding windows*) sont générées **avant** la séparation entraînement/test (*pre-split*), des informations temporellement futures peuvent s'infiltrer dans l'ensemble d'entraînement via les chevauchements entre fenêtres adjacentes. Une fenêtre centrée sur un point de la zone de test peut inclure des données antérieures issues du futur relatif à l'entraînement.
+
+$$
+\text{RMSE Gain} = \frac{\text{RMSE}_{\text{leaky}} - \text{RMSE}_{\text{clean}}}{\text{RMSE}_{\text{clean}}} \times 100\%
+$$
+
+Les preuves empiriques de [@Albelali2025] sont sans appel :
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+⚠️ Impact du Data Leakage sur l'Évaluation des Modèles
+::::
+
+```{ojs}
+//| echo: false
+leakage_table = html`<div class="px-3 pb-3 pt-2">
+  <table class="table table-sm table-striped mb-2">
+    <thead>
+      <tr>
+        <th>Stratégie de validation</th>
+        <th>RMSE Gain (optimisme artificiel)</th>
+        <th>Robustesse</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>10-fold Cross-Validation</td>
+        <td class="text-danger"><strong>Jusqu'à +20,5%</strong></td>
+        <td>❌ Très vulnérable</td>
+      </tr>
+      <tr>
+        <td>Division chronologique 2-way</td>
+        <td class="text-success"><strong>&lt; 5%</strong></td>
+        <td>✅ Robuste</td>
+      </tr>
+      <tr>
+        <td>Division chronologique 3-way</td>
+        <td class="text-success"><strong>&lt; 5%</strong></td>
+        <td>✅ Robuste</td>
+      </tr>
+      <tr>
+        <td>Walk-forward validation</td>
+        <td class="text-success"><strong>~0%</strong></td>
+        <td>✅ Optimal (mais coûteux)</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="text-muted small mb-0">
+    Source : Albelali &amp; Ahmed (2025). Des fenêtres réduites et des décalages plus longs
+    exacerbent le risque de fuite.
+  </p>
+</div>`;
+```
+
+:::
+
+**Règle d'or** : la séparation temporelle (train/val/test) doit **précéder** toute construction de séquence ou de fenêtre glissante. La validation croisée $k$-fold standard, bien que universelle en apprentissage statique, est structurellement inadaptée aux séries temporelles car elle mélange passé et futur [@Albelali2025; @LazyProgrammer2025].
+
+```{mermaid}
+graph TD
+    classDef good fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
+    classDef bad  fill:#002b36,stroke:#dc322f,stroke-width:2px,color:#dc322f;
+    classDef step fill:#002b36,stroke:#586e75,stroke-width:1px,color:#839496;
+
+    A["Données temporelles brutes"]:::step
+    B1["❌ Pre-split : fenêtres d'abord"]:::bad
+    B2["✅ Post-split : séparation d'abord"]:::good
+    C1["→ Leakage possible (fuite future)"]:::bad
+    C2["→ Protocole propre (causalité préservée)"]:::good
+
+    A --> B1 --> C1
+    A --> B2 --> C2
+```

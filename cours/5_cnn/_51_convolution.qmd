@@ -1,0 +1,83 @@
+## La Convolution : Filtrage Spatial Appris
+
+Le passage du traitement de données tabulaires aux grilles de pixels 2D a imposé un saut paradigmatique majeur dans l'histoire du deep learning. Un MLP appliqué à une image traite chaque pixel comme une dimension indépendante, ignorant totalement la structure spatiale intrinsèque : deux pixels voisins ne sont pas distingués de deux pixels aux antipodes. Cette approche est non seulement inefficace computationnellement, mais fondamentalement inadaptée à la nature des données visuelles [@CS231n2026; @WikipediaCNN2026; @BINUS2017].
+
+### Le Principe de Responsabilité Unique Spatiale
+
+La solution réside dans l'application du **Principe de Responsabilité Unique** (SRP) à l'extraction de caractéristiques : chaque neurone n'est responsable que d'une région locale de l'image, son **champ récepteur** (*receptive field*). Cette contrainte architecturale repose sur deux piliers fondamentaux [@CS231n2026; @ParadigmShift2026] :
+
+* **Connectivité locale :** Chaque neurone de la couche convolutionnelle n'est connecté qu'à une fenêtre spatiale de taille $F \times F$ dans la couche précédente, et non à l'ensemble de l'entrée. Cette localité exploite le fait que les corrélations entre pixels sont fortes à courte distance et faibles à longue distance.
+
+* **Partage de poids :** Un même filtre (*kernel*) $\mathbf{k} \in \mathbb{R}^{F \times F}$ est appliqué à chaque position spatiale de l'entrée. Ce partage impose une propriété fondamentale : **l'équivariance par translation**. Si un motif (un bord, une texture) se déplace dans l'image, sa réponse dans la carte de caractéristiques se déplace de la même quantité, sans nécessiter de nouveaux paramètres.
+
+En traitement du signal classique, les filtres de Sobel ou Gaussien sont définis à la main pour détecter des bords ou lisser l'image. Le CNN **apprend** ses propres noyaux directement depuis les données, optimisant automatiquement l'équilibre entre lissage et différentiation pour la tâche cible.
+
+### L'opération de convolution et ses dimensions
+
+L'opération de convolution transforme un volume d'entrée $W_1 \times H_1 \times D_1$ (largeur × hauteur × profondeur/canaux) en un volume de sortie $W_2 \times H_2 \times D_2$ via $K$ filtres de taille $F \times F$ [@CS231n2026] :
+
+$$
+W_2 = \frac{W_1 - F + 2P}{S} + 1 \qquad H_2 = \frac{H_1 - F + 2P}{S} + 1 \qquad D_2 = K
+$$
+
+où $P$ est le **padding** (remplissage avec des zéros pour contrôler la taille de sortie) et $S$ est la **stride** (pas de déplacement du filtre). Chaque filtre produit une **carte de caractéristiques** (*feature map*) de taille $W_2 \times H_2$.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔢 Calculateur de Dimensions de Convolution
+::::
+
+:::: {.card-control-row}
+```{ojs}
+//| echo: false
+viewof conv_W = Inputs.range([8, 224],  { value: 32, step: 1, label: "Entrée W₁ = H₁ (px)" })
+viewof conv_F = Inputs.range([1, 11],   { value:  3, step: 2, label: "Taille filtre F" })
+viewof conv_P = Inputs.range([0, 5],    { value:  1, step: 1, label: "Padding P" })
+viewof conv_S = Inputs.range([1, 4],    { value:  1, step: 1, label: "Stride S" })
+viewof conv_K = Inputs.range([1, 512],  { value: 32, step: 1, label: "Nombre de filtres K" })
+```
+::::
+
+```{ojs}
+//| echo: false
+conv_dims = {
+  const W2 = Math.floor((conv_W - conv_F + 2 * conv_P) / conv_S) + 1;
+  const H2 = W2;
+  const params_per_filter = conv_F * conv_F + 1; // + biais
+  const total_params = conv_K * params_per_filter;
+  const mlp_params = conv_W * conv_W * (W2 * H2 * conv_K);
+
+  const ok = W2 > 0;
+  return html`<div class="px-3 pb-3">
+    ${ok ? html`<table class="table table-sm mb-2">
+      <tbody>
+        <tr><td>Dimensions sortie</td>
+            <td><strong>${W2} × ${H2} × ${conv_K}</strong></td></tr>
+        <tr><td>Paramètres CNN (K filtres F×F+biais)</td>
+            <td><strong>${total_params.toLocaleString()}</strong></td></tr>
+        <tr><td>Paramètres MLP équivalent</td>
+            <td class="text-danger"><strong>${mlp_params.toLocaleString()}</strong></td></tr>
+        <tr><td>Réduction CNN vs MLP</td>
+            <td class="text-success"><strong>×${Math.round(mlp_params/total_params).toLocaleString()}</strong></td></tr>
+      </tbody>
+    </table>` : html`<p class="text-danger">Paramètres invalides — la sortie aurait une taille négative.</p>`}
+  </div>`;
+}
+```
+
+:::
+
+### Optimisation GPU : l'algorithme im2col et GEMM
+
+Pour maximiser le débit de calcul sur GPU, les frameworks de deep learning reformulent la convolution en **multiplication de matrices généralisée** (GEMM) via l'algorithme `im2col` [@CS231n2026] :
+
+1. Chaque bloc spatial $F \times F$ de l'entrée est déroulé en un vecteur colonne → matrice $\mathbf{X}_{\text{col}} \in \mathbb{R}^{(F^2 D_1) \times (W_2 H_2)}$.
+2. Les $K$ filtres sont déroulés en vecteurs lignes → matrice $\mathbf{W}_{\text{row}} \in \mathbb{R}^{K \times (F^2 D_1)}$.
+3. La convolution entière devient : $\mathbf{Y}_{\text{col}} = \mathbf{W}_{\text{row}} \mathbf{X}_{\text{col}}$
+
+Cette reformulation sacrifie de la mémoire (duplication des pixels dans $\mathbf{X}_{\text{col}}$) pour exploiter les routines d'algèbre linéaire hautement optimisées (cuBLAS, etc.) qui atteignent des dizaines de TFLOPS sur GPU modernes.
+
+### Hiérarchie des représentations
+
+L'empilement de couches convolutionnelles crée une hiérarchie progressive d'abstraction : les premières couches extraient des primitives élémentaires (bords, gradients de couleur), les couches intermédiaires combinent ces primitives en textures et formes, les couches profondes assemblent ces formes en concepts sémantiques (visages, roues, etc.). C'est cette hiérarchie automatique qui distingue fondamentalement le CNN du MLP et explique ses performances remarquables en vision par ordinateur.

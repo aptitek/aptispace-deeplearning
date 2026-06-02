@@ -1,0 +1,103 @@
+## Instabilité du Gradient dans les RNN
+
+La robustesse d'un RNN ne se mesure pas à sa profondeur structurelle, mais à sa capacité à propager l'information sans distorsion sur de **longs horizons temporels**. L'apprentissage par rétropropagation à travers le temps (*Backpropagation Through Time*, BPTT) expose les limites intrinsèques de l'architecture récurrente basique lorsque les séquences deviennent longues [@Pascanu2013; @Grosse2017; @wabbit2019].
+
+### Backpropagation Through Time (BPTT)
+
+Le BPTT est la généralisation de la rétropropagation au cas séquentiel. On "déplie" (*unroll*) le RNN sur $T$ pas de temps pour obtenir un réseau profond de $T$ couches partageant les mêmes poids. Le gradient de la perte totale $\mathcal{L} = \sum_t \mathcal{L}_t$ par rapport aux poids $\mathbf{W}_h$ nécessite de calculer, pour chaque pas $t$ :
+
+$$
+\frac{\partial \mathcal{L}_t}{\partial \mathbf{W}_h} = \sum_{i=1}^{t} \frac{\partial \mathcal{L}_t}{\partial \mathbf{h}_t} \cdot \frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i} \cdot \frac{\partial \mathbf{h}_i}{\partial \mathbf{W}_h}
+$$
+
+Le terme critique est le **produit de matrices jacobiennes** :
+
+$$
+\frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i} = \prod_{j=i}^{t-1} \frac{\partial \mathbf{h}_{j+1}}{\partial \mathbf{h}_j} = \prod_{j=i}^{t-1} \operatorname{diag}\!\left(\sigma'(\mathbf{z}^{j+1})\right) \mathbf{W}_h
+$$
+
+La stabilité de ce produit est dictée par le **rayon spectral** $\rho(\mathbf{W}_h)$ (la valeur propre dominante de $\mathbf{W}_h$) [@Pascanu2013; @Franck2024].
+
+### Disparition et explosion du gradient
+
+Deux pathologies symétriques émergent de ce produit sur de longues séquences [@SuperDataScience2018; @Grosse2017; @Weber2017] :
+
+* **Disparition du gradient** (*Vanishing Gradient*) : Si $\rho(\mathbf{W}_h) < 1$, ou si la dérivée de la fonction d'activation $\sigma'$ est systématiquement inférieure à $1$ (comme pour la sigmoïde ou tanh aux extrema), le produit converge exponentiellement vers zéro. Le gradient devient numériquement indistinguable de zéro après quelques dizaines de pas, rendant impossible l'apprentissage de dépendances à long terme.
+
+* **Explosion du gradient** (*Exploding Gradient*) : Si $\rho(\mathbf{W}_h) > 1$, le produit croît exponentiellement, générant des mises à jour de poids instables qui divergent l'entraînement.
+
+$$
+\left\|\frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i}\right\| \approx \begin{cases} \to 0 & \text{si } \rho(\mathbf{W}_h) < 1 \text{ (disparition)} \\ \to \infty & \text{si } \rho(\mathbf{W}_h) > 1 \text{ (explosion)} \end{cases}
+$$
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📉 Magnitude du Gradient selon la Longueur de la Séquence
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof rho_spectral = Inputs.range([0.5, 1.5], { value: 0.9, step: 0.01, label: "Rayon spectral ρ(Wₕ)" })
+viewof rnn_T_grad   = Inputs.range([5, 50],    { value: 20,  step: 1,    label: "Longueur de séquence T" })
+```
+::::
+
+:::: {#plot-grad-magnitude .plot-wrapper style="padding:1rem;"}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+grad_renderChart = {
+  const el = document.getElementById("plot-grad-magnitude");
+  if (!el) return;
+
+  const T = rnn_T_grad;
+  const rho = rho_spectral;
+  const steps = Array.from({length: T}, (_, i) => i + 1);
+  const sigma_prime = 0.25; // max of tanh'(x)
+  const mags = steps.map(t => Math.pow(rho * sigma_prime, t - 1));
+
+  const colorFn = rho > 1 ? "#dc322f" : rho < 0.95 ? "#268bd2" : "#859900";
+  const labelFn = rho > 1 ? "Explosion (ρ > 1)" : rho < 0.95 ? "Disparition (ρ < 1)" : "Zone marginale";
+
+  const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+  const fg    = isDark ? "#839496" : "#657b83";
+  const grid  = isDark ? "#073642" : "#eee8d5";
+
+  const traces = [{
+    x: steps, y: mags, name: `ρ = ${rho} — ${labelFn}`,
+    type:"scatter", mode:"lines+markers",
+    line:{ color: colorFn, width: 2.5 },
+    marker:{ size:5, color: colorFn }
+  }, {
+    x: [1, T], y: [0.01, 0.01], name:"Seuil critique (0.01)",
+    type:"scatter", mode:"lines",
+    line:{ color: fg, width: 1.5, dash:"dot" }
+  }];
+
+  const layout = {
+    paper_bgcolor:"transparent", plot_bgcolor:"transparent",
+    xaxis: { title:"Pas de temps t", gridcolor:grid, tickfont:{color:fg} },
+    yaxis: { title:"‖∂hₜ/∂h₁‖", type:"log", gridcolor:grid, tickfont:{color:fg} },
+    legend: { font:{color:fg}, x:0.5, y:0.95 },
+    margin:{ t:20, b:55, l:65, r:20 },
+    font:{ color:fg }
+  };
+
+  Plotly.react(el, traces, layout, { responsive:true, displayModeBar:false });
+}
+```
+
+### Remèdes pratiques
+
+Deux stratégies palliatives existent pour les RNN simples, avant d'adopter des architectures à portes [@Pascanu2013; @Xu2024] :
+
+* **Écrêtage du gradient** (*Gradient Clipping*) : Lorsque la norme du gradient global dépasse un seuil $\tau$, on le remet à l'échelle : $\mathbf{g} \leftarrow \tau \cdot \mathbf{g} / \|\mathbf{g}\|$. Cette technique règle le problème d'explosion mais ne résout pas la disparition.
+
+* **Troncature du BPTT** (*Truncated BPTT*) : On ne propage le gradient que sur une fenêtre de $k$ pas de temps au lieu de la séquence complète. Compromis entre efficacité computationnelle et capacité de mémoire à long terme.
+
+Ces remèdes sont des rustines. La solution structurelle réside dans les architectures à portes (*gated architectures*) — LSTM et GRU — qui remplacent la dynamique multiplicative instable par une dynamique additive contrôlée.

@@ -2,9 +2,7 @@ Cours Magistral : Architecture du Deep Learning, de la Séquence à la Vision
 
 L’évolution de l’intelligence artificielle contemporaine est marquée par un pivot épistémologique majeur : l'abandon de la statique du signal au profit de modèles dynamiques intégrant intrinsèquement les dimensions temporelle et spatiale. Cette transition ne représente pas seulement un gain de performance, mais une véritable révolution architecturale. En passant de l’analyse isolée d’un point de donnée à la compréhension de sa continuité, nous avons permis aux machines de converger vers des représentations qui respectent la structure causale du monde réel. Comme nous l'enseignent les mathématiques du signal, l’information ne prend sens que par rapport à son voisinage, qu'il soit chronologique ou topologique.
 
-
 --------------------------------------------------------------------------------
-
 
 Module 1 : Les Fondations et la Dimension Temporelle
 
@@ -37,9 +35,7 @@ La théorie de la récurrence trouve sa pleine expression dans la modélisation 
 
 Si le temps est une chaîne de dépendances, l'espace est une grille de corrélations locales. Cette observation nous mène à l'étude des architectures de vision.
 
-
 --------------------------------------------------------------------------------
-
 
 Module 2 : Compréhension Spatiale et Vision par Ordinateur
 

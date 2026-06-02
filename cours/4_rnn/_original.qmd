@@ -11,7 +11,7 @@ Le pivot de cette architecture est le vecteur latent \mathbf{h}_t, ou état cach
 
 Cette élégance conceptuelle se heurte toutefois à une réalité mathématique implacable lors de la phase d'apprentissage : la gestion de la stabilité du gradient sur des séquences étendues.
 
-2. La Dynamique de l'Apprentissage et le Problème du Gradient
+1. La Dynamique de l'Apprentissage et le Problème du Gradient
 
 La robustesse d'un RNN ne se mesure pas à sa profondeur structurelle, mais à sa capacité à propager l'information sans distorsion sur de longs horizons temporels. L'apprentissage par rétropropagation à travers le temps (BPTT) expose les limites intrinsèques des fonctions d'activation classiques lorsqu'elles sont couplées à des structures récurrentes.
 
@@ -19,7 +19,7 @@ Lors du calcul du gradient global \frac{\partial E_t}{\partial \theta_h} pour me
 
 Pour pallier ces instabilités, il est impératif d'évoluer vers des architectures capables de réguler activement le flux d'information par des mécanismes de contrôle non linéaires.
 
-3. Architectures à Portes : La Révolution LSTM et GRU
+1. Architectures à Portes : La Révolution LSTM et GRU
 
 L'introduction du "gating" (portage) a transformé les réseaux récurrents en outils industriels fiables. En substituant la mise à jour multiplicative simple par une gestion sélective de l'information, les cellules à portes permettent de simuler une mémoire à court et long terme.
 
@@ -31,7 +31,7 @@ La cellule LSTM (Long Short-Term Memory) résout la disparition du gradient en i
 
 Cette transition d'une dynamique multiplicative à une dynamique additive assure que le gradient peut être maintenu proche de l'unité, préservant la causalité sur de longues séquences [@Zhu2024]. L'alternative GRU (Gated Recurrent Unit) simplifie cette logique en fusionnant les portes d'oubli et d'entrée en une "porte de mise à jour" et en intégrant l'état de cellule directement dans l'état caché. Bien que moins complexe, le GRU maintient des propriétés de stabilité comparables au LSTM, offrant un compromis efficacité-performance optimal pour de nombreux cas d'usage.
 
-4. Extensions Modernes et Applications de Haute Précision
+1. Extensions Modernes et Applications de Haute Précision
 
 L'évolution des RNN vers des modèles hybrides permet aujourd'hui d'atteindre une précision chirurgicale dans des domaines critiques comme la surveillance de santé structurelle (SHM). L'architecture Bi-LSTM (bidirectionnelle) illustre ce saut qualitatif en traitant les séquences simultanément vers l'avant et vers l'arrière, capturant des dépendances contextuelles que les modèles unidirectionnels omettent.
 
@@ -39,7 +39,7 @@ Dans le cadre de la reconstruction de données de capteurs manquantes, l'utilisa
 
 Parallèlement, l'apprentissage multi-tâches (MTL) s'impose comme un levier de performance majeur. Le modèle MTLTFT, fusionnant le MTL et le Temporal Fusion Transformer, optimise les "représentations partagées" en prédisant conjointement des horizons temporels variés (du futur immédiat au futur lointain). Cette stratégie de génération multi-tâches agit comme un régularisateur puissant, forçant le modèle à extraire des caractéristiques robustes même en situation de pénurie de données [@Ji2023].
 
-5. Intégrité Méthodologique : Le Danger du Data Leakage
+1. Intégrité Méthodologique : Le Danger du Data Leakage
 
 La puissance de calcul de ces architectures est vaine si elle repose sur un protocole d'évaluation biaisé. Le Data Leakage (fuite de données) constitue la faille méthodologique la plus insidieuse en séries temporelles, générant un "optimisme biaisé" qui s'effondre lors du déploiement réel.
 

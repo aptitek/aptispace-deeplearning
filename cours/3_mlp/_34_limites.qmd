@@ -1,0 +1,97 @@
+## Limites Structurelles et Optimisation Continue
+
+Malgré sa polyvalence et son universalité théorique, le MLP souffre d'une **myopie structurelle** intrinsèque liée à sa connectivité totale. Comprendre ces limites est essentiel pour justifier l'émergence des architectures spécialisées qui font l'objet des chapitres suivants [@Traite_nd; @ResearchGate_MLP1_2026].
+
+### L'incapacité à capturer les relations spatiales
+
+Le MLP traite chaque dimension de l'entrée de manière **indépendante et isotrope** : il ne possède aucun a priori sur la structure spatiale des données. Cette approche est catastrophique pour les images.
+
+Pour une image en niveaux de gris de $100 \times 100$ pixels ($10\,000$ entrées), un seul neurone de la première couche cachée nécessite déjà $10\,000$ poids. Une couche de $1\,000$ neurones implique $10^7$ paramètres pour la seule première couche — et ce pour une image de résolution modeste. À $224 \times 224$ pixels (résolution standard d'ImageNet), le coût devient proprement rédhibitoire.
+
+De plus, le MLP ignore la **corrélation locale** des pixels : deux pixels voisins ne sont pas traités différemment de deux pixels aux antipodes de l'image. Cette indifférence à la topologie spatiale est précisément ce que les CNN résolvent via la connectivité locale et le partage de poids.
+
+### La rigidité face aux données séquentielles
+
+En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque exemple de manière **entièrement indépendante**. Pour une séquence de mots ou une série temporelle, chaque pas de temps est traité comme si le passé n'existait pas. Cette limitation fondamentale motive l'introduction des RNN, LSTM et GRU (chapitre 4), puis des Transformers.
+
+Il est important de noter que le MLP ne disparaît pas pour autant dans les architectures modernes. Au cœur même des **Transformers**, un bloc *Position-wise Feed-Forward Network* (FFN) — structurellement identique à un MLP à deux couches avec activation GELU — traite chaque position de la séquence indépendamment après le mécanisme d'attention. Le MLP est donc un sous-composant universel des architectures les plus sophistiquées.
+
+### Planificateurs de taux d'apprentissage
+
+Un taux d'apprentissage (LR) fixe est rarement optimal tout au long de l'entraînement : trop élevé, il fait osciller la perte autour d'un minimum sans jamais converger ; trop bas, il piège le réseau dans un minimum local médiocre [@DiveIntoDeepLearning_nd; @Chugani_2025; @Frans_2023]. Les **planificateurs de LR** (*learning rate schedulers*) adaptent dynamiquement ce taux au cours de l'entraînement :
+
+* **StepLR :** Réduit le LR d'un facteur multiplicatif $\gamma$ tous les $k$ pas d'optimisation [@CodeSignal_StepLR_2025]. Simple et prédictible mais nécessite un réglage manuel de $k$.
+
+* **ReduceLROnPlateau :** Réduit le LR lorsque la métrique surveillée (typiquement la perte de validation) n'améliore plus depuis $p$ époques. Adaptatif et particulièrement robuste dans les pipelines de production.
+
+* **CosineAnnealingLR :** Fait décroître le LR selon un cosinus depuis $\eta_{\max}$ jusqu'à $\eta_{\min}$, permettant un refroidissement progressif qui favorise la convergence vers des minima larges et plus généralisables.
+
+* **Warmup + Decay :** Utilisé dans les Transformers, le LR monte linéairement pendant quelques milliers de pas (*warmup*) puis décroît selon $1/\sqrt{t}$. Cela permet aux paramètres initiaux de se stabiliser avant d'appliquer de grandes mises à jour.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📉 Comparateur de Planificateurs de Taux d'Apprentissage
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof lr_init   = Inputs.range([0.001, 0.5],  { value: 0.1,  step: 0.001, label: "LR initial (η₀)" })
+viewof lr_epochs = Inputs.range([10, 100],      { value: 50,   step: 1,     label: "Époques totales" })
+```
+::::
+
+:::: {#plot-lr-schedulers .plot-wrapper style="padding:1rem;"}
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+lr_renderChart = {
+  const el = document.getElementById("plot-lr-schedulers");
+  if (!el) return;
+
+  const T = lr_epochs;
+  const eta0 = lr_init;
+  const epochs = Array.from({length: T}, (_, i) => i + 1);
+
+  const stepLR     = epochs.map(e => eta0 * Math.pow(0.5, Math.floor((e - 1) / (T / 5))));
+  const plateau    = epochs.map(e => {
+    // Simule ReduceLROnPlateau : réduit à chaque 1/4 de l'entraînement
+    const reductions = Math.floor((e - 1) / (T / 4));
+    return eta0 * Math.pow(0.5, reductions);
+  });
+  const cosine     = epochs.map(e => eta0 * 0.5 * (1 + Math.cos(Math.PI * (e - 1) / (T - 1))));
+  const warmup     = epochs.map(e => {
+    const w = Math.floor(T * 0.1);
+    return e <= w ? eta0 * (e / w) : eta0 * Math.sqrt(w / e);
+  });
+
+  const traces = [
+    { x: epochs, y: stepLR,  name:"StepLR",              line:{color:"#268bd2", width:2.5} },
+    { x: epochs, y: plateau, name:"ReduceLROnPlateau",    line:{color:"#859900", width:2.5} },
+    { x: epochs, y: cosine,  name:"CosineAnnealingLR",   line:{color:"#dc322f", width:2.5} },
+    { x: epochs, y: warmup,  name:"Warmup + 1/√t Decay", line:{color:"#d33682", width:2.5} },
+  ].map(t => ({ ...t, type:"scatter", mode:"lines" }));
+
+  const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+  const bg    = isDark ? "#002b36" : "#fdf6e3";
+  const fg    = isDark ? "#839496" : "#657b83";
+  const grid  = isDark ? "#073642" : "#eee8d5";
+
+  const layout = {
+    paper_bgcolor:"transparent", plot_bgcolor:"transparent",
+    xaxis: { title:"Époque", gridcolor:grid, zerolinecolor:fg, tickfont:{color:fg} },
+    yaxis: { title:"Taux d'apprentissage η", gridcolor:grid, zerolinecolor:fg, tickfont:{color:fg} },
+    legend: { orientation:"h", y:-0.25, font:{color:fg} },
+    margin: { t:20, b:70, l:65, r:20 },
+    font: { color:fg }
+  };
+
+  Plotly.react(el, traces, layout, { responsive:true, displayModeBar:false });
+}
+```
+
+Ces planificateurs illustrent une réalité fondamentale de l'optimisation profonde : **le taux d'apprentissage n'est pas un hyperparamètre fixe, mais une trajectoire dans l'espace des paramètres**. Maîtriser le MLP dans toute sa profondeur — architecture, activation, rétropropagation, normalisation et optimisation — constitue le prérequis indispensable à l'étude des architectures spécialisées qui vont suivre.

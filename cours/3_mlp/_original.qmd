@@ -4,7 +4,7 @@ Cours Magistral : Le Perceptron Multicouche (MLP), le Modèle par Défaut
 
 Le Perceptron Multicouche (MLP) constitue le socle fondamental de l'apprentissage profond moderne. Successeur structurel du perceptron simple de Rosenblatt — dont les limites face aux problèmes non linéairement séparables furent mises en exergue par la célèbre impasse du OU exclusif (XOR) — le MLP a introduit une architecture feedforward acyclique intégrant des couches cachées. Bien que des architectures spécialisées telles que les réseaux de neurones convolutionnels (CNN) ou les Transformers occupent aujourd'hui le devant de la scène pour des données structurées, le MLP demeure le « modèle par défaut » pour les tâches de classification et de régression sur données tabulaires. Sa puissance réside dans le théorème d'approximation universelle, faisant de lui un outil capable de modéliser n'importe quelle fonction continue, pourvu que sa profondeur et sa largeur soient adéquates. Pour comprendre son efficacité, il convient d'analyser la mécanique de ses composants élémentaires.
 
-2. Rappels Architecturaux : Les Piliers du Neurone Artificiel
+1. Rappels Architecturaux : Les Piliers du Neurone Artificiel
 
 L'architecture du MLP repose sur une organisation en strates (couches d'entrée, cachées et de sortie). Cette hiérarchie permet une extraction progressive de caractéristiques de plus en plus abstraites. La capacité du réseau à apprendre des représentations complexes dépend toutefois de la gestion rigoureuse de ses paramètres et de ses non-linéarités.
 
@@ -37,7 +37,7 @@ Pour optimiser les calculs sur GPU, le MLP abandonne la vue scalaire pour une ap
 
 Cette structure statique n'est toutefois que le support d'un mécanisme dynamique essentiel : la rétropropagation.
 
-3. Dynamique d'Apprentissage : Rétropropagation et Optimisation
+1. Dynamique d'Apprentissage : Rétropropagation et Optimisation
 
 La rétropropagation du gradient est le moteur de l'apprentissage. Fondée sur la règle de dérivation en chaîne, elle permet de distiller l'erreur globale du réseau vers chaque paramètre individuel.
 
@@ -56,7 +56,7 @@ Ici, le symbole \odot représente le produit de Hadamard (multiplication éléme
 
 Pour stabiliser l'apprentissage et lutter contre le « Internal Covariate Shift », la Batch Normalization est indispensable. Elle normalise les activations d'un mini-lot (moyenne nulle, variance unitaire) et introduit deux paramètres apprenables : le gain (\gamma) et le décalage (\beta). L'ordre des couches est stratégique : la pratique standard place la Batch Norm entre la transformation linéaire (couche Fully Connected) et la fonction d'activation. Cette disposition assure que les valeurs entrant dans la non-linéarité sont distribuées de manière optimale, permettant l'usage de taux d'apprentissage plus élevés sans risque de divergence.
 
-4. Les Limites du MLP face aux Données Séquentielles et Spatiales
+1. Les Limites du MLP face aux Données Séquentielles et Spatiales
 
 Malgré sa polyvalence, le MLP souffre d'une « myopie » structurelle intrinsèque liée à sa connectivité totale.
 
@@ -68,6 +68,6 @@ Le MLP échoue sur les données de haute dimension comme les images car il ignor
 
 En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque entrée de manière indépendante. Cette absence de contexte le rend inapte au traitement du langage naturel ou des séries temporelles, tâches dévolues aux RNN ou aux Transformers. Notez cependant que le MLP ne disparaît pas : il survit en tant que sous-composant essentiel (le bloc Position-wise Feed-Forward) au sein même des architectures Transformers.
 
-5. Conclusion : Le MLP, une Fondation Incontournable
+1. Conclusion : Le MLP, une Fondation Incontournable
 
 Le Perceptron Multicouche demeure le prérequis indispensable à toute expertise en Intelligence Artificielle. Il incarne les principes universels du gradient et de l'activation. Pour maximiser son efficacité, l'usage de Schedulers (planificateurs de taux d'apprentissage) tels que ReduceLROnPlateau est vital. Un taux fixe risque en effet soit d'osciller indéfiniment autour de l'optimum (s'il est trop élevé), soit de rester piégé dans un minimum local médiocre (s'il est trop bas). Maîtriser le MLP, c'est comprendre les fondations sur lesquelles s'élèvent les modèles les plus sophistiqués de notre ère.
