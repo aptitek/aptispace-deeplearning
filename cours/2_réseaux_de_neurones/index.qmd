@@ -12,4 +12,5 @@ bibliography: bibliography.bib
 {{< include _25_activation.qmd >}}
 {{< include _26_vanishing.qmd >}}
 {{< include _27_optimisation.qmd >}}
+{{< include _28_limites.qmd >}}
 <!-- DYNAMIC_INCLUDES_END -->

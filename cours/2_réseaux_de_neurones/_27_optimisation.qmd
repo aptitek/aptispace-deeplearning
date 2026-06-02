@@ -7,12 +7,23 @@ La résolution des problèmes de gradient a été un tournant majeur qui a permi
 
 * L'initialisation des poids joue également un rôle fondamental. Une approche comme la *Sparse Initialization* (initialisation creuse), qui limite par exemple à 15 le nombre de connexions non nulles par neurone, prévient la saturation précoce et favorise la différenciation des unités de calcul [@iNeuron_XavierHe; @Kumar2017; @Stanford_CS230].
 
-* **La normalisation par lot (Batch Normalization) :**
-* Cette technique a été une véritable révolution. Bien qu'elle ait été longtemps attribuée à la réduction du "décalage de covariable interne" (Internal Covariate Shift), une étude du MIT en 2018 a démontré que son véritable succès réside dans le lissage du paysage d'optimisation.
+### Batch Normalization : stabiliser le paysage d'optimisation
 
-* Sans cette normalisation, le paysage d'optimisation ressemble à une descente de piste noire glacée et bosselée, pleine de pièges pour l'algorithme.
+La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmschenk_2016] est une technique introduite par Ioffe et Szegedy (2015) pour stabiliser et accélérer l'apprentissage. Elle a été longtemps attribuée à la réduction du **glissement de covariable interne** (*Internal Covariate Shift*) : au fil des mises à jour des poids, la distribution des activations d'une couche change continuellement, forçant les couches suivantes à s'adapter en permanence. Cependant, une étude du MIT en 2018 a démontré que son véritable succès réside également dans le **lissage du paysage d'optimisation**, rendant le paysage comparable à une autoroute damée ou une piste bleue bien lisse [@Ioffe2015; @Sarkar2024; @Youtube_BatchNorm].
 
-* Avec elle, ce paysage devient comparable à une autoroute damée ou une piste bleue bien lisse, ce qui permet d'utiliser des taux d'apprentissage beaucoup plus élevés sans risquer la divergence ou l'explosion des gradients [@Ioffe2015; @Sarkar2024; @Youtube_BatchNorm].
+Pour un mini-lot de pré-activations $\{z_1, \dots, z_m\}$, la BN effectue :
+
+$$
+\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}
+\qquad \text{puis} \qquad
+\tilde{z}_i = \gamma \hat{z}_i + \beta
+$$
+
+où $\mu_{\mathcal{B}}$ et $\sigma_{\mathcal{B}}^2$ sont la moyenne et la variance du mini-lot, $\epsilon$ est un terme de stabilisation numérique, et $\gamma$, $\beta$ sont des **paramètres apprenables** permettant au réseau de retrouver la distribution optimale pour chaque couche.
+
+* **L'ordre stratégique :** La pratique standard place la BN entre la transformation linéaire et la fonction d'activation : $\text{Linear} \to \text{BN} \to \text{Activation}$. Cet ordre assure que les entrées de la non-linéarité sont normalisées avant leur application, maximisant la région de sensibilité de la fonction d'activation.
+
+* **Effets bénéfiques :** La BN permet d'utiliser des taux d'apprentissage plus élevés sans divergence, réduit la dépendance à l'initialisation des poids, et agit comme un régularisateur implicite en introduisant du bruit à travers la variabilité des mini-lots.
 
 * **L'approche architecturale : Les réseaux récurrents avec "portes" (LSTM et GRU) :**
 * Face aux données séquentielles, les réseaux profonds classiques souffrent terriblement de la disparition du gradient sur la longueur.

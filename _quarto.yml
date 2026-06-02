@@ -45,15 +45,12 @@ book:
     - part: "🧠 Réseaux de Neurones Profonds"
       chapters:
         - cours/2_réseaux_de_neurones/index.qmd
-    - part: "🔗 Le Perceptron Multicouche (MLP)"
-      chapters:
-        - cours/3_mlp/index.qmd
     - part: "🔁 Réseaux de Neurones Récurrents (RNN)"
       chapters:
-        - cours/4_rnn/index.qmd
+        - cours/3_rnn/index.qmd
     - part: "👁️ Réseaux de Neurones Convolutionnels (CNN)"
       chapters:
-        - cours/5_cnn/index.qmd
+        - cours/4_cnn/index.qmd
     # DYNAMIC_CHAPTERS_END
     - part: "📚 Annexes"
       chapters:

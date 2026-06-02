@@ -5,9 +5,9 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
-{{< include _41_fondements.qmd >}}
-{{< include _42_gradient.qmd >}}
-{{< include _43_lstm.qmd >}}
-{{< include _44_gru.qmd >}}
-{{< include _45_applications.qmd >}}
+{{< include _31_fondements.qmd >}}
+{{< include _32_gradient.qmd >}}
+{{< include _33_lstm.qmd >}}
+{{< include _34_gru.qmd >}}
+{{< include _35_applications.qmd >}}
 <!-- DYNAMIC_INCLUDES_END -->

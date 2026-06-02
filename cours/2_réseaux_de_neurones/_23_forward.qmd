@@ -11,9 +11,15 @@ La propagation avant constitue le flux tensorial unidirectionnel qui transforme 
 
 $$h = \sum_{i} w_i x_i + b$$
 
-Sous forme matricielle pour une couche complète, l'opération se généralise ainsi :
+### Formalisme vectoriel et vectorisation
 
-$$Z = W \cdot X + B$$
+Pour tirer parti de l'accélération matérielle des GPU, on reformule ce calcul en opérations matricielles. L'ensemble de la couche $l$ se calcule en une seule multiplication de matrices [@Nielsen_2019] :
+
+$$
+\mathbf{a}^l = \sigma\!\left(\mathbf{W}^l \mathbf{a}^{l-1} + \mathbf{b}^l\right)
+$$
+
+où $\mathbf{W}^l \in \mathbb{R}^{n_l \times n_{l-1}}$ est la matrice des poids, et la non-linéarité $\sigma$ est appliquée élément par élément. Ce passage de la vue scalaire à la vue matricielle est fondamental : un GPU peut effectuer des milliers de ces multiplications en parallèle, ce qui rend l'entraînement de réseaux profonds computationnellement faisable.
 
 * **L'impératif de la non-linéarité :**
 * L'étape la plus cruciale de ce flux consiste à appliquer une fonction d'activation à la somme pondérée $h$.

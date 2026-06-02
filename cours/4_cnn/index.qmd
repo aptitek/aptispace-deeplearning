@@ -5,8 +5,8 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
-{{< include _51_convolution.qmd >}}
-{{< include _52_pooling.qmd >}}
-{{< include _53_architectures.qmd >}}
-{{< include _54_detection.qmd >}}
+{{< include _41_convolution.qmd >}}
+{{< include _42_pooling.qmd >}}
+{{< include _43_architectures.qmd >}}
+{{< include _44_detection.qmd >}}
 <!-- DYNAMIC_INCLUDES_END -->

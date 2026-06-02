@@ -12,7 +12,7 @@ De plus, le MLP ignore la **corrélation locale** des pixels : deux pixels voisi
 
 ### La rigidité face aux données séquentielles
 
-En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque exemple de manière **entièrement indépendante**. Pour une séquence de mots ou une série temporelle, chaque pas de temps est traité comme si le passé n'existait pas. Cette limitation fondamentale motive l'introduction des RNN, LSTM et GRU (chapitre 4), puis des Transformers.
+En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque exemple de manière **entièrement indépendante**. Pour une séquence de mots ou une série temporelle, chaque pas de temps est traité comme si le passé n'existait pas. Cette limitation fondamentale motive l'introduction des RNN, LSTM et GRU (chapitre 3), puis des Transformers.
 
 Il est important de noter que le MLP ne disparaît pas pour autant dans les architectures modernes. Au cœur même des **Transformers**, un bloc *Position-wise Feed-Forward Network* (FFN) — structurellement identique à un MLP à deux couches avec activation GELU — traite chaque position de la séquence indépendamment après le mécanisme d'attention. Le MLP est donc un sous-composant universel des architectures les plus sophistiquées.
 
