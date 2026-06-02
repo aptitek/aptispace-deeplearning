@@ -1,0 +1,73 @@
+Cours Magistral : Le Perceptron Multicouche (MLP), le Modèle par Défaut
+
+1. Introduction : L'Émergence du MLP comme Standard de l'Apprentissage Profond
+
+Le Perceptron Multicouche (MLP) constitue le socle fondamental de l'apprentissage profond moderne. Successeur structurel du perceptron simple de Rosenblatt — dont les limites face aux problèmes non linéairement séparables furent mises en exergue par la célèbre impasse du OU exclusif (XOR) — le MLP a introduit une architecture feedforward acyclique intégrant des couches cachées. Bien que des architectures spécialisées telles que les réseaux de neurones convolutionnels (CNN) ou les Transformers occupent aujourd'hui le devant de la scène pour des données structurées, le MLP demeure le « modèle par défaut » pour les tâches de classification et de régression sur données tabulaires. Sa puissance réside dans le théorème d'approximation universelle, faisant de lui un outil capable de modéliser n'importe quelle fonction continue, pourvu que sa profondeur et sa largeur soient adéquates. Pour comprendre son efficacité, il convient d'analyser la mécanique de ses composants élémentaires.
+
+2. Rappels Architecturaux : Les Piliers du Neurone Artificiel
+
+L'architecture du MLP repose sur une organisation en strates (couches d'entrée, cachées et de sortie). Cette hiérarchie permet une extraction progressive de caractéristiques de plus en plus abstraites. La capacité du réseau à apprendre des représentations complexes dépend toutefois de la gestion rigoureuse de ses paramètres et de ses non-linéarités.
+
+2.1. Les Poids Synaptiques (w) et les Biais (b)
+
+Le traitement de l'information s'opère via deux vecteurs de paramètres ajustables :
+
+* Les poids (w) : Ils modulent l'influence d'une entrée sur le neurone, agissant comme une mesure de l'importance relative de chaque caractéristique.
+* Le biais (b) : Il permet de décaler la fonction d'activation par rapport à l'origine, offrant au modèle la flexibilité nécessaire pour s'ajuster aux données même lorsque les entrées sont nulles.
+
+L'initialisation de ces paramètres n'est pas une simple étape technique, mais une condition sine qua non de la convergence :
+
+* Initialisation à zéro : À proscrire absolument pour les poids. Elle induit une symétrie parfaite où chaque neurone d'une couche cachée calcule le même gradient et apprend les mêmes caractéristiques. La couche est alors réduite fonctionnellement à un seul neurone, rendant la profondeur inutile.
+* Heuristiques d'initialisation : Pour briser cette symétrie, on utilise aujourd'hui des méthodes calibrées sur la variance. L'initialisation de He (Kaiming) est le standard pour les réseaux utilisant la fonction ReLU. Elle définit une variance de 2/n_{l-1} pour compenser le fait que la fonction ReLU « neutralise » mathématiquement la moitié du signal (la partie négative).
+
+2.2. Les Fonctions d'Activation (\sigma) : Introduire la Non-linéarité
+
+La fonction d'activation transforme la somme pondérée des entrées en un signal de sortie. Sans elle, le MLP ne serait qu'une succession de transformations linéaires, équivalente à une simple régression.
+
+* Sigmoïde : Écrase les valeurs dans l'intervalle [0, 1]. Bien qu'utile en sortie pour les probabilités, elle est pathologique dans les couches cachées en raison de la saturation : lorsque les entrées s'éloignent de zéro, la dérivée s'annule, bloquant ainsi la mise à jour des poids (évanouissement du gradient).
+* Tanh (Tangente Hyperbolique) : Centrée sur zéro (intervalle [-1, 1]), elle offre une dynamique souvent supérieure à la sigmoïde mais reste sujette à la saturation.
+* ReLU (Rectified Linear Unit) : f(x) = \max(0, x). Elle est privilégiée pour sa simplicité et sa capacité à accélérer la convergence. Cependant, elle est vulnérable au phénomène de la « mort neuronale » (Dying ReLU). Si les poids d'un neurone sont ajustés de sorte que son entrée z est systématiquement négative, son gradient devient nul à jamais. Pour pallier cela, on utilise souvent la Leaky ReLU (f(x) = \max(0.01x, x)), dont la pente résiduelle assure que le gradient ne s'annule jamais totalement.
+
+2.3. Formalisme Mathématique et Vectorisation
+
+Pour optimiser les calculs sur GPU, le MLP abandonne la vue scalaire pour une approche matricielle globale de la couche l :
+
+* Équation locale : a^l_j = \sigma\left(\sum_k w^l_{jk} a^{l-1}_k + b^l_j\right)
+* Équation matricielle : a^l = \sigma(w^l a^{l-1} + b^l)
+
+Cette structure statique n'est toutefois que le support d'un mécanisme dynamique essentiel : la rétropropagation.
+
+3. Dynamique d'Apprentissage : Rétropropagation et Optimisation
+
+La rétropropagation du gradient est le moteur de l'apprentissage. Fondée sur la règle de dérivation en chaîne, elle permet de distiller l'erreur globale du réseau vers chaque paramètre individuel.
+
+3.1. Le Flux d'Erreur (Backward Pass)
+
+L'apprentissage repose sur quatre équations fondamentales qui régissent la propagation de l'erreur \delta :
+
+1. BP1 (Erreur de sortie) : \delta^L = \nabla_a C \odot \sigma'(z^L)
+2. BP2 (Propagation de l'erreur) : \delta^l = ((w^{l+1})^T \delta^{l+1}) \odot \sigma'(z^l)
+3. BP3 (Gradient du biais) : \frac{\partial C}{\partial b^l_j} = \delta^l_j
+4. BP4 (Gradient du poids) : \frac{\partial C}{\partial w^l_{jk}} = a^{l-1}_k \delta^l_j
+
+Ici, le symbole \odot représente le produit de Hadamard (multiplication élément par élément). Cette opération est cruciale car elle permet de moduler l'erreur transmise par la dérivée de la fonction d'activation locale, facilitant une vectorisation efficace des calculs.
+
+3.2. Stabilité et Normalisation (Batch Normalization)
+
+Pour stabiliser l'apprentissage et lutter contre le « Internal Covariate Shift », la Batch Normalization est indispensable. Elle normalise les activations d'un mini-lot (moyenne nulle, variance unitaire) et introduit deux paramètres apprenables : le gain (\gamma) et le décalage (\beta). L'ordre des couches est stratégique : la pratique standard place la Batch Norm entre la transformation linéaire (couche Fully Connected) et la fonction d'activation. Cette disposition assure que les valeurs entrant dans la non-linéarité sont distribuées de manière optimale, permettant l'usage de taux d'apprentissage plus élevés sans risque de divergence.
+
+4. Les Limites du MLP face aux Données Séquentielles et Spatiales
+
+Malgré sa polyvalence, le MLP souffre d'une « myopie » structurelle intrinsèque liée à sa connectivité totale.
+
+4.1. L'Incapacité à Capturer les Relations Spatiales (Vision)
+
+Le MLP échoue sur les données de haute dimension comme les images car il ignore la corrélation locale des pixels. Sa structure fully connected entraîne une explosion du nombre de paramètres : pour une modeste image grise de 100 \times 100 pixels (10\,000 entrées), un seul neurone de la première couche cachée nécessite déjà 10\,000 poids. Cette redondance est inefficace face aux CNN, qui exploitent la localité spatiale par le partage de poids (noyaux de convolution).
+
+4.2. La Rigidité face aux Données Séquentielles (Temporel)
+
+En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque entrée de manière indépendante. Cette absence de contexte le rend inapte au traitement du langage naturel ou des séries temporelles, tâches dévolues aux RNN ou aux Transformers. Notez cependant que le MLP ne disparaît pas : il survit en tant que sous-composant essentiel (le bloc Position-wise Feed-Forward) au sein même des architectures Transformers.
+
+5. Conclusion : Le MLP, une Fondation Incontournable
+
+Le Perceptron Multicouche demeure le prérequis indispensable à toute expertise en Intelligence Artificielle. Il incarne les principes universels du gradient et de l'activation. Pour maximiser son efficacité, l'usage de Schedulers (planificateurs de taux d'apprentissage) tels que ReduceLROnPlateau est vital. Un taux fixe risque en effet soit d'osciller indéfiniment autour de l'optimum (s'il est trop élevé), soit de rester piégé dans un minimum local médiocre (s'il est trop bas). Maîtriser le MLP, c'est comprendre les fondations sur lesquelles s'élèvent les modèles les plus sophistiqués de notre ère.

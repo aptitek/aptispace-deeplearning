@@ -1,0 +1,53 @@
+Cours Magistral : Maîtriser les Réseaux de Neurones Récurrents (RNN) et la Gestion de la Mémoire
+
+1. Fondements des RNN : Au-delà du cadre Markovien
+
+Le passage des architectures de Perceptron Multicouche (MPC) aux réseaux de neurones récurrents (RNN) représente une rupture paradigmatique nécessaire pour le traitement des dépendances temporelles. Contrairement aux modèles statiques qui postulent l'indépendance des entrées, les RNN intègrent une dimension séquentielle où l'ordre des observations est déterminant. Dans les systèmes dynamiques réels, l'hypothèse markovienne de premier ordre — postulant que l'état futur ne dépend que du temps immédiatement précédent — s'avère structurellement insuffisante. La capture des corrélations à long terme exige que le modèle transforme une séquence d'entrée (\mathbf{x}_1, \dots, \mathbf{x}_t) en une représentation capable d'estimer la loi de probabilité conditionnelle P(\mathbf{x}_t | \mathbf{x}_{1}, \dots, \mathbf{x}_{t-1}) [@Franck2024].
+
+Le pivot de cette architecture est le vecteur latent \mathbf{h}_t, ou état caché, qui fait office de mécanisme de mémoire interne. Mathématiquement, \mathbf{h}_t compresse l'historique des entrées pour transformer une séquence de taille variable en un flux de sortie \mathbf{y}_t = f_\theta(\mathbf{x}_t, \mathbf{h}_{t-1}). L'étude comparative des architectures de base révèle deux approches fondamentales de mise à jour de ce vecteur :
+
+* Le réseau d'Elman : L'état latent \mathbf{h}_t dépend de l'entrée actuelle et de l'état latent précédent (\mathbf{h}_{t-1}), privilégiant la continuité de la dynamique interne.
+* Le réseau de Jordan : La mise à jour de \mathbf{h}_t s'appuie sur la sortie précédente (\mathbf{y}_{t-1}), une configuration pertinente lorsque les performances observées sont les meilleurs prédicteurs de l'état futur.
+
+Cette élégance conceptuelle se heurte toutefois à une réalité mathématique implacable lors de la phase d'apprentissage : la gestion de la stabilité du gradient sur des séquences étendues.
+
+2. La Dynamique de l'Apprentissage et le Problème du Gradient
+
+La robustesse d'un RNN ne se mesure pas à sa profondeur structurelle, mais à sa capacité à propager l'information sans distorsion sur de longs horizons temporels. L'apprentissage par rétropropagation à travers le temps (BPTT) expose les limites intrinsèques des fonctions d'activation classiques lorsqu'elles sont couplées à des structures récurrentes.
+
+Lors du calcul du gradient global \frac{\partial E_t}{\partial \theta_h} pour mettre à jour les poids, la règle de dérivation des fonctions composées fait apparaître un produit de dérivées partielles : \frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i} = \prod_{j=i}^{t} \frac{\partial \mathbf{h}_{j+1}}{\partial \mathbf{h}_j} = \prod_{j=i}^{t} \sigma'(\dots) \mathbf{U}_h Dans cette expression, \mathbf{U}_h représente la matrice jacobienne des poids de l'état caché [@Franck2024]. La stabilité de ce produit est dictée par le rayon spectral (la valeur propre dominante) de \mathbf{U}_h. Si cette valeur est supérieure à l'unité, le gradient subit une explosion exponentielle. À l'inverse, si elle est inférieure à 1, ou si l'on considère que la dérivée de la fonction d'activation \sigma' (tanh ou sigmoïde) est par définition \leq 1, le gradient tend inéluctablement vers zéro. Ce phénomène de disparition multiplicative du gradient annihile la capacité du réseau à "se souvenir" des informations lointaines, limitant sa mémoire effective à quelques pas de temps seulement.
+
+Pour pallier ces instabilités, il est impératif d'évoluer vers des architectures capables de réguler activement le flux d'information par des mécanismes de contrôle non linéaires.
+
+3. Architectures à Portes : La Révolution LSTM et GRU
+
+L'introduction du "gating" (portage) a transformé les réseaux récurrents en outils industriels fiables. En substituant la mise à jour multiplicative simple par une gestion sélective de l'information, les cellules à portes permettent de simuler une mémoire à court et long terme.
+
+La cellule LSTM (Long Short-Term Memory) résout la disparition du gradient en introduisant un état de cellule \mathbf{c}_t, agissant comme une "autoroute de l'information". Contrairement à l'état caché, \mathbf{c}_t subit des mises à jour principalement additives et linéaires, protégées par trois portes :
+
+1. Porte d'oubli (f_t) : Détermine les segments de la mémoire passée à rejeter via une fonction sigmoïde.
+2. Porte d'entrée (i_t) : Identifie les nouvelles données pertinentes à intégrer à l'état de cellule.
+3. Porte de sortie (o_t) : Filtre l'information de \mathbf{c}_t pour produire l'état caché \mathbf{h}_t.
+
+Cette transition d'une dynamique multiplicative à une dynamique additive assure que le gradient peut être maintenu proche de l'unité, préservant la causalité sur de longues séquences [@Zhu2024]. L'alternative GRU (Gated Recurrent Unit) simplifie cette logique en fusionnant les portes d'oubli et d'entrée en une "porte de mise à jour" et en intégrant l'état de cellule directement dans l'état caché. Bien que moins complexe, le GRU maintient des propriétés de stabilité comparables au LSTM, offrant un compromis efficacité-performance optimal pour de nombreux cas d'usage.
+
+4. Extensions Modernes et Applications de Haute Précision
+
+L'évolution des RNN vers des modèles hybrides permet aujourd'hui d'atteindre une précision chirurgicale dans des domaines critiques comme la surveillance de santé structurelle (SHM). L'architecture Bi-LSTM (bidirectionnelle) illustre ce saut qualitatif en traitant les séquences simultanément vers l'avant et vers l'arrière, capturant des dépendances contextuelles que les modèles unidirectionnels omettent.
+
+Dans le cadre de la reconstruction de données de capteurs manquantes, l'utilisation du framework VMD-SSA-Bi-LSTM est exemplaire [@Zhu2024]. Ici, la décomposition en modes variationnels (VMD) est utilisée pour segmenter des signaux périodiques irréguliers en fonctions de modes intrinsèques (IMF), tandis que l'algorithme de recherche du moineau (SSA) automatise l'optimisation des hyperparamètres (unités cachées, taux d'apprentissage). Cette synergie permet de modéliser les corrélations spatio-temporelles avec une fidélité bien supérieure aux méthodes d'interpolation classiques.
+
+Parallèlement, l'apprentissage multi-tâches (MTL) s'impose comme un levier de performance majeur. Le modèle MTLTFT, fusionnant le MTL et le Temporal Fusion Transformer, optimise les "représentations partagées" en prédisant conjointement des horizons temporels variés (du futur immédiat au futur lointain). Cette stratégie de génération multi-tâches agit comme un régularisateur puissant, forçant le modèle à extraire des caractéristiques robustes même en situation de pénurie de données [@Ji2023].
+
+5. Intégrité Méthodologique : Le Danger du Data Leakage
+
+La puissance de calcul de ces architectures est vaine si elle repose sur un protocole d'évaluation biaisé. Le Data Leakage (fuite de données) constitue la faille méthodologique la plus insidieuse en séries temporelles, générant un "optimisme biaisé" qui s'effondre lors du déploiement réel.
+
+Le risque majeur réside dans la configuration "pre-split" : générer des séquences de fenêtres coulissantes avant le partitionnement des données. Ce processus permet à des informations futures de s'infiltrer dans l'ensemble d'entraînement via les chevauchements de fenêtres, violant ainsi la causalité temporelle [@Albelali2025]. Pour quantifier ce biais, on utilise le RMSE Gain, défini comme la différence en pourcentage de l'erreur entre une configuration "leaky" (pre-split) et une configuration "clean" (post-split).
+
+Les preuves empiriques sont sans appel :
+
+* La validation 10-fold Cross-Validation, bien que standard, est extrêmement vulnérable, affichant des gains d'artificialité allant jusqu'à 20,5 % pour des horizons de prévision étendus.
+* À l'inverse, les divisions chronologiques simples (2-way ou 3-way splits) s'avèrent plus robustes, maintenant le RMSE Gain sous le seuil des 5 %.
+
+Il est également établi que des fenêtres d'entrée réduites et des décalages temporels (lag steps) plus longs exacerbent ce risque de fuite. La rigueur scientifique impose donc des pipelines "post-split" stricts, garantissant que la séparation temporelle précède toute construction de séquence, condition sine qua non pour la reproductibilité et la confiance dans les modèles prédictifs.

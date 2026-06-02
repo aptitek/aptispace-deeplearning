@@ -1,0 +1,96 @@
+Module 2 : Compréhension Spatiale et Vision par Ordinateur — Cours Magistral
+
+Bienvenue dans ce deuxième module. En tant que chercheurs, nous observons que l'évolution de la vision par ordinateur n'est pas une simple accumulation de couches, mais une quête structurelle visant à équilibrer l'expressivité sémantique et la fidélité spatiale. Ce cours analyse la transition des architectures locales vers les modèles globaux, en disséquant les fondements mathématiques qui permettent à l'intelligence artificielle de transformer le signal brut en compréhension géométrique.
+
+
+--------------------------------------------------------------------------------
+
+
+1. Introduction à la Responsabilité Spatiale : Du Séquentiel à la Grille de Pixels
+
+Le passage du traitement de données séquentielles (1D) aux grilles de pixels (2D/3D) a imposé un saut paradigmatique majeur. Dans les Multi-Layer Perceptrons (MLP) traditionnels, la connectivité totale entraîne une explosion du nombre de paramètres qui croît de manière quadratique avec la résolution [2, 3]. Cette approche est non seulement inefficace sur le plan computationnel, mais elle ignore totalement la structure spatiale intrinsèque de l'image.
+
+Le Principe de Responsabilité Unique (SRP) et la Connectivité Locale
+
+Pour pallier ces limites, nous appliquons le Principe de Responsabilité Unique (SRP) à l'extraction de caractéristiques via la connectivité locale. Chaque neurone n'est responsable que d'un champ récepteur local restreint [1, 3]. Cette architecture repose sur deux piliers :
+
+1. Le partage de paramètres : Les poids des filtres (kernels) sont répliqués sur l'ensemble du domaine spatial. Mathématiquement, cela impose une équivariance par translation : si un trait distinctif se déplace dans l'image, sa réponse dans la carte de caractéristiques subira un décalage spatial équivalent [1, 4].
+2. La hiérarchie des traits : En empilant ces couches, le réseau apprend une hiérarchie : les couches initiales extraient des primitives (bords, textures), tandis que les couches profondes assemblent ces formes en concepts sémantiques complexes [5].
+
+Cette transition est essentielle pour transformer le déluge de pixels en une représentation compacte et structurée, socle des réseaux convolutionnels (CNN).
+
+
+--------------------------------------------------------------------------------
+
+
+2. L'Anatomie du CNN : De l'Extraction de Features à la Décision
+
+Un CNN fonctionne comme un entonnoir informationnel structuré en trois phases : Convolution, Pooling et Classification.
+
+La Convolution et l'Optimisation par GEMM
+
+L'opération de convolution transforme un volume d'entrée W_1 \times H_1 \times D_1 en un volume de sortie W_2 \times H_2 \times D_2 via K filtres de taille F \times F. Les dimensions de sortie sont régies par les équations suivantes [4] : W_2 = \frac{W_1 - F + 2P}{S} + 1 \quad ; \quad H_2 = \frac{H_1 - F + 2P}{S} + 1 \quad ; \quad D_2 = K Pour maximiser le débit sur GPU, les frameworks utilisent l'opération im2col afin de reformuler la convolution en une multiplication de matrices généralisée (GEMM). Les filtres sont aplatis en vecteurs lignes pour former une matrice de poids \mathbf{W}_{\text{row}}, tandis que les blocs spatiaux de l'image sont transformés en vecteurs colonnes formant la matrice \mathbf{X}_{\text{col}} [4]. Le calcul devient alors : \mathbf{Y}_{\text{col}} = \mathbf{W}_{\text{row}} \mathbf{X}_{\text{col}} Cette approche sacrifie de la mémoire (via la duplication des pixels dans \mathbf{X}_{\text{col}}) pour exploiter l'efficacité des routines d'algèbre linéaire hautement optimisées.
+
+Le Pooling (Sous-échantillonnage) : Le compromis Invariance-Localisation
+
+Le pooling réduit la dimensionnalité tout en induisant une invariance locale. Cependant, en jetant les coordonnées précises des activations, il est la cause directe du "Problème Picasso" (incapacité à vérifier la cohérence spatiale globale des parties).
+
+Méthode	Caractéristiques	Impact Stratégique
+Max Pooling	Sélectionne \max_{i \in \mathcal{R}} x_i.	Capture les traits saillants (bords, textures). Idéal pour les objets clairs sur fond sombre [11].
+Min Pooling	Sélectionne \min_{i \in \mathcal{R}} x_i.	Utile pour détecter des traits sombres sur fond clair (ex: MNIST inversé) [11].
+Average Pooling	Calcule \frac{1}{|\mathcal{R}|} \sum x_i.	Lissage spatial. Préserve mieux les contours pour la segmentation [8, 10].
+Global Average Pooling (GAP)	Moyenne par canal entier.	Remplace les couches denses. Impose une invariance spatiale totale [7, 8].
+
+La Classification : GAP vs FCN
+
+Le passage à une décision finale s'effectue soit par des couches denses (MLP), soit par une structure Fully Convolutional (FCN). Notons une distinction stratégique majeure : les FCN sont structurellement plus flexibles car ils conservent les dimensions spatiales et peuvent être entraînés à se comporter comme un GAP, alors que le GAP ne peut pas généraliser pour représenter le routage localisé d'un FCN [8].
+
+
+--------------------------------------------------------------------------------
+
+
+3. L'Évolution des Architectures de Vision : Profondeur et Attention
+
+VGG et ResNet : Maîtrise de la Profondeur et du Gradient
+
+VGG a standardisé l'usage de petits filtres 3 \times 3 empilés [14, 16]. Cependant, au-delà de 20 couches, la dégradation du gradient et de l'exactitude sature l'apprentissage [15, 17]. ResNet a résolu ce problème par les skip connections, permettant d'apprendre un résidu F(x) = H(x) - x. Lors de la rétropropagation, la dérivée devient : \frac{\partial L}{\partial x} = \frac{\partial L}{\partial H} \left( \frac{\partial F(x)}{\partial x} + 1 \right) Ce "+1" crée une autoroute pour le gradient, empêchant son évanouissement [17, 21]. L'analyse montre que le couplage avec la Batch Normalization (BN) est vital : BN et les branches résiduelles travaillent de concert pour confiner la variance du gradient dans une plage stable [23]. Sans BN (voir "Model-3" dans les études comparatives), le réseau souffre d'une explosion immédiate du gradient et échoue à converger [23].
+
+Vision Transformer (ViT) : L'Attention Globale
+
+Le ViT rompt avec la localité en traitant l'image comme une séquence de patchs [25]. Deux composants sont critiques pour son fonctionnement :
+
+1. Le token de classification [CLS] : Pris en entrée pour agréger l'information globale.
+2. Les Encodages Positionnels 1D : Puisque l'attention est par nature invariante à la permutation, ces encodages injectent la structure spatiale nécessaire à la compréhension de la topologie de l'image [25, 26]. Contrairement aux CNN qui possèdent un fort biais inductif (localité, équivariance), le ViT doit tout apprendre, ce qui le rend "data-hungry" et nécessite des pré-entraînements massifs (ex: JFT-300M) pour surpasser les CNN [25, 27].
+
+
+--------------------------------------------------------------------------------
+
+
+4. Applications Avancées et Alternatives de Rupture
+
+YOLO : La Détection comme Régression
+
+YOLO divise l'image en une grille S \times S. La fonction de perte SSE est stratégiquement pondérée pour stabiliser l'apprentissage [31, 35] :
+
+* \lambda_{coord} = 5 : Sur-pondère la localisation.
+* \lambda_{noobj} = 0.5 : Réduit l'impact des cellules vides (majoritaires) pour éviter l'instabilité [31, 34]. L'usage de la racine carrée pour la largeur (w) et la hauteur (h) dans la perte est une intuition mathématique fine : comme \frac{d}{dx}\sqrt{x} = \frac{1}{2\sqrt{x}}, la pente est plus forte pour les petites valeurs de x. Ainsi, une erreur de 10 pixels sur une petite boîte est pénalisée bien plus sévèrement que sur une grande boîte [31, 37]. En post-traitement, le Non-Maximum Suppression (NMS) utilise l'Intersection over Union (IoU) comme seuil pour éliminer les doublons [29, 33].
+
+Capsule Networks : Résoudre l'Équivariance
+
+Pour corriger le "Problème Picasso", les capsules utilisent des vecteurs dont l'orientation code les paramètres de pose. Le routage dynamique remplace le pooling par un mécanisme d'accord : une capsule de bas niveau vote pour une capsule parente si leurs prédictions concordent [38, 41]. Pour garantir que la longueur du vecteur représente une probabilité (0 à 1) tout en préservant son orientation, nous utilisons la fonction de "squashing" [38, 41] : \mathbf{v}_j = \frac{\|\mathbf{s}_j\|^2}{1 + \|\mathbf{s}_j\|^2} \frac{\mathbf{s}_j}{\|\mathbf{s}_j\|} Cette architecture assure une équivariance totale : si l'objet tourne, le vecteur d'activité tourne de concert dans l'espace des paramètres, préservant la fidélité spatiale que les CNN sacrifient pour l'invariance.
+
+
+--------------------------------------------------------------------------------
+
+
+5. Synthèse Stratégique et Perspectives
+
+Le choix architectural dépend d'un arbitrage rigoureux entre capacité de généralisation et ressources disponibles.
+
+Critères décisionnels finaux :
+
+* Contrainte de Données : Pour des datasets restreints (ex: imagerie médicale), le biais inductif des CNN (ResNet-50) assure une efficacité d'échantillonnage supérieure. Pour le Big Data, le ViT offre une meilleure mise à l'échelle.
+* Vitesse et Temps Réel : Pour l'inférence embarquée, l'approche monolithique de YOLO demeure le standard industriel grâce à sa formulation en régression unique.
+* Fidélité Géométrique : Si la relation structurelle entre les parties est critique (ex: reconnaissance de pose complexe), l'approche vectorielle des Capsule Networks offre une robustesse théorique supérieure face aux changements de point de vue, malgré son coût de routage itératif.
+
+En résumé, nous passons d'une vision par agrégation locale à une vision par attention globale et vectorielle, redéfinissant notre capacité à interpréter la complexité spatiale du monde.
