@@ -8,9 +8,152 @@ La solution réside dans l'application du **Principe de Responsabilité Unique**
 
 * **Connectivité locale :** Chaque neurone de la couche convolutionnelle n'est connecté qu'à une fenêtre spatiale de taille $F \times F$ dans la couche précédente, et non à l'ensemble de l'entrée. Cette localité exploite le fait que les corrélations entre pixels sont fortes à courte distance et faibles à longue distance.
 
+::: {.card .card-window .mb-4 .local-filter-card}
+:::: {.card-header}
+🔍 Champ Récepteur et Connectivité Locale
+::::
+:::: {.card-body .d-flex .justify-content-center .py-4}
+::::: {.viz-local-filter-container}
+:::::: {.viz-local-filter-window}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::: {.viz-local-filter-cell}
+::::::
+:::::
+::::
+:::
+
 * **Partage de poids :** Un même filtre (*kernel*) $\mathbf{k} \in \mathbb{R}^{F \times F}$ est appliqué à chaque position spatiale de l'entrée. Ce partage impose une propriété fondamentale : **l'équivariance par translation**. Si un motif (un bord, une texture) se déplace dans l'image, sa réponse dans la carte de caractéristiques se déplace de la même quantité, sans nécessiter de nouveaux paramètres.
 
 En traitement du signal classique, les filtres de Sobel ou Gaussien sont définis à la main pour détecter des bords ou lisser l'image. Le CNN **apprend** ses propres noyaux directement depuis les données, optimisant automatiquement l'équilibre entre lissage et différentiation pour la tâche cible.
+
+::: {.card .card-window .mb-4 .convolution-simulator}
+
+:::: {.card-header}
+👁️ Couche de Convolution : Connectivité Locale et Activations
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof conv_stride = Inputs.radio([1, 2], { value: 1, label: "Stride S" })
+viewof conv_padding = Inputs.radio([0, 1], { value: 0, label: "Padding P" })
+viewof conv_preset = Inputs.select(
+  new Map([
+    ["Sobel Vertical (Bords)", "sobel_v"],
+    ["Sobel Horizontal (Bords)", "sobel_h"],
+    ["Netteté (Sharpen)", "sharpen"],
+    ["Flou (Box Blur)", "blur"],
+    ["Identité", "identity"]
+  ]),
+  { value: "sobel_v", label: "Noyau W" }
+)
+viewof conv_activation = Inputs.radio(
+  new Map([
+    ["ReLU", "relu"],
+    ["Linéaire (Aucune)", "linear"]
+  ]),
+  { value: "relu", label: "Activation f" }
+)
+viewof conv_play = Inputs.toggle({ label: "Scan Automatique", value: true })
+viewof conv_speed = Inputs.range([200, 2000], { value: 1000, step: 100, label: "Vitesse (ms)" })
+```
+::::
+
+:::: {.row .g-3 .px-3 .pb-3 .align-items-stretch}
+
+::::: {.col-lg-4 .col-md-6}
+:::::: {.card .border .m-0 .h-100}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+🖥️ Entrée X (7×7) - Cliquez pour dessiner
+:::::::
+::::::: {.card-body .d-flex .flex-column .justify-content-center}
+:::::::: {#conv-input-grid .conv-grid .conv-grid-input}
+::::::::
+:::::::
+::::::
+:::::
+
+::::: {.col-lg-4 .col-md-6}
+:::::: {.card .border .m-0 .h-100}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+⚙️ Poids Noyau W (3×3) & Calculs
+:::::::
+::::::: {.card-body .d-flex .flex-column .gap-3}
+:::::::: {#conv-kernel-grid .conv-grid .conv-grid-kernel}
+::::::::
+:::::::: {#conv-math-details}
+::::::::
+:::::::
+::::::
+:::::
+
+::::: {.col-lg-4 .col-md-12}
+:::::: {.card .border .m-0 .h-100}
+::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
+📊 Carte d'Activations Y
+:::::::
+::::::: {.card-body .d-flex .flex-column .justify-content-center}
+:::::::: {#conv-output-grid .conv-grid .conv-grid-output}
+::::::::
+:::::::
+::::::
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateConvolutionSimulator } from "../../assets/js/custom/convolution.js"
+
+renderConv = {
+  updateConvolutionSimulator({
+    stride: conv_stride,
+    padding: conv_padding,
+    speed: conv_speed,
+    kernelPreset: conv_preset,
+    activation: conv_activation,
+    isPlaying: conv_play,
+    containers: {
+      inputEl: document.getElementById("conv-input-grid"),
+      kernelEl: document.getElementById("conv-kernel-grid"),
+      outputEl: document.getElementById("conv-output-grid"),
+      mathEl: document.getElementById("conv-math-details")
+    }
+  });
+}
+```
 
 ### L'opération de convolution et ses dimensions
 

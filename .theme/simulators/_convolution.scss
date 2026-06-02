@@ -1,0 +1,242 @@
+/* ==========================================================================
+   CONVOLUTION SIMULATOR STYLES
+   ========================================================================== */
+
+.convolution-simulator {
+  // Grids Layout
+  .conv-grid-container {
+    background-color: var(--sol-base2);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: var(--canvas-shadow-inset);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    position: relative;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .conv-grid-title {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--sol-base01);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  // Grids Structure
+  .conv-grid {
+    display: grid;
+    gap: 3px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+  }
+
+  .conv-grid-input {
+    max-width: 240px;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .conv-grid-kernel {
+    max-width: 130px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .conv-grid-output {
+    max-width: 240px;
+  }
+
+  // Cells Styling
+  .conv-cell {
+    background-color: var(--sol-base3);
+    border: 1.5px solid rgba(var(--sol-base1-rgb), 0.25);
+    border-radius: 4px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-code);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--sol-base01);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &.clickable {
+      cursor: pointer;
+      &:hover {
+        border-color: var(--sol-blue);
+        transform: scale(1.05);
+        z-index: 2;
+      }
+    }
+
+    // Activated input pixel (white/bright value 1)
+    &.pixel-active {
+      background-color: var(--sol-base03);
+      color: var(--sol-base2);
+      border-color: var(--sol-base03);
+    }
+
+    // Inside receptive field (sliding window)
+    &.in-receptive-field {
+      border-color: var(--sol-cyan) !important;
+      background-color: rgba(var(--sol-cyan-rgb), 0.12);
+      box-shadow: 0 0 4px rgba(var(--sol-cyan-rgb), 0.2);
+
+      &.pixel-active {
+        background-color: rgba(var(--sol-cyan-rgb), 0.9);
+        color: white;
+        border-color: var(--sol-cyan) !important;
+      }
+    }
+
+    // Receptive field anchor (center pixel or outline border corner)
+    &.receptive-field-center {
+      box-shadow: inset 0 0 0 2px var(--sol-cyan);
+    }
+
+    // Output feature map styling based on activation value
+    &.output-active {
+      background-color: rgba(var(--sol-blue-rgb), var(--activation-intensity, 0));
+      color: var(--sol-base03);
+
+      &[style*="--activation-intensity: 0"] {
+        color: var(--sol-base01);
+      }
+
+      &[style*="--activation-intensity: 0.8"],
+      &[style*="--activation-intensity: 0.9"],
+      &[style*="--activation-intensity: 1"] {
+        color: white;
+      }
+    }
+
+    // Highlighted cell being evaluated currently
+    &.evaluating {
+      border-color: var(--sol-magenta) !important;
+      box-shadow: 0 0 8px rgba(var(--sol-magenta-rgb), 0.5) !important;
+      transform: scale(1.1);
+      z-index: 5;
+    }
+  }
+
+  // Math Box & Logs Panel
+  .conv-math-panel {
+    background-color: var(--sol-base3);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: var(--font-code);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-small);
+
+    .math-title {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--sol-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+      border-bottom: 1.5px solid var(--sol-base2);
+      padding-bottom: 0.25rem;
+    }
+
+    .math-formula {
+      font-size: 0.85rem;
+      color: var(--sol-base00);
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .math-calc-details {
+      font-size: 0.8rem;
+      background-color: var(--sol-base2);
+      padding: 0.6rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      word-break: break-word;
+      color: var(--sol-base01);
+      border-left: 3px solid var(--sol-cyan);
+    }
+
+    .math-result {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--sol-green);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .badge {
+        font-size: 0.7rem !important;
+      }
+    }
+  }
+
+  // Control indicators in the controls row
+  .conv-control-indicator {
+    font-family: var(--font-code);
+    font-size: 0.8rem;
+    color: var(--sol-base01);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+// Local Filter Ported Animation Styles
+.local-filter-card {
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.viz-local-filter-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+  border-radius: 4px;
+  background: rgba($sol-cyan, 0.1);
+  border: 2px solid $sol-cyan;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.viz-local-filter-cell {
+  border: 1px solid rgba($sol-cyan, 0.15);
+}
+
+.viz-local-filter-window {
+  width: 60px;
+  height: 60px;
+  background: rgba($sol-cyan, 0.4);
+  border: 2px solid darken($sol-cyan, 15%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 2px;
+  animation: slideWindow 4s infinite alternate ease-in-out;
+}
+
+@keyframes slideWindow {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(60px, 0); }
+  50% { transform: translate(60px, 60px); }
+  75% { transform: translate(0, 60px); }
+  100% { transform: translate(0, 0); }
+}
+
