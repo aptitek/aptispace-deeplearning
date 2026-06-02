@@ -43,14 +43,6 @@ viewof epoch = Inputs.range([0, 100], {
 ```{ojs}
 //| echo: false
 // ==========================================
-// 🧩 IMPORTS & ETAT (Store)
-// ==========================================
-
-// Import des variables de thème depuis ton core.js (si nécessaire pour des logs,
-// mais ici D3 lira directement les variables CSS pour respecter le DRY styling)
-import { theme } from "../../assets/js/core.js";
-
-// ==========================================
 // 📊 DONNÉES DE SIMULATION
 // ==========================================
 
@@ -579,12 +571,12 @@ Adam combine Momentum et RMSprop en maintenant à la fois une moyenne mobile des
 
 ```{ojs}
 //| echo: false
-import { createTabsetWatcher as createTabsetWatcherGrad } from "../../assets/js/custom/card.js"
+
 
 mutable optType = "momentum"
 
 _optTypeWatcher = {
-  const w = createTabsetWatcherGrad(
+  const w = aptitek.createTabsetWatcher(
     ".opt-type-tabset",
     {
       "Momentum": "momentum",
@@ -595,7 +587,7 @@ _optTypeWatcher = {
     (val) => { mutable optType = val; }
   );
   invalidation.then(() => w.destroy());
-  return html`<span style="display:none"></span>`;
+  return aptitek.noop();
 }
 
 viewof optParam = {

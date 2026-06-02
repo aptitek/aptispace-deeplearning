@@ -5,6 +5,7 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
 {{< include _41_convolution.qmd >}}
 {{< include _42_pooling.qmd >}}
 {{< include _43_architectures.qmd >}}

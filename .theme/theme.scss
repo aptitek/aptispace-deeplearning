@@ -351,6 +351,17 @@ div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
 }
 
 // ==========================================
+// ==========================================
+// 8.5 PLOT WRAPPER UTILITY
+// ==========================================
+
+// Generic container for Plotly/D3 charts — ensures consistent padding.
+// Use in QMD as {.plot-wrapper} instead of style="padding:1rem;"
+.plot-wrapper {
+    padding: 1rem;
+}
+
+// ==========================================
 // 9. NATIVE BOOTSTRAP PROGRESS BAR RESKIN
 // ==========================================
 

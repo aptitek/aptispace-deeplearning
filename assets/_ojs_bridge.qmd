@@ -1,0 +1,32 @@
+```{ojs}
+//| echo: false
+// ==========================================
+// _ojs_bridge.qmd — OJS Global Namespace Bridge
+//
+// Include ONCE at the top of each chapter index.qmd:
+//   {{< include ../../assets/_ojs_bridge.qmd >}}
+//
+// window.aptitek is set by an async `<script type="module">` in the page
+// header (_quarto.yml include-in-header). That import may resolve AFTER
+// OJS starts executing, causing `aptitek` to be undefined.
+//
+// Fix: return a Promise from this cell. OJS suspends all downstream cells
+// until the promise resolves — the built-in, idiomatic solution for async
+// dependencies in Observable JS.
+//
+// ✅ Zero-maintenance: adding a new export to aptitek.js barrel is
+//    instantly available — no edits to this file ever needed.
+// ✅ Race-condition-safe: downstream cells never see undefined.
+// ✅ Anti-double-definition: only ONE OJS name (`aptitek`) is defined.
+// ==========================================
+aptitek = {
+  if (window.aptitek) return window.aptitek;
+  return new Promise(resolve => {
+    const check = () =>
+      window.aptitek
+        ? resolve(window.aptitek)
+        : requestAnimationFrame(check);
+    check();
+  });
+}
+```

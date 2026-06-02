@@ -197,6 +197,65 @@
   }
 }
 
+// Math panel output value
+.math-output-value {
+  color: var(--accent-info);
+  font-size: 1.1em;
+}
+
+// Cube viewport — min-height container for 3D cube comparisons
+.cube-viewport {
+  min-height: 250px;
+}
+
+// Architecture monitor — parameter comparison panel
+.arch-monitor-panel {
+  background: rgba(var(--sol-base03-rgb), 0.12);
+  border-color: rgba(var(--sol-base1-rgb), 0.15) !important;
+
+  .arch-monitor-label-mlp { color: var(--accent-danger); }
+  .arch-monitor-label-cnn { color: var(--accent-success); }
+
+  .progress {
+    background: rgba(var(--sol-base1-rgb), 0.15) !important;
+  }
+
+  .arch-monitor-progress-mlp { background-color: var(--accent-danger) !important; }
+  .arch-monitor-progress-cnn { background-color: var(--accent-success) !important; }
+}
+
+// Architecture monitor — memory status panel with data-state colored left border
+.arch-monitor-status {
+  background: rgba(var(--sol-base03-rgb), 0.12);
+  border-color: rgba(var(--sol-base1-rgb), 0.15) !important;
+  border-left-width: 4px !important;
+
+  &[data-state="danger"]  { border-left-color: var(--accent-danger)  !important; }
+  &[data-state="warning"] { border-left-color: var(--accent-warning) !important; }
+  &[data-state="success"] { border-left-color: var(--accent-success) !important; }
+  &[data-state="info"]    { border-left-color: var(--accent-info)    !important; }
+}
+
+// Architecture monitor — state badge
+.arch-monitor-badge {
+  color: var(--sol-base3);
+
+  &[data-state="danger"]  { background-color: var(--accent-danger);  }
+  &[data-state="warning"] { background-color: var(--accent-warning); }
+  &[data-state="success"] { background-color: var(--accent-success); }
+  &[data-state="info"]    { background-color: var(--accent-info);    }
+}
+
+// CSS custom property for dynamic output grid columns (set by JS at runtime)
+.conv-grid-output {
+  grid-template-columns: repeat(var(--output-dim, 5), 1fr);
+}
+
+// Description box — prevents layout shift when step text changes
+.description-box {
+  min-height: 1.4em;
+}
+
 // Local Filter Ported Animation Styles
 .local-filter-card {
   max-width: 760px;

@@ -47,7 +47,7 @@ viewof rnn_T_grad   = Inputs.range([5, 50],    { value: 20,  step: 1,    label: 
 ```
 ::::
 
-:::: {#plot-grad-magnitude .plot-wrapper style="padding:1rem;"}
+:::: {#plot-grad-magnitude .plot-wrapper}
 ::::
 
 :::

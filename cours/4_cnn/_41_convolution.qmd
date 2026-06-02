@@ -11,9 +11,8 @@ Le passage du traitement de données tabulaires aux grilles de pixels 2D a impos
 :::: {.card-control-row .sim-controls-row}
 ```{ojs}
 //| echo: false
-import { createPremiumSlider } from "../../assets/js/core.js"
-resolutions = [28, 250, 1080, 3840];
-viewof res_idx = createPremiumSlider({
+import { createDimensionalityComparison } from "../../assets/js/custom/convolution.js"
+viewof res_idx = aptitek.createSlider({
   label: "Résolution d'Entrée",
   labels: ["28x28 (MNIST)", "250x250 (Standard)", "1920x1080 (Full HD)", "3840x2160 (4K UHD)"],
   value: 1,
@@ -26,124 +25,7 @@ viewof res_idx = createPremiumSlider({
 
 ```{ojs}
 //| echo: false
-dim_comparison = {
-  const res = resolutions[res_idx];
-  // MLP layer with 100 hidden neurons, input size is res * res * 3 channels
-  const mlp_params = res * res * 3 * 100;
-  // CNN layer with 100 filters of size 3x3x3 channels
-  const cnn_params = 3 * 3 * 3 * 100;
-
-  // 1. Calculate cube sizes based on parameter ratio
-  const fixed_cnn_size = 20;
-  const weight_ratio = mlp_params / cnn_params;
-  const size_ratio = Math.pow(weight_ratio, 1/6);
-
-  const s_cnn = fixed_cnn_size;
-  const s_mlp = Math.min(180, s_cnn * size_ratio);
-
-  const mlp_color = mlp_params > 10000000 ? "var(--sol-red)" : (mlp_params > 1000000 ? "var(--sol-orange)" : "var(--sol-yellow)");
-  const cnn_color = "var(--sol-green)";
-
-  const cube_html = (size, color, label) => {
-    const offset = size * 0.35;
-    const darken = (c, amt) => `color-mix(in srgb, ${c}, black ${amt}%)`;
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "d-flex flex-column align-items-center gap-2";
-
-    const cube = document.createElement("div");
-    cube.className = "cube-container";
-    cube.style.setProperty("--size", size + "px");
-    cube.style.setProperty("--offset", offset + "px");
-    cube.style.setProperty("--color", color);
-    cube.style.setProperty("--color-top", darken(color, 15));
-    cube.style.setProperty("--color-right", darken(color, 30));
-
-    cube.innerHTML = `
-      <div class="cube-face-top"></div>
-      <div class="cube-face-right"></div>
-      <div class="cube-face-front"></div>
-    `;
-
-    const labelSpan = document.createElement("span");
-    labelSpan.className = "small fw-bold text-muted";
-    labelSpan.innerText = label;
-
-    wrapper.appendChild(cube);
-    wrapper.appendChild(labelSpan);
-    return wrapper;
-  };
-
-  // 2. Self-contained monitor generator using Bootstrap 5 utility classes
-  const createArchitectureMonitor = (mlp, cnn, memoryAnalysis, memoryState) => {
-    const total = mlp + cnn;
-    const pctCnn = ((cnn / total) * 100).toFixed(1);
-    const pctMlp = (100 - parseFloat(pctCnn)).toFixed(1);
-
-    const levelColors = {
-      danger: "var(--sol-red)",
-      warning: "var(--sol-orange)",
-      success: "var(--sol-green)",
-      info: "var(--sol-blue)"
-    };
-    const resolvedStateColor = levelColors[memoryState] || "var(--sol-blue)";
-
-    return html`
-      <div class="card bg-transparent border-0 w-100">
-        <div class="card-body p-0 d-flex flex-column gap-3">
-          <!-- Parameter comparison -->
-          <div class="p-3 rounded border" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important;">
-            <div class="small fw-bold text-muted mb-2">Poids du Réseau (Paramètres)</div>
-            <div class="d-flex justify-content-between mb-1 font-monospace small">
-              <span style="color: var(--sol-red);">MLP (Full) : ${mlp.toLocaleString()}</span>
-              <span style="color: var(--sol-green);">CNN (Filtres) : ${cnn.toLocaleString()}</span>
-            </div>
-            <div class="progress" style="height: 8px; background: rgba(var(--sol-base1-rgb), 0.15);">
-              <div class="progress-bar" style="width: ${pctMlp}%; background-color: var(--sol-red);"></div>
-              <div class="progress-bar" style="width: ${pctCnn}%; background-color: var(--sol-green);"></div>
-            </div>
-            <div class="d-flex justify-content-between mt-1 text-muted extra-small font-monospace">
-              <span>${pctMlp}%</span>
-              <span>${pctCnn}%</span>
-            </div>
-          </div>
-
-          <!-- Memory status -->
-          <div class="p-3 rounded border d-flex align-items-center justify-content-between" style="background: rgba(var(--sol-base03-rgb), 0.12); border-color: rgba(var(--sol-base1-rgb), 0.15) !important; border-left: 4px solid ${resolvedStateColor} !important;">
-            <div>
-              <div class="small fw-bold text-muted">État de la Mémoire</div>
-              <div class="small mt-1 text-muted font-monospace">Empreinte RAM</div>
-            </div>
-            <div class="badge font-monospace" style="background-color: ${resolvedStateColor}; color: var(--sol-base3); font-size: 0.8rem; padding: 6px 12px;">
-              ${memoryAnalysis}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  };
-
-  const analysis = mlp_params > 100000000 ? "Incalculable sur PC (Saturation)" : mlp_params > 1000000 ? "Lent et Inefficace" : "Stable et Léger";
-  const state = mlp_params > 100000000 ? "danger" : mlp_params > 1000000 ? "warning" : "success";
-
-  const monitor = createArchitectureMonitor(mlp_params, cnn_params, analysis, state);
-
-  // 3. Combine both into a side-by-side Bootstrap layout
-  const container = html`<div class="row g-4 align-items-center px-3 pb-3">
-    <div class="col-md-6 d-flex justify-content-center align-items-end" style="min-height: 250px;">
-      <div class="d-flex gap-5 justify-content-center align-items-end w-100 pb-2">
-        ${cube_html(s_cnn, cnn_color, `CNN (${cnn_params.toLocaleString()})`)}
-        ${cube_html(s_mlp, mlp_color, `MLP (${mlp_params.toLocaleString()})`)}
-      </div>
-    </div>
-    <div class="col-md-6 monitor-container">
-    </div>
-  </div>`;
-
-  container.querySelector(".monitor-container").appendChild(monitor);
-
-  return container;
-}
+dim_comparison = createDimensionalityComparison(res_idx)
 ```
 
 :::
@@ -209,7 +91,7 @@ La solution réside dans l'application du **Principe de Responsabilité Unique**
 :::::::: {.viz-local-filter-cell}
 ::::::::
 :::::::
-::::::: {.text-muted .fst-italic .text-center .description-box style="min-height: 20px;"}
+::::::: {.text-muted .fst-italic .text-center .description-box}
 Étape 1 : Le filtre analyse la région en haut à gauche (neurone h₀,₀).
 :::::::
 ::::::
@@ -219,9 +101,6 @@ La solution réside dans l'application du **Principe de Responsabilité Unique**
 
 ```{ojs}
 //| echo: false
-import { createGraph as createLocalFilterGraph } from "../../assets/js/networks.js"
-import { StateMachine as LocalFilterStateMachine, SimulationController } from "../../assets/js/core.js"
-
 renderLocalFilterNetwork = {
   // 1. Configuration of states
   const states = [
@@ -236,7 +115,7 @@ renderLocalFilterNetwork = {
   }
 
   // 2. Instantiate StateMachine
-  const sm = new LocalFilterStateMachine({
+  const sm = new aptitek.StateMachine({
     states: states,
     interval: 1800,
     loop: true,
@@ -271,7 +150,7 @@ renderLocalFilterNetwork = {
     }
   });
 
-  const controller = new SimulationController(sm, {
+  const controller = new aptitek.SimulationController(sm, {
     play: "#btn-local-filter-play",
     pause: "#btn-local-filter-pause",
     reset: "#btn-local-filter-reset",
@@ -353,7 +232,7 @@ renderLocalFilterNetwork = {
     });
   });
 
-  const graph = createLocalFilterGraph("#plot-local-filter-network", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-local-filter-network", { nodes, links }, {
     nodeRadius: 16, fontSize: 8, height: 260,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 30,

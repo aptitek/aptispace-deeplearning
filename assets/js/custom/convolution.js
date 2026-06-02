@@ -1,7 +1,7 @@
 // =====================================================================
 // convolution.js — Convolution layer simulation logic
 // =====================================================================
-import { StateMachine, resolveCssValue } from "../core.js";
+import { StateMachine } from "../core.js";
 
 // Initialize global state for persistence across OJS updates
 if (typeof window !== "undefined" && !window.convSimulatorState) {
@@ -74,9 +74,147 @@ const KERNELS = {
   }
 };
 
-/**
- * Main update function called by OJS cell
- */
+// =====================================================================
+// Pure computation — no DOM dependency
+// =====================================================================
+
+function computeFeatureMap({ inputValues, kernelWeights, inputDim, kernelDim, outputDim, stride, padding, bias, activation }) {
+  const outputValues = new Array(outputDim * outputDim).fill(0);
+  for (let oY = 0; oY < outputDim; oY++) {
+    for (let oX = 0; oX < outputDim; oX++) {
+      let sum = 0;
+      const outXStart = oX * stride - padding;
+      const outYStart = oY * stride - padding;
+      for (let kY = 0; kY < kernelDim; kY++) {
+        for (let kX = 0; kX < kernelDim; kX++) {
+          const inX = outXStart + kX;
+          const inY = outYStart + kY;
+          if (inX >= 0 && inX < inputDim && inY >= 0 && inY < inputDim) {
+            sum += inputValues[inY * inputDim + inX] * kernelWeights[kY * kernelDim + kX];
+          }
+        }
+      }
+      sum += bias;
+      outputValues[oY * outputDim + oX] = activation === "relu" ? Math.max(0, sum) : sum;
+    }
+  }
+  return outputValues;
+}
+
+// =====================================================================
+// DOM renderers — each receives pre-computed data, no math inside
+// =====================================================================
+
+function renderInputGrid(inputEl, inputValues, inputDim, kernelDim, currentScan, stride, padding) {
+  const xStart = currentScan.x * stride - padding;
+  const yStart = currentScan.y * stride - padding;
+
+  inputEl.innerHTML = "";
+  for (let y = 0; y < inputDim; y++) {
+    for (let x = 0; x < inputDim; x++) {
+      const cellIdx = y * inputDim + x;
+      const val = inputValues[cellIdx];
+      const cell = document.createElement("div");
+      cell.className = "conv-cell clickable";
+      cell.dataset.idx = cellIdx;
+      if (val === 1) cell.classList.add("pixel-active");
+
+      const insideX = x >= xStart && x < xStart + kernelDim;
+      const insideY = y >= yStart && y < yStart + kernelDim;
+      if (insideX && insideY) {
+        cell.classList.add("in-receptive-field");
+        if (x === xStart + 1 && y === yStart + 1) cell.classList.add("receptive-field-center");
+      }
+
+      cell.textContent = val;
+      inputEl.appendChild(cell);
+    }
+  }
+}
+
+function renderKernelGrid(kernelEl, kernelWeights) {
+  kernelEl.innerHTML = "";
+  for (const w of kernelWeights) {
+    const cell = document.createElement("div");
+    cell.className = "conv-cell";
+    cell.textContent = Number.isInteger(w) ? w : w.toFixed(2);
+    kernelEl.appendChild(cell);
+  }
+}
+
+function renderOutputGrid(outputEl, outputValues, outputDim, maxVal, currentScan) {
+  outputEl.style.setProperty("--output-dim", outputDim);
+  outputEl.innerHTML = "";
+  for (let y = 0; y < outputDim; y++) {
+    for (let x = 0; x < outputDim; x++) {
+      const outVal = outputValues[y * outputDim + x];
+      const cell = document.createElement("div");
+      cell.className = "conv-cell output-active";
+      cell.textContent = outVal.toFixed(1);
+      cell.style.setProperty("--activation-intensity", Math.min(1.0, Math.max(0, outVal / maxVal)));
+      if (x === currentScan.x && y === currentScan.y) cell.classList.add("evaluating");
+      outputEl.appendChild(cell);
+    }
+  }
+}
+
+function renderMathPanel(mathEl, { kernelWeights, kernelDim, inputValues, inputDim, currentScan, stride, padding, bias, activation }) {
+  const xStart = currentScan.x * stride - padding;
+  const yStart = currentScan.y * stride - padding;
+
+  const calcSteps = [];
+  let mathSum = 0;
+  for (let kY = 0; kY < kernelDim; kY++) {
+    for (let kX = 0; kX < kernelDim; kX++) {
+      const inX = xStart + kX;
+      const inY = yStart + kY;
+      const w = kernelWeights[kY * kernelDim + kX];
+      const inBounds = inX >= 0 && inX < inputDim && inY >= 0 && inY < inputDim;
+      const px = inBounds ? inputValues[inY * inputDim + inX] : 0;
+      mathSum += px * w;
+      calcSteps.push(`(${px} × ${Number.isInteger(w) ? w : w.toFixed(2)})`);
+    }
+  }
+  mathSum += bias;
+  const finalVal = activation === "relu" ? Math.max(0, mathSum) : mathSum;
+
+  mathEl.innerHTML = "";
+
+  const title = document.createElement("div");
+  title.className = "math-title";
+  title.textContent = `Calcul Neurone (${currentScan.x}, ${currentScan.y})`;
+
+  const formula = document.createElement("div");
+  formula.className = "math-formula";
+  formula.innerHTML = `Somme pondérée avec biais <i>b</i> = ${bias} :`;
+
+  const calcDetails = document.createElement("div");
+  calcDetails.className = "math-calc-details";
+  calcDetails.innerHTML = `${calcSteps.join(" + ")} = <strong>${mathSum.toFixed(2)}</strong>`;
+
+  const result = document.createElement("div");
+  result.className = "math-result";
+  const actText = activation === "relu" ? `ReLU(${mathSum.toFixed(2)})` : `Linear(${mathSum.toFixed(2)})`;
+  result.innerHTML = `<span>f(x) = ${actText}</span>`;
+  const badge = document.createElement("span");
+  badge.className = finalVal > 0 ? "badge bg-success" : "badge bg-danger";
+  badge.textContent = finalVal > 0 ? "Activé" : "Éteint";
+  result.appendChild(badge);
+
+  const resultVal = document.createElement("div");
+  resultVal.className = "mt-2 pt-2 border-top text-end font-monospace fw-bold";
+  const resultSpan = document.createElement("span");
+  resultSpan.className = "math-output-value";
+  resultSpan.textContent = finalVal.toFixed(2);
+  resultVal.append("Sortie = ", resultSpan);
+
+  mathEl.append(title, formula, calcDetails, result, resultVal);
+}
+
+// =====================================================================
+// Main update function called by OJS cell
+// =====================================================================
+
 export function updateConvolutionSimulator({
   stride = 1,
   padding = 0,
@@ -90,44 +228,30 @@ export function updateConvolutionSimulator({
   if (!inputEl || !kernelEl || !outputEl || !mathEl) return;
 
   const state = window.convSimulatorState;
-  const inputDim = 7; // 7x7 input grid
-  const kernelDim = 3; // 3x3 kernel
+  const inputDim = 7;
+  const kernelDim = 3;
 
-  // 1. Get current kernel details
   const kernelInfo = KERNELS[kernelPreset] || KERNELS.sobel_v;
   const kernelWeights = kernelInfo.weights;
   const bias = kernelInfo.bias;
 
-  // 2. Compute output dimensions
   const outputDim = Math.floor((inputDim - kernelDim + 2 * padding) / stride) + 1;
 
-  // 3. Generate scanning states
   const scanStates = [];
   let indexCounter = 0;
   for (let y = 0; y < outputDim; y++) {
     for (let x = 0; x < outputDim; x++) {
-      scanStates.push({
-        index: indexCounter++,
-        x: x,
-        y: y
-      });
+      scanStates.push({ index: indexCounter++, x, y });
     }
   }
 
-  // 4. Handle StateMachine lifecycle
-  if (state.currentIndex >= scanStates.length) {
-    state.currentIndex = 0;
-  }
+  if (state.currentIndex >= scanStates.length) state.currentIndex = 0;
 
-  // Check if we need to reconstruct or update the state machine
   const stateCountChanged = !state.stateMachine || state.stateMachine.states.length !== scanStates.length;
   const speedChanged = state.stateMachine && state.stateMachine.interval !== speed;
 
   if (stateCountChanged || speedChanged) {
-    if (state.stateMachine) {
-      state.stateMachine.stop();
-    }
-
+    if (state.stateMachine) state.stateMachine.stop();
     state.stateMachine = new StateMachine({
       states: scanStates,
       interval: speed,
@@ -137,180 +261,207 @@ export function updateConvolutionSimulator({
         renderAll();
       }
     });
-
-    // Restore index position
     state.stateMachine.currentIndex = state.currentIndex;
   }
 
-  // Sync play/pause state
   if (isPlaying) {
     state.stateMachine.isPlaying = true;
-    if (!state.stateMachine.timer) {
-      state.stateMachine.start();
-    }
+    if (!state.stateMachine.timer) state.stateMachine.start();
   } else {
-    if (state.stateMachine) {
-      state.stateMachine.stop();
-    }
+    if (state.stateMachine) state.stateMachine.stop();
   }
 
-  // Define global render logic so both click events and animation ticks can trigger redraws
+  // Register click handler via event delegation once per mount
+  if (!inputEl.dataset.delegated) {
+    inputEl.addEventListener("click", (e) => {
+      const cell = e.target.closest(".conv-cell.clickable");
+      if (!cell) return;
+      const idx = parseInt(cell.dataset.idx);
+      if (!isNaN(idx)) {
+        state.inputValues[idx] = state.inputValues[idx] === 1 ? 0 : 1;
+        renderAll();
+      }
+    });
+    inputEl.dataset.delegated = "true";
+  }
+
   function renderAll() {
-    // Current scan state
     const currentScan = scanStates[state.currentIndex] || scanStates[0] || { x: 0, y: 0 };
-    const xStart = currentScan.x * stride - padding;
-    const yStart = currentScan.y * stride - padding;
 
-    // Compute entire output feature map first
-    const outputValues = new Array(outputDim * outputDim).fill(0);
-    for (let oY = 0; oY < outputDim; oY++) {
-      for (let oX = 0; oX < outputDim; oX++) {
-        let sum = 0;
-        const outXStart = oX * stride - padding;
-        const outYStart = oY * stride - padding;
+    const outputValues = computeFeatureMap({
+      inputValues: state.inputValues,
+      kernelWeights,
+      inputDim,
+      kernelDim,
+      outputDim,
+      stride,
+      padding,
+      bias,
+      activation
+    });
 
-        for (let kY = 0; kY < kernelDim; kY++) {
-          for (let kX = 0; kX < kernelDim; kX++) {
-            const inX = outXStart + kX;
-            const inY = outYStart + kY;
-            const weightVal = kernelWeights[kY * kernelDim + kX];
-
-            // Only compute if within input bounds (padding is 0 outside)
-            if (inX >= 0 && inX < inputDim && inY >= 0 && inY < inputDim) {
-              const pixelVal = state.inputValues[inY * inputDim + inX];
-              sum += pixelVal * weightVal;
-            }
-          }
-        }
-
-        sum += bias;
-        const activated = activation === "relu" ? Math.max(0, sum) : sum;
-        outputValues[oY * outputDim + oX] = activated;
-      }
-    }
-
-    // --- RENDER 1: INPUT GRID ---
-    inputEl.innerHTML = "";
-    for (let y = 0; y < inputDim; y++) {
-      for (let x = 0; x < inputDim; x++) {
-        const cellIdx = y * inputDim + x;
-        const val = state.inputValues[cellIdx];
-        const cell = document.createElement("div");
-        cell.className = "conv-cell clickable";
-        if (val === 1) cell.classList.add("pixel-active");
-
-        // Is cell inside the sliding window (receptive field)?
-        const insideX = x >= xStart && x < xStart + kernelDim;
-        const insideY = y >= yStart && y < yStart + kernelDim;
-        if (insideX && insideY) {
-          cell.classList.add("in-receptive-field");
-          if (x === xStart + 1 && y === yStart + 1) {
-            cell.classList.add("receptive-field-center");
-          }
-        }
-
-        cell.textContent = val;
-
-        // Click to toggle pixel value
-        cell.addEventListener("click", () => {
-          state.inputValues[cellIdx] = val === 1 ? 0 : 1;
-          renderAll();
-        });
-
-        inputEl.appendChild(cell);
-      }
-    }
-
-    // --- RENDER 2: KERNEL GRID ---
-    kernelEl.innerHTML = "";
-    for (let i = 0; i < kernelWeights.length; i++) {
-      const w = kernelWeights[i];
-      const cell = document.createElement("div");
-      cell.className = "conv-cell";
-      cell.textContent = Number.isInteger(w) ? w : w.toFixed(2);
-      kernelEl.appendChild(cell);
-    }
-
-    // --- RENDER 3: OUTPUT GRID ---
-    outputEl.innerHTML = "";
-    outputEl.style.gridTemplateColumns = `repeat(${outputDim}, 1fr)`;
-    for (let y = 0; y < outputDim; y++) {
-      for (let x = 0; x < outputDim; x++) {
-        const outIdx = y * outputDim + x;
-        const outVal = outputValues[outIdx];
-        const cell = document.createElement("div");
-        cell.className = "conv-cell output-active";
-        cell.textContent = outVal.toFixed(1);
-
-        // Map intensity for styling
-        const normalized = Math.min(1.0, Math.max(0, outVal / kernelInfo.maxVal));
-        cell.style.setProperty("--activation-intensity", normalized);
-
-        // Highlight currently evaluated cell
-        if (x === currentScan.x && y === currentScan.y) {
-          cell.classList.add("evaluating");
-        }
-
-        outputEl.appendChild(cell);
-      }
-    }
-
-    // --- RENDER 4: MATH DETAILS ---
-    // Extract values inside current sliding window
-    const calcSteps = [];
-    let mathSum = 0;
-    for (let kY = 0; kY < kernelDim; kY++) {
-      for (let kX = 0; kX < kernelDim; kX++) {
-        const inX = xStart + kX;
-        const inY = yStart + kY;
-        const w = kernelWeights[kY * kernelDim + kX];
-        const inBounds = inX >= 0 && inX < inputDim && inY >= 0 && inY < inputDim;
-        const px = inBounds ? state.inputValues[inY * inputDim + inX] : 0;
-        
-        mathSum += px * w;
-        
-        // Show calculations: W*X
-        const wStr = w.toFixed(w % 1 === 0 ? 0 : 2);
-        calcSteps.push(`(${px} × ${wStr})`);
-      }
-    }
-
-    mathSum += bias;
-    const finalVal = activation === "relu" ? Math.max(0, mathSum) : mathSum;
-
-    mathEl.innerHTML = "";
-
-    const title = document.createElement("div");
-    title.className = "math-title";
-    title.textContent = `Calcul Neurone (${currentScan.x}, ${currentScan.y})`;
-
-    const formula = document.createElement("div");
-    formula.className = "math-formula";
-    formula.innerHTML = `Somme pondérée avec biais <i>b</i> = ${bias} :`;
-
-    const calcDetails = document.createElement("div");
-    calcDetails.className = "math-calc-details";
-    calcDetails.innerHTML = `${calcSteps.join(" + ")} = <strong>${mathSum.toFixed(2)}</strong>`;
-
-    const result = document.createElement("div");
-    result.className = "math-result";
-    
-    const actText = activation === "relu" ? `ReLU(${mathSum.toFixed(2)})` : `Linear(${mathSum.toFixed(2)})`;
-    result.innerHTML = `<span>f(x) = ${actText}</span>`;
-
-    const badge = document.createElement("span");
-    badge.className = finalVal > 0 ? "badge bg-success" : "badge bg-danger";
-    badge.textContent = finalVal > 0 ? "Activé" : "Éteint";
-    
-    result.appendChild(badge);
-
-    const resultVal = document.createElement("div");
-    resultVal.className = "mt-2 pt-2 border-top text-end font-monospace fw-bold";
-    resultVal.innerHTML = `Sortie = <span style="color: var(--sol-blue); font-size: 1.1em;">${finalVal.toFixed(2)}</span>`;
-
-    mathEl.append(title, formula, calcDetails, result, resultVal);
+    renderInputGrid(inputEl, state.inputValues, inputDim, kernelDim, currentScan, stride, padding);
+    renderKernelGrid(kernelEl, kernelWeights);
+    renderOutputGrid(outputEl, outputValues, outputDim, kernelInfo.maxVal, currentScan);
+    renderMathPanel(mathEl, {
+      kernelWeights, kernelDim, inputValues: state.inputValues, inputDim,
+      currentScan, stride, padding, bias, activation
+    });
   }
 
-  // Initial draw
   renderAll();
+}
+
+// =====================================================================
+// Dimensionality comparison organism (MLP vs CNN parameter count)
+// =====================================================================
+
+export function createDimensionalityComparison(resIdx) {
+  const resolutions = [28, 250, 1080, 3840];
+  const res = resolutions[resIdx] ?? 250;
+  const mlp_params = res * res * 3 * 100;
+  const cnn_params = 3 * 3 * 3 * 100;
+
+  // Cube size proportional to parameter ratio
+  const fixed_cnn_size = 20;
+  const size_ratio = Math.pow(mlp_params / cnn_params, 1 / 6);
+  const s_cnn = fixed_cnn_size;
+  const s_mlp = Math.min(180, s_cnn * size_ratio);
+
+  const mlp_color = mlp_params > 10_000_000 ? "var(--accent-danger)"
+    : mlp_params > 1_000_000 ? "var(--accent-warning)"
+    : "var(--sol-yellow)";
+  const cnn_color = "var(--accent-success)";
+
+  const makeCube = (size, color, label) => {
+    const offset = size * 0.35;
+    const darken = (c, amt) => `color-mix(in srgb, ${c}, black ${amt}%)`;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "d-flex flex-column align-items-center gap-2";
+
+    const cube = document.createElement("div");
+    cube.className = "cube-container";
+    cube.style.setProperty("--size", size + "px");
+    cube.style.setProperty("--offset", offset + "px");
+    cube.style.setProperty("--color", color);
+    cube.style.setProperty("--color-top", darken(color, 15));
+    cube.style.setProperty("--color-right", darken(color, 30));
+    cube.innerHTML = `
+      <div class="cube-face-top"></div>
+      <div class="cube-face-right"></div>
+      <div class="cube-face-front"></div>
+    `;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "small fw-bold text-muted";
+    labelSpan.textContent = label;
+
+    wrapper.appendChild(cube);
+    wrapper.appendChild(labelSpan);
+    return wrapper;
+  };
+
+  const makeMonitor = (mlp, cnn, memoryAnalysis, memoryState) => {
+    const total = mlp + cnn;
+    const pctCnn = ((cnn / total) * 100).toFixed(1);
+    const pctMlp = (100 - parseFloat(pctCnn)).toFixed(1);
+
+    const card = document.createElement("div");
+    card.className = "card bg-transparent border-0 w-100";
+
+    const body = document.createElement("div");
+    body.className = "card-body p-0 d-flex flex-column gap-3";
+
+    // --- Parameter comparison panel ---
+    const paramPanel = document.createElement("div");
+    paramPanel.className = "arch-monitor-panel p-3 rounded border";
+
+    const paramTitle = document.createElement("div");
+    paramTitle.className = "small fw-bold text-muted mb-2";
+    paramTitle.textContent = "Poids du Réseau (Paramètres)";
+
+    const paramLabels = document.createElement("div");
+    paramLabels.className = "d-flex justify-content-between mb-1 font-monospace small";
+    const mlpLabel = document.createElement("span");
+    mlpLabel.className = "arch-monitor-label-mlp";
+    mlpLabel.textContent = `MLP (Full) : ${mlp.toLocaleString()}`;
+    const cnnLabel = document.createElement("span");
+    cnnLabel.className = "arch-monitor-label-cnn";
+    cnnLabel.textContent = `CNN (Filtres) : ${cnn.toLocaleString()}`;
+    paramLabels.appendChild(mlpLabel);
+    paramLabels.appendChild(cnnLabel);
+
+    const progress = document.createElement("div");
+    progress.className = "progress";
+    const barMlp = document.createElement("div");
+    barMlp.className = "progress-bar arch-monitor-progress-mlp";
+    barMlp.style.width = `${pctMlp}%`;
+    const barCnn = document.createElement("div");
+    barCnn.className = "progress-bar arch-monitor-progress-cnn";
+    barCnn.style.width = `${pctCnn}%`;
+    progress.appendChild(barMlp);
+    progress.appendChild(barCnn);
+
+    const pctRow = document.createElement("div");
+    pctRow.className = "d-flex justify-content-between mt-1 text-muted extra-small font-monospace";
+    pctRow.innerHTML = `<span>${pctMlp}%</span><span>${pctCnn}%</span>`;
+
+    paramPanel.append(paramTitle, paramLabels, progress, pctRow);
+
+    // --- Memory status panel ---
+    const statusPanel = document.createElement("div");
+    statusPanel.className = "arch-monitor-status p-3 rounded border d-flex align-items-center justify-content-between";
+    statusPanel.dataset.state = memoryState;
+
+    const statusText = document.createElement("div");
+    const statusTitle = document.createElement("div");
+    statusTitle.className = "small fw-bold text-muted";
+    statusTitle.textContent = "État de la Mémoire";
+    const statusSub = document.createElement("div");
+    statusSub.className = "small mt-1 text-muted font-monospace";
+    statusSub.textContent = "Empreinte RAM";
+    statusText.appendChild(statusTitle);
+    statusText.appendChild(statusSub);
+
+    const badge = document.createElement("div");
+    badge.className = "arch-monitor-badge badge font-monospace";
+    badge.dataset.state = memoryState;
+    badge.textContent = memoryAnalysis;
+
+    statusPanel.appendChild(statusText);
+    statusPanel.appendChild(badge);
+
+    body.appendChild(paramPanel);
+    body.appendChild(statusPanel);
+    card.appendChild(body);
+    return card;
+  };
+
+  const analysis = mlp_params > 100_000_000 ? "Incalculable sur PC (Saturation)"
+    : mlp_params > 1_000_000 ? "Lent et Inefficace"
+    : "Stable et Léger";
+  const memState = mlp_params > 100_000_000 ? "danger"
+    : mlp_params > 1_000_000 ? "warning"
+    : "success";
+
+  // Assemble Bootstrap row layout
+  const row = document.createElement("div");
+  row.className = "row g-4 align-items-center px-3 pb-3";
+
+  const colCubes = document.createElement("div");
+  colCubes.className = "col-md-6 d-flex justify-content-center align-items-end cube-viewport";
+  const cubeWrapper = document.createElement("div");
+  cubeWrapper.className = "d-flex gap-5 justify-content-center align-items-end w-100 pb-2";
+  cubeWrapper.appendChild(makeCube(s_cnn, cnn_color, `CNN (${cnn_params.toLocaleString()})`));
+  cubeWrapper.appendChild(makeCube(s_mlp, mlp_color, `MLP (${mlp_params.toLocaleString()})`));
+  colCubes.appendChild(cubeWrapper);
+
+  const colMonitor = document.createElement("div");
+  colMonitor.className = "col-md-6";
+  colMonitor.appendChild(makeMonitor(mlp_params, cnn_params, analysis, memState));
+
+  row.appendChild(colCubes);
+  row.appendChild(colMonitor);
+  return row;
 }

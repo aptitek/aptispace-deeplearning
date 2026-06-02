@@ -117,7 +117,6 @@ Le "Budget Travaux" corrige proportionnellement les poids. Modifiez le taux d'ap
 
 ```{ojs}
 //| echo: false
-import { createGraph } from "../../assets/js/networks.js"
 
 // Forward Pass
 Z = (trafficA * weightA) + (trafficB * weightB) + bias
@@ -157,7 +156,7 @@ renderSupermarketNetwork = {
     }
   ];
 
-  const graph = createGraph("#plot-supermarket-network", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-supermarket-network", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,
@@ -208,7 +207,7 @@ renderBackprop = {
     { source: "Neuron", target: "Bias",   label: () => `Ajust.`,                                                                                            status: "errorFlow" }
   ];
 
-  const graph = createGraph("#plot-backprop", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-backprop", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,
@@ -242,7 +241,7 @@ renderGradientDescent = {
     { source: "Neuron", target: "Output", label: "Nouveau Potentiel",                                   status: "activeFlow" }
   ];
 
-  const graph = createGraph("#plot-gradient", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-gradient", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,

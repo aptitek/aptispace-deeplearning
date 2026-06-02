@@ -5,6 +5,7 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
 {{< include _11_histoire.qmd >}}
 {{< include _12_typologie.qmd >}}
 {{< include _13_gradient.qmd >}}

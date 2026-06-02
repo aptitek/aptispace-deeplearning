@@ -5,6 +5,7 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
 {{< include _31_fondements.qmd >}}
 {{< include _32_gradient.qmd >}}
 {{< include _33_lstm.qmd >}}

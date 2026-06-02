@@ -37,6 +37,9 @@ const tagCloudPromise = import("https://esm.sh/TagCloud")
   });
 
 
+// Canvas 2D fill/stroke calls require resolved hex/rgb values — they cannot consume
+// CSS custom properties (unlike DOM elements where getComputedStyle works).
+// These mirror _variables.scss exactly; update both when the palette changes.
 const SOL_FALLBACKS = {
   base03: "#002b36", base02: "#073642", base01: "#586e75", base00: "#657b83",
   base0: "#839496", base1: "#93a1a1", base2: "#eee8d5", base3: "#fdf6e3",
@@ -409,7 +412,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
       const rawColor = evaluate(link.color, link) || evaluate(link.stroke, link) || style.linkStroke;
-      return resolveColor(rawColor, "#586e75");
+      return resolveColor(rawColor, SOL_FALLBACKS.base01);
     })
     .linkWidth((link) => {
       const status = options.getLinkStatus(link);
@@ -420,7 +423,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
       const rawColor = evaluate(link.color, link) || evaluate(link.stroke, link) || style.linkStroke;
-      return resolveColor(rawColor, "#586e75");
+      return resolveColor(rawColor, SOL_FALLBACKS.base01);
     });
 
   // Dynamic flow particles based on link status
@@ -435,7 +438,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       const status = options.getLinkStatus(link);
       const style = styles[status] || styles.default;
       const rawColor = evaluate(link.color, link) || evaluate(link.particleColor, link) || style.particleColor || style.linkStroke;
-      return resolveColor(rawColor, "#2aa198");
+      return resolveColor(rawColor, SOL_FALLBACKS.cyan);
     })
     .linkDirectionalParticleWidth((link) => {
       const status = options.getLinkStatus(link);
@@ -516,9 +519,9 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
     const rawBorder = evaluate(node.borderColor, node) || evaluate(node.nodeBorder, node) || evaluate(node.border, node) || style.nodeBorder || style.border;
     const rawText = evaluate(node.textColor, node) || evaluate(node.nodeText, node) || style.nodeText;
 
-    const nodeBg = resolveColor(rawBg, "#eee8d5");
-    const nodeBorder = resolveColor(rawBorder, "#586e75");
-    const nodeText = resolveColor(rawText, "#657b83");
+    const nodeBg = resolveColor(rawBg, SOL_FALLBACKS.base2);
+    const nodeBorder = resolveColor(rawBorder, SOL_FALLBACKS.base01);
+    const nodeText = resolveColor(rawText, SOL_FALLBACKS.base00);
     
     const r = evaluate(options.nodeRadius, node) || 16;
 
@@ -541,7 +544,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
     if (shape === "sheet") {
       ctx.fillStyle = "rgba(253, 246, 227, 0.25)";
     } else {
-      ctx.fillStyle = resolveColor("var(--sol-base3)", "#fdf6e3");
+      ctx.fillStyle = resolveColor("var(--sol-base3)", SOL_FALLBACKS.base3);
     }
     ctx.fill();
 
@@ -619,7 +622,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       const labelPos = node.labelPosition || "center";
       const isBottom = labelPos === "bottom";
       const isTop = labelPos === "top";
-      ctx.fillStyle = shape === "sheet" ? "#fdf6e3" : nodeText;
+      ctx.fillStyle = shape === "sheet" ? SOL_FALLBACKS.base3 : nodeText;
       
       let maxTextWidth = isBottom ? r * 5.0 : r * 1.85;
       if (!isBottom) {
@@ -724,7 +727,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
         const pillW = textWidth + 6;
 
         const tagBg = isTrue ? "rgba(133, 153, 0, 0.15)" : "rgba(220, 50, 47, 0.15)";
-        const tagBorder = resolveColor(isTrue ? "var(--sol-green)" : "var(--sol-red)", isTrue ? "#859900" : "#dc322f");
+        const tagBorder = resolveColor(isTrue ? "var(--sol-green)" : "var(--sol-red)", isTrue ? SOL_FALLBACKS.green : SOL_FALLBACKS.red);
         const tagText = tagBorder;
 
         ctx.beginPath();
@@ -750,8 +753,8 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       // ================= DRAW LINK CENTER LABEL =================
       const label = options.getLinkLabel(link);
       if (label) {
-        const linkText = resolveColor(style.linkText, "#657b83");
-        const labelBg = resolveColor("var(--sol-base3)", "#fdf6e3");
+        const linkText = resolveColor(style.linkText, SOL_FALLBACKS.base00);
+        const labelBg = resolveColor("var(--sol-base3)", SOL_FALLBACKS.base3);
 
         let x = source.x + (target.x - source.x) * 0.5;
         let y = source.y + (target.y - source.y) * 0.5;
@@ -787,7 +790,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
         }
 
         ctx.fillStyle = labelBg;
-        ctx.strokeStyle = resolveColor(style.linkStroke, "#586e75");
+        ctx.strokeStyle = resolveColor(style.linkStroke, SOL_FALLBACKS.base01);
         ctx.lineWidth = 1;
         
         drawRoundedRect(ctx, x - rectW / 2, y - rectH / 2, rectW, rectH, rectH / 2);
@@ -1518,16 +1521,16 @@ function initRamStorageGraphSync(container, storageMode, queryCol, tableData) {
   const links = [];
 
   // Theme Colors Resolution (Safe for Canvas API)
-  const colorHit = getThemeColor("--sol-green", "#859900");
-  const colorMiss = getThemeColor("--sol-red", "#dc322f");
-  const colorLoad = getThemeColor("--sol-blue", "#268bd2");
-  const colorActive = getThemeColor("--sol-yellow", "#b58900");
-  
-  const colorPalette = [ 
-    getThemeColor("--sol-cyan", "#2aa198"),
-    getThemeColor("--sol-magenta", "#d33682"),
-    getThemeColor("--sol-orange", "#cb4b16"),
-    getThemeColor("--sol-violet", "#6c71c4")
+  const colorHit = getThemeColor("--sol-green", SOL_FALLBACKS.green);
+  const colorMiss = getThemeColor("--sol-red", SOL_FALLBACKS.red);
+  const colorLoad = getThemeColor("--sol-blue", SOL_FALLBACKS.blue);
+  const colorActive = getThemeColor("--sol-yellow", SOL_FALLBACKS.yellow);
+
+  const colorPalette = [
+    getThemeColor("--sol-cyan", SOL_FALLBACKS.cyan),
+    getThemeColor("--sol-magenta", SOL_FALLBACKS.magenta),
+    getThemeColor("--sol-orange", SOL_FALLBACKS.orange),
+    getThemeColor("--sol-violet", SOL_FALLBACKS.violet)
   ];
   const colColors = {};
   columns.forEach((col, i) => colColors[col] = colorPalette[i % colorPalette.length]);

@@ -84,5 +84,12 @@ format:
       <meta name="robots" content="noindex, nofollow">
     include-in-header:
       - text: '<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>'
+      - text: |
+          <script type="module">
+            if (!window.aptitek) {
+              const mod = await import("/assets/js/aptitek.js");
+              window.aptitek = Object.freeze({ ...mod });
+            }
+          </script>
     include-after-body: assets/fix_links.html
     css: .theme/book_custom.css

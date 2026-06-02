@@ -149,7 +149,6 @@ Le "Budget Travaux" corrige proportionnellement les poids des routes ($w_1, w_2$
 
 ```{ojs}
 //| echo: false
-import { createGraph } from "../../assets/js/networks.js"
 
 // Calculs RNN réactifs
 rnn_Z = (rnn_trafficA * rnn_weightA) + (rnn_trafficB * rnn_weightB) + rnn_bias + (rnn_h_prev * rnn_w_h)
@@ -233,7 +232,7 @@ renderRNNForward = {
     }
   ];
 
-  const graph = createGraph("#plot-rnn-forward", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-rnn-forward", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,
@@ -280,7 +279,7 @@ renderRNNBackprop = {
     }
   ];
 
-  const graph = createGraph("#plot-rnn-backprop", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-rnn-backprop", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,
@@ -323,7 +322,7 @@ renderRNNGradient = {
     }
   ];
 
-  const graph = createGraph("#plot-rnn-gradient", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-rnn-gradient", { nodes, links }, {
     nodeRadius: 25, fontSize: 9, height: 300,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 40,
@@ -390,7 +389,6 @@ viewof rnn_t = Inputs.range([1, 5], { value: 3, step: 1, label: "Pas de temps T 
 
 ```{ojs}
 //| echo: false
-import { createGraph as createRNNGraph } from "../../assets/js/networks.js"
 
 renderRNNUnrolled = {
   const T = rnn_t;
@@ -432,7 +430,7 @@ renderRNNUnrolled = {
     links.unshift({ source:"h_init", target:"h0", status:"recurrent" });
   }
 
-  const g = createRNNGraph("#plot-rnn-unrolled", {nodes, links}, {
+  const g = aptitek.createGraph("#plot-rnn-unrolled", {nodes, links}, {
     nodeRadius: d => d.shape === "sheet" ? 52 : 14.5,
     fontSize: 9,
     height: 280,

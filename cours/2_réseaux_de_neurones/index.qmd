@@ -5,6 +5,7 @@ bibliography: bibliography.bib
 ---
 
 <!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
 {{< include _21_morphologie.qmd >}}
 {{< include _22_neurone.qmd >}}
 {{< include _23_forward.qmd >}}

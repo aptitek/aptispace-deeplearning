@@ -31,18 +31,17 @@ En apprentissage automatique, on applique cette contrainte en ajoutant une péna
 
 ```{ojs}
 //| echo: false
-import { createTabsetWatcher } from "../../assets/js/custom/card.js"
 
 mutable regType = "lasso"
 
 _regTypeWatcher = {
-  const w = createTabsetWatcher(
+  const w = aptitek.createTabsetWatcher(
     ".reg-type-tabset",
     { "Lasso (L1)": "lasso", "Ridge (L2)": "ridge", "ElasticNet": "elastic" },
     (val) => { mutable regType = val; }
   );
   invalidation.then(() => w.destroy());
-  return html`<span style="display:none"></span>`;
+  return aptitek.noop();
 }
 
 viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Intensité (λ)" })

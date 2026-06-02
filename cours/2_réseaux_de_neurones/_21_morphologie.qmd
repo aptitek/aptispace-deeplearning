@@ -43,7 +43,7 @@ L'apprentissage profond s'appuie sur une révolution architecturale où la topol
 ::::: {#plot-morphology-network .plot-wrapper}
 :::::
 
-::::: {.text-muted .fst-italic .text-center .description-box style="min-height: 20px;"}
+::::: {.text-muted .fst-italic .text-center .description-box}
 Réseau au repos — En attente d'informations.
 :::::
 ::::
@@ -51,8 +51,6 @@ Réseau au repos — En attente d'informations.
 
 ```{ojs}
 //| echo: false
-import { createGraph as createMorphologyGraph } from "../../assets/js/networks.js"
-import { StateMachine as MorphologyStateMachine, SimulationController } from "../../assets/js/core.js"
 
 // Rendu réactif du graphe de réseau multicouche
 renderMorphologyNetwork = {
@@ -72,7 +70,7 @@ renderMorphologyNetwork = {
   }
 
   // Machine à états de contrôle de la simulation
-  const sm = new MorphologyStateMachine({
+  const sm = new aptitek.StateMachine({
     states: states,
     interval: 1500,
     loop: true,
@@ -86,7 +84,7 @@ renderMorphologyNetwork = {
     }
   });
 
-  const controller = new SimulationController(sm, {
+  const controller = new aptitek.SimulationController(sm, {
     play: "#btn-morphology-play",
     pause: "#btn-morphology-pause",
     reset: "#btn-morphology-reset",
@@ -169,7 +167,7 @@ renderMorphologyNetwork = {
     }
   ];
 
-  const graph = createMorphologyGraph("#plot-morphology-network", { nodes, links }, {
+  const graph = aptitek.createGraph("#plot-morphology-network", { nodes, links }, {
     nodeRadius: 22, fontSize: 9, height: 320,
     enableZoom: false, enablePan: false, enableDrag: false,
     zoomToFit: true, zoomToFitPadding: 45,
