@@ -557,3 +557,76 @@ export class StateMachine {
     this.onStateChange(this.states[0], 0);
   }
 }
+
+/**
+ * A generic UI controller for managing simulation buttons (play, pause, reset)
+ * linked to a StateMachine.
+ */
+export class SimulationController {
+  constructor(stateMachine, elements = {}, options = {}) {
+    this.sm = stateMachine;
+    this.playBtn = typeof elements.play === "string" ? document.querySelector(elements.play) : elements.play;
+    this.pauseBtn = typeof elements.pause === "string" ? document.querySelector(elements.pause) : elements.pause;
+    this.resetBtn = typeof elements.reset === "string" ? document.querySelector(elements.reset) : elements.reset;
+    this.descBox = typeof elements.description === "string" ? document.querySelector(elements.description) : elements.description;
+
+    this.onPlay = options.onPlay || (() => {});
+    this.onPause = options.onPause || (() => {});
+    this.onReset = options.onReset || (() => {});
+
+    // Save custom state change callback
+    this.onStateChange = options.onStateChange || (() => {});
+
+    // Intercept StateMachine's onStateChange to automatically keep UI updated
+    const originalOnStateChange = this.sm.onStateChange;
+    this.sm.onStateChange = (state, index) => {
+      originalOnStateChange(state, index);
+      this.updateUI();
+      this.onStateChange(state, index);
+    };
+
+    this._bindEvents();
+    this.updateUI();
+  }
+
+  _bindEvents() {
+    this._playHandler = () => {
+      this.sm.start();
+      this.updateUI();
+      this.onPlay();
+    };
+    this._pauseHandler = () => {
+      this.sm.stop();
+      this.updateUI();
+      this.onPause();
+    };
+    this._resetHandler = () => {
+      this.sm.reset();
+      this.updateUI();
+      this.onReset();
+    };
+
+    if (this.playBtn) this.playBtn.addEventListener("click", this._playHandler);
+    if (this.pauseBtn) this.pauseBtn.addEventListener("click", this._pauseHandler);
+    if (this.resetBtn) this.resetBtn.addEventListener("click", this._resetHandler);
+  }
+
+  updateUI() {
+    if (this.playBtn) {
+      this.playBtn.classList.toggle("active", this.sm.isPlaying);
+    }
+    if (this.pauseBtn) {
+      this.pauseBtn.classList.toggle("active", !this.sm.isPlaying && this.sm.currentIndex > 0);
+    }
+    if (this.descBox && this.sm.states[this.sm.currentIndex]) {
+      this.descBox.textContent = this.sm.states[this.sm.currentIndex].description || "";
+    }
+  }
+
+  destroy() {
+    this.sm.stop();
+    if (this.playBtn) this.playBtn.removeEventListener("click", this._playHandler);
+    if (this.pauseBtn) this.pauseBtn.removeEventListener("click", this._pauseHandler);
+    if (this.resetBtn) this.resetBtn.removeEventListener("click", this._resetHandler);
+  }
+}

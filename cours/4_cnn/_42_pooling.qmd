@@ -8,6 +8,119 @@ Chaque opération de pooling parcourt la carte de caractéristiques avec une fen
 
 * **Max Pooling** $\max_{i \in \mathcal{R}} x_i$ : Sélectionne l'activation la plus forte dans la région. Capture les traits saillants (bords, textures marquées) et est particulièrement efficace pour la détection d'objets à contraste élevé. Idéal sur fond sombre car il retient les activations maximales qui correspondent souvent aux contours.
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔎 Max-Pooling Interactif : Distiller l'Essentiel
+::::
+
+:::: {.pooling-simulator}
+```{ojs}
+//| echo: false
+mutable poolGroup = -1;
+```
+
+<div class="row g-4 align-items-center justify-content-center px-3 pt-3">
+  <div class="col-md-5">
+    <div class="pooling-grid-container">
+      <div class="pooling-grid-title">Image d'Entrée (4x4)</div>
+```{ojs}
+//| echo: false
+renderInputGrid = {
+  const gridInValues = [12, 20, 30, 0, 8, 12, 2, 0, 34, 70, 37, 4, 112, 100, 25, 12];
+  const getGroup = (i) => {
+    if ([0,1,4,5].includes(i)) return 0;
+    if ([2,3,6,7].includes(i)) return 1;
+    if ([8,9,12,13].includes(i)) return 2;
+    return 3;
+  };
+
+  const container = html`<div class="matrix-grid-in">
+    ${gridInValues.map((val, i) => {
+      const group = getGroup(i);
+      const isSelected = poolGroup === group;
+      const values = gridInValues.filter((_, idx) => getGroup(idx) === group);
+      const isMax = val === Math.max(...values);
+
+      const cell = html`<div class="matrix-cell group-${group} ${isSelected ? 'is-active-group' : ''} ${isSelected && isMax ? 'is-max-cell' : ''}">${val}</div>`;
+      cell.onclick = () => mutable poolGroup = group;
+      return cell;
+    })}
+  </div>`;
+  return container;
+}
+```
+    </div>
+  </div>
+
+  <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+    <div class="pooling-separator">➡️</div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="pooling-grid-container">
+      <div class="pooling-grid-title">Sortie Pooled (2x2)</div>
+```{ojs}
+//| echo: false
+renderOutputGrid = {
+  const pooledValues = [20, 30, 112, 37];
+
+  const container = html`<div class="matrix-grid-out">
+    ${pooledValues.map((val, i) => {
+      const isSelected = poolGroup === i;
+      const cell = html`<div class="matrix-cell-out out-${i} ${isSelected ? 'is-active-out' : ''}">${val}</div>`;
+      cell.onclick = () => mutable poolGroup = i;
+      return cell;
+    })}
+  </div>`;
+  return container;
+}
+```
+    </div>
+  </div>
+</div>
+
+<div class="px-3 pb-3 pt-2">
+```{ojs}
+//| echo: false
+renderExplanation = {
+  const gridInValues = [12, 20, 30, 0, 8, 12, 2, 0, 34, 70, 37, 4, 112, 100, 25, 12];
+  const groupNames = ["Rouge", "Bleue", "Verte", "Jaune"];
+  const getGroup = (i) => {
+    if ([0,1,4,5].includes(i)) return 0;
+    if ([2,3,6,7].includes(i)) return 1;
+    if ([8,9,12,13].includes(i)) return 2;
+    return 3;
+  };
+
+  const textClasses = [
+    "text-danger",
+    "text-primary",
+    "text-success",
+    "text-warning"
+  ];
+
+  if (poolGroup === -1) {
+    return html`<div class="alert alert-info border-0 mb-0 font-monospace small">
+      💡 <strong>Astuce :</strong> Cliquez sur une région colorée des grilles ci-dessus pour observer le processus de réduction (Max-Pooling).
+    </div>`;
+  }
+
+  const values = gridInValues.filter((_, i) => getGroup(i) === poolGroup);
+  const maxVal = Math.max(...values);
+  const activeClass = textClasses[poolGroup];
+
+  return html`<div class="pooling-explanation-box group-color-${poolGroup}">
+    Dans la zone <strong class="${activeClass}">${groupNames[poolGroup]}</strong>, les valeurs comparées sont : <strong>[${values.join(", ")}]</strong>.<br/>
+    La valeur maximale est <strong class="${activeClass}">${maxVal}</strong>. C'est elle qui survit à l'opération de pooling !
+  </div>`;
+}
+```
+</div>
+::::
+
+:::
+
 * **Average Pooling** $\frac{1}{|\mathcal{R}|} \sum_{i \in \mathcal{R}} x_i$ : Calcule la moyenne spatiale. Produit des représentations plus lisses, mieux adaptées aux tâches de segmentation où la continuité spatiale est importante. Préserve mieux les informations diffuses distribuées sur la région.
 
 * **Min Pooling** $\min_{i \in \mathcal{R}} x_i$ : Symétrique au max pooling, utile pour détecter des traits sombres sur fond clair (ex. MNIST inversé). Rarement utilisé seul mais parfois combiné.

@@ -199,7 +199,7 @@
 
 // Local Filter Ported Animation Styles
 .local-filter-card {
-  max-width: 320px;
+  max-width: 760px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -218,6 +218,11 @@
 
 .viz-local-filter-cell {
   border: 1px solid rgba($sol-cyan, 0.15);
+  transition: background-color 0.3s ease;
+
+  &.is-active {
+    background-color: rgba($sol-cyan, 0.25);
+  }
 }
 
 .viz-local-filter-window {
@@ -229,14 +234,31 @@
   top: 0;
   left: 0;
   border-radius: 2px;
-  animation: slideWindow 4s infinite alternate ease-in-out;
+  transition: transform 0.4s ease-in-out;
+
+  &.pos-0 { transform: translate(0, 0); }
+  &.pos-1 { transform: translate(60px, 0); }
+  &.pos-2 { transform: translate(60px, 60px); }
+  &.pos-3 { transform: translate(0, 60px); }
 }
 
-@keyframes slideWindow {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(60px, 0); }
-  50% { transform: translate(60px, 60px); }
-  75% { transform: translate(0, 60px); }
-  100% { transform: translate(0, 0); }
+.local-filter-card {
+  .tab-actions {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid rgba(var(--sol-base0-rgb), 0.15);
+    background: rgba(var(--sol-base03-rgb), 0.05);
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+      display: flex;
+      gap: 8px;
+    }
+  }
 }
+
+
 

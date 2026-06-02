@@ -1,0 +1,239 @@
+/* ==========================================================================
+   POOLING SIMULATOR STYLES
+   ========================================================================== */
+
+.pooling-simulator {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+
+  .pooling-grid-container {
+    background-color: var(--sol-base2);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: var(--canvas-shadow-inset);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+    position: relative;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .pooling-grid-title {
+    font-family: var(--font-code);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--sol-base01);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  .matrix-grid-in {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 180px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+  }
+
+  .matrix-grid-out {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 90px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+  }
+
+  .matrix-cell, .matrix-cell-out {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-code);
+    font-size: 0.95rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1.5px solid transparent;
+
+    &:hover {
+      transform: scale(1.08);
+      z-index: 2;
+    }
+  }
+
+  // Color mappings for input matrix
+  // Group 0: Red
+  .group-0 {
+    background-color: rgba(var(--sol-red-rgb), 0.12);
+    border-color: rgba(var(--sol-red-rgb), 0.3);
+    color: var(--sol-red);
+
+    &.is-active-group {
+      background-color: rgba(var(--sol-red-rgb), 0.25);
+      border-color: var(--sol-red);
+      border-width: 2px;
+      
+      &.is-max-cell {
+        background-color: var(--sol-red);
+        color: var(--sol-base3);
+        box-shadow: 0 0 8px rgba(var(--sol-red-rgb), 0.4);
+      }
+    }
+  }
+
+  // Group 1: Blue
+  .group-1 {
+    background-color: rgba(var(--sol-blue-rgb), 0.12);
+    border-color: rgba(var(--sol-blue-rgb), 0.3);
+    color: var(--sol-blue);
+
+    &.is-active-group {
+      background-color: rgba(var(--sol-blue-rgb), 0.25);
+      border-color: var(--sol-blue);
+      border-width: 2px;
+      
+      &.is-max-cell {
+        background-color: var(--sol-blue);
+        color: var(--sol-base3);
+        box-shadow: 0 0 8px rgba(var(--sol-blue-rgb), 0.4);
+      }
+    }
+  }
+
+  // Group 2: Green
+  .group-2 {
+    background-color: rgba(var(--sol-green-rgb), 0.12);
+    border-color: rgba(var(--sol-green-rgb), 0.3);
+    color: var(--sol-green);
+
+    &.is-active-group {
+      background-color: rgba(var(--sol-green-rgb), 0.25);
+      border-color: var(--sol-green);
+      border-width: 2px;
+      
+      &.is-max-cell {
+        background-color: var(--sol-green);
+        color: var(--sol-base3);
+        box-shadow: 0 0 8px rgba(var(--sol-green-rgb), 0.4);
+      }
+    }
+  }
+
+  // Group 3: Yellow
+  .group-3 {
+    background-color: rgba(var(--sol-yellow-rgb), 0.12);
+    border-color: rgba(var(--sol-yellow-rgb), 0.3);
+    color: var(--sol-yellow);
+
+    &.is-active-group {
+      background-color: rgba(var(--sol-yellow-rgb), 0.25);
+      border-color: var(--sol-yellow);
+      border-width: 2px;
+      
+      &.is-max-cell {
+        background-color: var(--sol-yellow);
+        color: var(--sol-base3);
+        box-shadow: 0 0 8px rgba(var(--sol-yellow-rgb), 0.4);
+      }
+    }
+  }
+
+  // Color mappings for output pooled cells
+  .out-0 {
+    background-color: rgba(var(--sol-red-rgb), 0.12);
+    border-color: rgba(var(--sol-red-rgb), 0.4);
+    color: var(--sol-red);
+
+    &.is-active-out {
+      background-color: var(--sol-red);
+      color: var(--sol-base3);
+      border-color: var(--sol-red);
+      border-width: 2px;
+      box-shadow: 0 0 8px rgba(var(--sol-red-rgb), 0.4);
+    }
+  }
+
+  .out-1 {
+    background-color: rgba(var(--sol-blue-rgb), 0.12);
+    border-color: rgba(var(--sol-blue-rgb), 0.4);
+    color: var(--sol-blue);
+
+    &.is-active-out {
+      background-color: var(--sol-blue);
+      color: var(--sol-base3);
+      border-color: var(--sol-blue);
+      border-width: 2px;
+      box-shadow: 0 0 8px rgba(var(--sol-blue-rgb), 0.4);
+    }
+  }
+
+  .out-2 {
+    background-color: rgba(var(--sol-green-rgb), 0.12);
+    border-color: rgba(var(--sol-green-rgb), 0.4);
+    color: var(--sol-green);
+
+    &.is-active-out {
+      background-color: var(--sol-green);
+      color: var(--sol-base3);
+      border-color: var(--sol-green);
+      border-width: 2px;
+      box-shadow: 0 0 8px rgba(var(--sol-green-rgb), 0.4);
+    }
+  }
+
+  .out-3 {
+    background-color: rgba(var(--sol-yellow-rgb), 0.12);
+    border-color: rgba(var(--sol-yellow-rgb), 0.4);
+    color: var(--sol-yellow);
+
+    &.is-active-out {
+      background-color: var(--sol-yellow);
+      color: var(--sol-base3);
+      border-color: var(--sol-yellow);
+      border-width: 2px;
+      box-shadow: 0 0 8px rgba(var(--sol-yellow-rgb), 0.4);
+    }
+  }
+
+  // Separator arrow styling
+  .pooling-separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--sol-base01);
+    height: 100%;
+    
+    @media (max-width: 768px) {
+      transform: rotate(90deg);
+      margin: 10px 0;
+    }
+  }
+
+  // Explanation box styling
+  .pooling-explanation-box {
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(var(--sol-base1-rgb), 0.15);
+    background-color: rgba(var(--sol-base03-rgb), 0.12);
+    font-family: var(--font-code);
+    font-size: 0.85rem;
+
+    &.group-color-0 { border-left: 4px solid var(--sol-red) !important; }
+    &.group-color-1 { border-left: 4px solid var(--sol-blue) !important; }
+    &.group-color-2 { border-left: 4px solid var(--sol-green) !important; }
+    &.group-color-3 { border-left: 4px solid var(--sol-yellow) !important; }
+  }
+}

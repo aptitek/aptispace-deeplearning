@@ -1,0 +1,234 @@
+.org-monitor {
+    background: $sol-base2;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    padding: 6px;
+    margin: 10px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .monitor-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 4px 8px;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+
+        .monitor-title {
+            font-family: $font-family-base;
+            font-size: 0.9em;
+            font-weight: 800;
+            color: $sol-base01;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+    }
+
+    .monitor-grid {
+        padding: 2px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 6px;
+        overflow-y: visible;
+    }
+}
+
+.mol-stat-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 5px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--card-color, $sol-blue);
+        opacity: 0.7;
+    }
+
+    .stat-label {
+        font-family: $font-family-code;
+        font-size: 0.65em;
+        text-transform: uppercase;
+        color: $sol-base01;
+        margin-bottom: 1px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+    }
+
+    .stat-value {
+        font-size: 1.4em;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1px;
+        color: var(--card-color, $sol-blue);
+    }
+
+    .stat-comment {
+        font-size: 0.7em;
+        color: $sol-base1;
+        font-style: normal;
+        font-weight: 500;
+    }
+}
+
+.mol-versus-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    .versus-header {
+        font-family: $font-family-code;
+        font-size: 0.8em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .versus-values {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+
+        .v-left,
+        .v-right {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .v-left {
+            align-items: flex-start;
+        }
+
+        .v-right {
+            align-items: flex-end;
+        }
+
+        .v-val {
+            font-size: 1.8em;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .v-lbl {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+    }
+
+    .versus-bar {
+        height: 6px;
+        background: $sol-base2;
+        border-radius: 3px;
+        display: flex;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        .v-fill-a,
+        .v-fill-b {
+            height: 100%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    }
+}
+
+.mol-status-card {
+    background: $sol-base3;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 4px;
+        background: $sol-base1;
+        transition: background-color 0.3s ease;
+    }
+
+    .status-label {
+        font-family: $font-family-code;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        color: $sol-base1;
+        font-weight: bold;
+    }
+
+    .status-text {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: $sol-base1;
+        line-height: 1.2;
+    }
+
+    &.is-info {
+        &::before {
+            background: $sol-blue;
+        }
+
+        .status-text {
+            color: $sol-blue;
+        }
+    }
+
+    &.is-success {
+        &::before {
+            background: $sol-green;
+        }
+
+        .status-text {
+            color: $sol-green;
+        }
+    }
+
+    &.is-warning {
+        &::before {
+            background: $sol-yellow;
+        }
+
+        .status-text {
+            color: $sol-yellow;
+        }
+    }
+
+    &.is-danger {
+        &::before {
+            background: $sol-red;
+        }
+
+        .status-text {
+            color: $sol-red;
+        }
+    }
+}

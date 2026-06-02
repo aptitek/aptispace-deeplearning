@@ -1,11 +1,41 @@
 // ==========================================
 // networks.js - Composants de Réseaux et de Graphes
 // ==========================================
-import ForceGraph from "https://esm.sh/force-graph";
-import ForceGraph3D from "https://esm.sh/3d-force-graph";
-import SpriteText from "https://esm.sh/three-spritetext";
-import TagCloud from "https://esm.sh/TagCloud";
 import { getThemeColor, resolveCssValue, utils, StateMachine } from "./core.js";
+
+// Dynamically imported libraries to ensure robust offline loading
+let ForceGraph = null;
+const forceGraphPromise = import("https://esm.sh/force-graph")
+  .then(m => { ForceGraph = m.default; return ForceGraph; })
+  .catch(err => {
+    console.error("Failed to load force-graph:", err);
+    return null;
+  });
+
+let ForceGraph3D = null;
+const forceGraph3DPromise = import("https://esm.sh/3d-force-graph")
+  .then(m => { ForceGraph3D = m.default; return ForceGraph3D; })
+  .catch(err => {
+    console.error("Failed to load 3d-force-graph:", err);
+    return null;
+  });
+
+let SpriteText = null;
+const spriteTextPromise = import("https://esm.sh/three-spritetext")
+  .then(m => { SpriteText = m.default; return SpriteText; })
+  .catch(err => {
+    console.error("Failed to load three-spritetext:", err);
+    return null;
+  });
+
+let TagCloud = null;
+const tagCloudPromise = import("https://esm.sh/TagCloud")
+  .then(m => { TagCloud = m.default; return TagCloud; })
+  .catch(err => {
+    console.error("Failed to load TagCloud:", err);
+    return null;
+  });
+
 
 const SOL_FALLBACKS = {
   base03: "#002b36", base02: "#073642", base01: "#586e75", base00: "#657b83",
@@ -181,6 +211,83 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     is3D = !!optionsOr3d.is3D;
     customOptions = optionsOr3d;
   }
+
+  // If already loaded, initialize synchronously and return
+  if ((!is3D && ForceGraph) || (is3D && ForceGraph3D)) {
+    return initGraphSync(targetEl, graphData, is3D, customOptions);
+  }
+
+  // Otherwise, return a Proxy that will resolve the graph once the libraries are loaded
+  targetEl.innerHTML = "<div class='text-muted small p-3' style='font-family: var(--font-sans, sans-serif);'>Chargement du graphique...</div>";
+
+  let realGraph = null;
+  let destroyed = false;
+
+  const stub = {
+    isProxy: true,
+    destroy: () => {
+      destroyed = true;
+      if (realGraph) {
+        realGraph.destroy();
+      } else {
+        targetEl.innerHTML = "";
+      }
+    },
+    refresh: () => {
+      if (realGraph && typeof realGraph.refresh === "function") {
+        realGraph.refresh();
+      }
+    }
+  };
+
+  const proxy = new Proxy(stub, {
+    get: (target, prop) => {
+      if (prop === "destroy" || prop === "refresh") {
+        return stub[prop];
+      }
+      if (realGraph) {
+        const val = realGraph[prop];
+        if (typeof val === "function") {
+          return val.bind(realGraph);
+        }
+        return val;
+      }
+      return target[prop];
+    },
+    set: (target, prop, value) => {
+      if (realGraph) {
+        realGraph[prop] = value;
+      } else {
+        target[prop] = value;
+      }
+      return true;
+    }
+  });
+
+  const libPromise = is3D 
+    ? Promise.all([forceGraph3DPromise, spriteTextPromise])
+    : forceGraphPromise;
+
+  libPromise.then(() => {
+    if (destroyed) return;
+    try {
+      realGraph = initGraphSync(targetEl, graphData, is3D, customOptions);
+      // Copy any properties that were set on the proxy stub in the meantime
+      for (const key of Object.keys(stub)) {
+        if (key !== "isProxy" && key !== "destroy" && key !== "refresh") {
+          realGraph[key] = stub[key];
+        }
+      }
+    } catch (err) {
+      console.error("Error initializing graph asynchronously:", err);
+      targetEl.innerHTML = "<div class='text-danger small p-3'>Erreur d'initialisation du graphique.</div>";
+    }
+  });
+
+  return proxy;
+}
+
+function initGraphSync(targetEl, graphData, is3D, customOptions) {
 
   // Check if we can reuse an existing instance on this container to avoid flickering
   if (targetEl.__forceGraphInstance) {
@@ -728,8 +835,6 @@ export function createWordCloud(containerSelector, words, options = {}) {
     return null;
   }
 
-  container.innerHTML = ""; // clear before re-render to avoid OJS duplicates
-
   const finalOptions = {
     radius: 100,
     maxSpeed: 'normal',
@@ -737,6 +842,50 @@ export function createWordCloud(containerSelector, words, options = {}) {
     keep: true,
     ...options
   };
+
+  if (TagCloud) {
+    return initWordCloudSync(container, words, finalOptions);
+  }
+
+  container.innerHTML = "<div class='text-muted small p-3' style='font-family: var(--font-sans, sans-serif);'>Chargement du nuage de mots...</div>";
+
+  let realInstance = null;
+  let destroyed = false;
+
+  const stub = {
+    isProxy: true,
+    destroy: () => {
+      destroyed = true;
+      container.innerHTML = "";
+    }
+  };
+
+  const proxy = new Proxy(stub, {
+    get: (target, prop) => {
+      if (prop === "destroy") return stub.destroy;
+      if (realInstance) {
+        const val = realInstance[prop];
+        return typeof val === "function" ? val.bind(realInstance) : val;
+      }
+      return target[prop];
+    }
+  });
+
+  tagCloudPromise.then(() => {
+    if (destroyed) return;
+    try {
+      realInstance = initWordCloudSync(container, words, finalOptions);
+    } catch (err) {
+      console.error("Error initializing TagCloud asynchronously:", err);
+      container.innerHTML = "<div class='text-danger small p-3'>Erreur de chargement du nuage.</div>";
+    }
+  });
+
+  return proxy;
+}
+
+function initWordCloudSync(container, words, finalOptions) {
+  container.innerHTML = ""; // clear before re-render to avoid OJS duplicates
 
   const tagCloudInstance = TagCloud(container, words, finalOptions);
 
@@ -1315,8 +1464,54 @@ export function createRamStorageGraph(containerSelector, storageMode, queryCol, 
     return null;
   }
 
-  container.innerHTML = "";
   if (!tableData || tableData.length === 0) return null;
+
+  if (ForceGraph) {
+    return initRamStorageGraphSync(container, storageMode, queryCol, tableData);
+  }
+
+  container.innerHTML = "<div class='text-muted small p-3' style='font-family: var(--font-sans, sans-serif);'>Chargement...</div>";
+
+  let realGraph = null;
+  let destroyed = false;
+
+  const stub = {
+    isProxy: true,
+    destroy: () => {
+      destroyed = true;
+      if (realGraph) {
+        realGraph.destroy();
+      } else {
+        container.innerHTML = "";
+      }
+    }
+  };
+
+  const proxy = new Proxy(stub, {
+    get: (target, prop) => {
+      if (prop === "destroy") return stub.destroy;
+      if (realGraph) {
+        const val = realGraph[prop];
+        return typeof val === "function" ? val.bind(realGraph) : val;
+      }
+      return target[prop];
+    }
+  });
+
+  forceGraphPromise.then(() => {
+    if (destroyed) return;
+    try {
+      realGraph = initRamStorageGraphSync(container, storageMode, queryCol, tableData);
+    } catch (err) {
+      console.error("Error initializing RamStorageGraph asynchronously:", err);
+      container.innerHTML = "<div class='text-danger small p-3'>Erreur de chargement.</div>";
+    }
+  });
+
+  return proxy;
+}
+
+function initRamStorageGraphSync(container, storageMode, queryCol, tableData) {
 
   const columns = Object.keys(tableData[0]);
   const nodes = [];
