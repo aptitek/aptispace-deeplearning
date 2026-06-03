@@ -68,13 +68,13 @@ function renderPreview(previewEl, activeTransforms, symbol) {
     .map((key) => AUGMENTATION_STEPS[key].transform)
     .filter(Boolean)
     .join(" ");
-  emoji.style.transform = transform || "none";
+  emoji.style.setProperty("transform", transform || "none");
 
   const filter = activeTransforms
     .map((key) => AUGMENTATION_STEPS[key].filter)
     .filter(Boolean)
     .join(" ");
-  emoji.style.filter = filter || "none";
+  emoji.style.setProperty("filter", filter || "none");
 
   const overlay = document.createElement("div");
   overlay.className = "augmentation-overlay";

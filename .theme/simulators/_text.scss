@@ -81,3 +81,22 @@
     font-weight: 800;
     color: color-mix(in srgb, var(--token-color, var(--sol-blue)) 80%, white);
 }
+
+// BPE demo panel metric value colors
+.bpe-token-count  { color: var(--sol-magenta); font-size: 1.1rem; }
+.bpe-char-count   { color: var(--accent-info);    font-size: 1.1rem; }
+.bpe-window-usage { color: var(--accent-success);  font-size: 1.1rem; }
+
+// Legend note — left-border info callout used by tokenizer and similar demos
+.sim-legend-note {
+    font-size: .75rem;
+    color: var(--sol-base01);
+    border-left: 3px solid var(--sol-cyan);
+    padding: .5rem .75rem;
+    background: var(--control-bg);
+    border-radius: 0 6px 6px 0;
+}
+
+.bpe-fragment-indicator {
+    border-bottom: 1px dashed var(--sol-base01);
+}

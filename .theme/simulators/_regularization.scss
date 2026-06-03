@@ -11,3 +11,12 @@
         width: 100% !important;
     }
 }
+
+// Rule detail card — border and title color driven by --rule-color set from JS
+#reg-details-container {
+    border-left-color: var(--rule-color, var(--accent-primary)) !important;
+}
+
+.detail-title-color {
+    color: var(--rule-color, var(--accent-primary));
+}

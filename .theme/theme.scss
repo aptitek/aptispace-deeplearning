@@ -352,14 +352,35 @@ div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
 
 // ==========================================
 // ==========================================
-// 8.5 PLOT WRAPPER UTILITY
+// 8.5 SIMULATOR UTILITY COMPONENTS
 // ==========================================
 
 // Generic container for Plotly/D3 charts — ensures consistent padding.
-// Use in QMD as {.plot-wrapper} instead of style="padding:1rem;"
 .plot-wrapper {
     padding: 1rem;
 }
+
+// Row of metric cards (label + value) used in simulator info bars.
+.sim-metric-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: .75rem 1rem;
+    font-size: .8rem;
+}
+
+.sim-metric-card {
+    background: var(--control-bg);
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    flex: 1;
+    text-align: center;
+}
+
+// Distance-state color variants for sim-metric-dist
+.dist-success { color: var(--accent-success); }
+.dist-warning { color: var(--sol-yellow); }
+.dist-danger  { color: var(--accent-warning); }
 
 // ==========================================
 // 9. NATIVE BOOTSTRAP PROGRESS BAR RESKIN

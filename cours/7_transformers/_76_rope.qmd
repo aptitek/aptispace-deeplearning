@@ -16,7 +16,7 @@ Cette propriété garantit que l'attention capturée entre deux tokens dépend d
 🔄 Simulation : RoPE — Rotation des Tokens dans l'Espace Complexe
 ::::
 
-:::: {.card-control-row .sim-controls-row style="flex-wrap: wrap; gap: 0.5rem;"}
+:::: {.card-control-row .sim-controls-row .flex-wrap .gap-2}
 ```{ojs}
 //| echo: false
 viewof rope_sentence = Inputs.text({

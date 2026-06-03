@@ -34,7 +34,7 @@ export async function initMoboSvg(selector) {
     if (res.ok) {
       const svgText = await res.text();
       container.innerHTML = svgText;
-      container.style.backgroundImage = 'none'; // Efface l'image de fond statique
+      container.style.setProperty("background-image", "none"); // remove static placeholder after SVG is inlined
     }
   } catch (e) {
     console.error("initMoboSvg: Impossible de charger l'SVG en ligne —", e);

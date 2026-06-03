@@ -57,9 +57,9 @@ vq_codebook = {
   // Grid
   [2,4,6,8].forEach(v => {
     svg.append("line").attr("x1", toX(v)).attr("y1", 0).attr("x2", toX(v)).attr("y2", H)
-      .attr("stroke", "#073642").attr("stroke-width", 0.5);
+      .style("stroke", "var(--sol-base02)").attr("stroke-width", 0.5);
     svg.append("line").attr("x1", 0).attr("y1", toY(v)).attr("x2", W).attr("y2", toY(v))
-      .attr("stroke", "#073642").attr("stroke-width", 0.5);
+      .style("stroke", "var(--sol-base02)").attr("stroke-width", 0.5);
   });
 
   // Codebook points
@@ -67,11 +67,11 @@ vq_codebook = {
     const isNearest = pt.id === nearest.id;
     svg.append("circle")
       .attr("cx", toX(pt.x)).attr("cy", toY(pt.y)).attr("r", isNearest ? 9 : 5)
-      .attr("fill", isNearest ? "#859900" : "#586e75")
+      .style("fill", isNearest ? "var(--sol-green)" : "var(--sol-base01)")
       .attr("stroke", isNearest ? "var(--sol-base3)" : "none").attr("stroke-width", 1.5);
     if (isNearest) {
       svg.append("rect").attr("x", toX(pt.x) + 12).attr("y", toY(pt.y) - 10).attr("width", 50).attr("height", 20)
-        .attr("rx", 4).attr("fill", "#859900");
+        .attr("rx", 4).style("fill", "var(--sol-green)");
       svg.append("text").attr("x", toX(pt.x) + 37).attr("y", toY(pt.y) + 1).attr("dy", ".35em")
         .attr("text-anchor", "middle").attr("fill", "var(--sol-base3)").attr("font-size", "9px").attr("font-weight", "700")
         .style("font-family", "var(--font-code)").text(pt.id);
@@ -82,30 +82,30 @@ vq_codebook = {
   svg.append("line")
     .attr("x1", toX(qx)).attr("y1", toY(qy))
     .attr("x2", toX(nearest.x)).attr("y2", toY(nearest.y))
-    .attr("stroke", "#dc322f").attr("stroke-width", 2).attr("stroke-dasharray", "5,3");
+    .style("stroke", "var(--sol-red)").attr("stroke-width", 2).attr("stroke-dasharray", "5,3");
 
   // Distance label at midpoint
   const mx = (toX(qx) + toX(nearest.x)) / 2;
   const my = (toY(qy) + toY(nearest.y)) / 2;
   svg.append("rect").attr("x", mx - 20).attr("y", my - 9).attr("width", 40).attr("height", 18)
-    .attr("rx", 4).attr("fill", "#073642").attr("opacity", 0.9);
+    .attr("rx", 4).style("fill", "var(--sol-base02)").attr("opacity", 0.9);
   svg.append("text").attr("x", mx).attr("y", my + 1).attr("dy", ".35em").attr("text-anchor", "middle")
-    .attr("fill", "#dc322f").attr("font-size", "9px").attr("font-weight", "700")
+    .attr("fill", "var(--sol-red)").attr("font-size", "9px").attr("font-weight", "700")
     .style("font-family", "var(--font-code)").text(`d=${minD.toFixed(2)}`);
 
   // Input vector
   svg.append("circle").attr("cx", toX(qx)).attr("cy", toY(qy)).attr("r", 12)
-    .attr("fill", "#268bd2").attr("stroke", "var(--sol-base3)").attr("stroke-width", 2)
-    .style("filter", "drop-shadow(0 0 6px #268bd2)");
+    .style("fill", "var(--sol-blue)").attr("stroke", "var(--sol-base3)").attr("stroke-width", 2)
+    .style("filter", "drop-shadow(0 0 6px var(--sol-blue))");
   svg.append("rect").attr("x", toX(qx) - 52).attr("y", toY(qy) - 28).attr("width", 104).attr("height", 18)
-    .attr("rx", 4).attr("fill", "#268bd2");
+    .attr("rx", 4).style("fill", "var(--sol-blue)");
   svg.append("text").attr("x", toX(qx)).attr("y", toY(qy) - 19).attr("dy", ".35em").attr("text-anchor", "middle")
     .attr("fill", "var(--sol-base3)").attr("font-size", "9px").attr("font-weight", "700")
     .style("font-family", "var(--font-code)").text(`IN [${qx.toFixed(1)}, ${qy.toFixed(1)}]`);
 
   // Quantized label
   svg.append("rect").attr("x", toX(nearest.x) - 52).attr("y", toY(nearest.y) + 14).attr("width", 104).attr("height", 18)
-    .attr("rx", 4).attr("fill", "#859900");
+    .attr("rx", 4).style("fill", "var(--sol-green)");
   svg.append("text").attr("x", toX(nearest.x)).attr("y", toY(nearest.y) + 23).attr("dy", ".35em").attr("text-anchor", "middle")
     .attr("fill", "var(--sol-base3)").attr("font-size", "9px").attr("font-weight", "700")
     .style("font-family", "var(--font-code)")
@@ -122,21 +122,29 @@ vq_codebook = {
   const qx = vq_x, qy = vq_y;
   let minD = Infinity, nearest = cb[0];
   cb.forEach(pt => { const d = Math.hypot(pt.x - qx, pt.y - qy); if (d < minD) { minD = d; nearest = pt; } });
-  const infoCol = minD < 1.5 ? "var(--sol-green)" : minD < 3 ? "var(--sol-yellow)" : "var(--sol-orange)";
-  return html`<div style="padding:.75rem 1rem;display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;">
-    <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem .75rem;flex:1;text-align:center;">
-      <div style="color:var(--sol-base01);">Vecteur continu</div>
-      <div style="font-weight:700;color:var(--sol-blue);font-family:var(--font-code);">[${qx.toFixed(2)}, ${qy.toFixed(2)}]</div>
-    </div>
-    <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem .75rem;flex:1;text-align:center;">
-      <div style="color:var(--sol-base01);">Code VQ (k*)</div>
-      <div style="font-weight:700;color:var(--sol-green);font-family:var(--font-code);">${nearest.id}</div>
-    </div>
-    <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem .75rem;flex:1;text-align:center;">
-      <div style="color:var(--sol-base01);">Distance Euclidienne</div>
-      <div style="font-weight:700;font-family:var(--font-code);color:${infoCol};">${minD.toFixed(3)}</div>
-    </div>
-  </div>`;
+  const distState = minD < 1.5 ? "success" : minD < 3 ? "warning" : "danger";
+
+  const makeMetric = (label, value, valueClass) => {
+    const card = document.createElement("div");
+    card.className = "sim-metric-card";
+    const lbl = document.createElement("div");
+    lbl.className = "text-muted";
+    lbl.textContent = label;
+    const val = document.createElement("div");
+    val.className = `fw-bold font-monospace ${valueClass}`;
+    val.textContent = value;
+    card.append(lbl, val);
+    return card;
+  };
+
+  const row = document.createElement("div");
+  row.className = "sim-metric-row";
+  row.append(
+    makeMetric("Vecteur continu",     `[${qx.toFixed(2)}, ${qy.toFixed(2)}]`, "text-info"),
+    makeMetric("Code VQ (k*)",        nearest.id,                              "text-success"),
+    makeMetric("Distance Euclidienne", minD.toFixed(3),                        `sim-metric-dist dist-${distState}`)
+  );
+  return row;
 }
 ```
 

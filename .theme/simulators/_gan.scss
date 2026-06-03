@@ -1,0 +1,126 @@
+/* ==========================================================================
+   GAN DUEL SIMULATOR STYLES
+   ========================================================================== */
+
+// Phase tokens cascade to all children via data-phase on .gan-duel root
+.gan-duel {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &[data-phase="danger"]  { --phase-color: var(--accent-danger);  --phase-bg: rgba(var(--sol-red-rgb), 0.13); }
+  &[data-phase="warning"] { --phase-color: var(--accent-warning); --phase-bg: rgba(var(--sol-orange-rgb), 0.13); }
+  &[data-phase="success"] { --phase-color: var(--accent-success); --phase-bg: rgba(var(--sol-green-rgb), 0.13); }
+}
+
+.gan-arena {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.gan-combatant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .75rem;
+  flex: 1;
+
+  .gan-label {
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    font-size: .75rem;
+
+    &.is-generator     { color: var(--accent-info); }
+    &.is-discriminator { color: var(--accent-danger); }
+  }
+
+  .gan-emoji {
+    font-size: 4rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    // Driven by CSS custom properties set at render time
+    filter: blur(var(--gan-blur, 0px));
+    opacity: var(--gan-opacity, 1);
+    transform: scale(var(--gan-scale, 1));
+    transition: filter .4s ease, opacity .4s ease, transform .4s ease;
+  }
+
+  .gan-caption {
+    font-size: .7rem;
+    color: var(--sol-base01);
+    text-align: center;
+  }
+}
+
+.gan-verdict {
+  padding: .6rem 1.2rem;
+  border-radius: 8px;
+  background: var(--phase-color, var(--accent-danger));
+  color: var(--sol-base3);
+  font-weight: 800;
+  font-size: .85rem;
+  letter-spacing: .05em;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  transition: background .3s ease;
+}
+
+.gan-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+
+  .gan-divider-icon { font-size: 1.8rem; opacity: 0.5; }
+
+  .gan-divider-bar {
+    height: 4px;
+    width: 60px;
+    background: linear-gradient(to right, var(--accent-info), var(--accent-danger));
+    border-radius: 2px;
+    opacity: .4;
+  }
+}
+
+.gan-status {
+  border-left: 3px solid var(--phase-color, var(--accent-primary));
+  padding: .6rem 1rem;
+  background: var(--phase-bg, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: .82rem;
+  color: var(--sol-base0);
+  line-height: 1.5;
+
+  strong { color: var(--phase-color, var(--accent-primary)); }
+}
+
+.gan-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .75rem;
+  font-size: .78rem;
+  text-align: center;
+
+  .gan-metric {
+    background: var(--control-bg);
+    border-radius: 8px;
+    padding: .5rem;
+
+    .gan-metric-label { color: var(--sol-base01); }
+
+    .gan-metric-value {
+      font-weight: 700;
+      font-size: 1.1rem;
+
+      &.is-nash   { color: var(--sol-yellow); }
+      &.is-g-loss { color: var(--accent-info); }
+      &.is-d-loss { color: var(--accent-danger); }
+    }
+  }
+}

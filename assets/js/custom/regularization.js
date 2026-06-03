@@ -178,16 +178,10 @@ function renderDetails(detailsEl, type, lambda) {
   const cfg = rules.find(r => lambda <= r.maxLambda);
   if (!cfg) return;
 
-  const titleColor = resolveCssValue(cfg.color);
-  detailsEl.style.borderLeftColor = titleColor;
+  detailsEl.style.setProperty("--rule-color", cfg.color);
 
   renderTemplate(detailsEl, {
     title: cfg.title.replace("{λ}", lambda),
     body: cfg.body
   });
-
-  const titleEl = detailsEl.querySelector('.detail-title-color');
-  if (titleEl) {
-    titleEl.style.color = titleColor;
-  }
 }

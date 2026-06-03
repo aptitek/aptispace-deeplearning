@@ -207,10 +207,13 @@ export function createLabeledText(selectorOrElement, options = {}) {
   // Return component controller/handle
   const controller = {
     element: container,
-    update: (newTokensOrText) => {
+    update: (newTokensOrText, asRaw = false) => {
       let nextTokens = newTokensOrText;
       if (typeof newTokensOrText === "string") {
         nextTokens = tokenizeText(newTokensOrText);
+      } else if (asRaw) {
+        // Accept raw {text,fragment,space} objects (from bpe_tokens cell)
+        nextTokens = newTokensOrText.map(t => ({ text: t.text, isFragment: t.fragment, hasSpace: t.space }));
       }
       render(nextTokens);
       return controller;
@@ -222,4 +225,54 @@ export function createLabeledText(selectorOrElement, options = {}) {
   };
 
   return controller;
+}
+
+/**
+ * Builds the full BPE tokenizer demo panel: token stream + metrics row + legend.
+ * Accepts the `{ tokens, chars, count }` object produced by a bpe_tokens OJS cell.
+ * Token objects must have `{ text, fragment, space }` (raw BPE format).
+ */
+export function createBpeDemoPanel({ tokens = [], chars = 0, count = 0 } = {}) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "d-flex flex-column gap-3 p-3";
+
+  // Token stream — normalize raw BPE format to createLabeledText's format
+  const streamEl = document.createElement("div");
+  const normalized = tokens.map(t => ({ text: t.text, isFragment: t.fragment, hasSpace: t.space }));
+  createLabeledText(streamEl, { emptyMessage: "Saisissez du texte..." }).update(normalized);
+  wrapper.appendChild(streamEl);
+
+  if (count === 0) return wrapper;
+
+  // Metrics row
+  const metricsRow = document.createElement("div");
+  metricsRow.className = "sim-metric-row";
+  const usedPct = Math.min(100, (count / 8192) * 100).toFixed(2);
+
+  const makeMetric = (label, value, valueClass) => {
+    const card = document.createElement("div");
+    card.className = "sim-metric-card";
+    const lbl = document.createElement("div");
+    lbl.className = "text-muted";
+    lbl.textContent = label;
+    const val = document.createElement("div");
+    val.className = `fw-bold font-monospace ${valueClass}`;
+    val.textContent = value;
+    card.append(lbl, val);
+    return card;
+  };
+
+  metricsRow.append(
+    makeMetric("Tokens",     count,         "bpe-token-count"),
+    makeMetric("Caractères", chars,         "bpe-char-count"),
+    makeMetric("Fenêtre",    `${usedPct}%`, "bpe-window-usage")
+  );
+
+  // Legend
+  const legend = document.createElement("div");
+  legend.className = "sim-legend-note";
+  legend.innerHTML = `<strong>Ġ</strong> = espace fusionné au token suivant (convention BPE). Les tokens <span class="bpe-fragment-indicator">en pointillés</span> sont des fragments de mots décomposés.`;
+
+  wrapper.append(metricsRow, legend);
+  return wrapper;
 }

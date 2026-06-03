@@ -42,81 +42,8 @@ viewof gan_epoch = Inputs.range([0, 100], {
 
 ```{ojs}
 //| echo: false
-{
-  const blur = Math.max(0, 10 - gan_epoch / 10);
-  const opacity = 0.2 + gan_epoch / 125;
-  const scale = 0.8 + gan_epoch / 500;
-  const nashReached = gan_epoch > 80;
-  const phase = gan_epoch < 30 ? "danger" : gan_epoch < 80 ? "warning" : "success";
-  const phaseColors = {
-    danger:  "var(--sol-red)",
-    warning: "var(--sol-orange)",
-    success: "var(--sol-green)"
-  };
-  const col = phaseColors[phase];
-
-  const msg = gan_epoch < 30
-    ? "Le Faussaire produit du bruit aléatoire — le Policier gagne sans effort. Gradient nul pour G."
-    : gan_epoch < 80
-      ? "Le Faussaire affine ses faux. La compétition s'intensifie — chacun contraint l'autre à progresser."
-      : "Équilibre de Nash approché : D*(x) ≈ ½ partout. Le Policier ne peut plus distinguer réel du faux.";
-
-  // Generator/Discriminator loss curves (simplified)
-  const lossG = Array.from({length: 101}, (_, i) => {
-    if (i <= gan_epoch) return { epoch: i, val: Math.max(0.05, 2.5 * Math.exp(-i / 40) + 0.05 + (Math.random() * 0.05)) };
-    return null;
-  }).filter(Boolean);
-  const lossD = Array.from({length: 101}, (_, i) => {
-    if (i <= gan_epoch) return { epoch: i, val: Math.max(0.05, 1.2 * Math.exp(-i / 35) + 0.05 + (Math.random() * 0.05)) };
-    return null;
-  }).filter(Boolean);
-
-  return html`
-  <div style="padding: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
-    <!-- Duel visuel -->
-    <div style="display: flex; gap: 2rem; align-items: center; justify-content: center;">
-      <div style="display: flex; flex-direction: column; align-items: center; gap: .75rem; flex: 1;">
-        <div style="font-weight: 700; color: var(--sol-blue); letter-spacing: .05em; text-transform: uppercase; font-size: .75rem;">Faussaire (G)</div>
-        <div style="font-size: 4rem; filter: blur(${blur}px); opacity: ${opacity}; transform: scale(${scale}); transition: all .4s ease; height: 5rem; display: flex; align-items: center;">🖼️</div>
-        <div style="font-size: .7rem; color: var(--sol-base01); text-align: center;">Bruit → Structure</div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; align-items: center; gap: .5rem;">
-        <span style="font-size: 1.8rem; opacity: 0.5;">⚔️</span>
-        <div style="height: 4px; width: 60px; background: linear-gradient(to right, var(--sol-blue), var(--sol-red)); border-radius: 2px; opacity: .4;"></div>
-      </div>
-
-      <div style="display: flex; flex-direction: column; align-items: center; gap: .75rem; flex: 1;">
-        <div style="font-weight: 700; color: var(--sol-red); letter-spacing: .05em; text-transform: uppercase; font-size: .75rem;">Policier (D)</div>
-        <div style="padding: .6rem 1.2rem; border-radius: 8px; background: ${col}; color: white; font-weight: 800; transition: all .3s; font-size: .85rem; letter-spacing: .05em; height: 5rem; display: flex; align-items: center;">
-          ${nashReached ? "Vrai ?" : "FAUX !"}
-        </div>
-        <div style="font-size: .7rem; color: var(--sol-base01); text-align: center;">Réel vs Synthétique</div>
-      </div>
-    </div>
-
-    <!-- Statut -->
-    <div style="border-left: 3px solid ${col}; padding: .6rem 1rem; background: ${col}22; border-radius: 0 6px 6px 0; font-size: .82rem; color: var(--sol-base0); line-height: 1.5;">
-      <strong style="color: ${col};">Époque ${gan_epoch} / 100 :</strong> ${msg}
-    </div>
-
-    <!-- Métriques -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; font-size: .78rem; text-align: center;">
-      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
-        <div style="color: var(--sol-base01);">D*(x̂) estimé</div>
-        <div style="font-weight: 700; color: var(--sol-yellow); font-size: 1.1rem;">${(0.5 + (1 - gan_epoch / 100) * 0.45).toFixed(2)}</div>
-      </div>
-      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
-        <div style="color: var(--sol-base01);">Loss G</div>
-        <div style="font-weight: 700; color: var(--sol-blue); font-size: 1.1rem;">${(Math.max(0.05, 2.5 * Math.exp(-gan_epoch / 40))).toFixed(2)}</div>
-      </div>
-      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
-        <div style="color: var(--sol-base01);">Loss D</div>
-        <div style="font-weight: 700; color: var(--sol-red); font-size: 1.1rem;">${(Math.max(0.05, 1.2 * Math.exp(-gan_epoch / 35))).toFixed(2)}</div>
-      </div>
-    </div>
-  </div>`;
-}
+import { createGanDuel } from "../../assets/js/custom/gan.js"
+createGanDuel(gan_epoch)
 ```
 
 :::
