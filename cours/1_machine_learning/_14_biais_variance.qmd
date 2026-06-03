@@ -1,8 +1,12 @@
 ## La Physique du Modèle : Le Compromis Biais-Variance
 
+Trouver le bon modèle est une affaire de compromis : soit il est trop rigide et rate les grandes tendances (le **biais**), soit il est trop fluide et mémorise les moindres détails inutiles, y compris le bruit (la **variance**).
+
 Un bon modèle doit trouver le juste milieu entre deux défauts opposés : **trop simpliste** (il rate les vraies tendances) ou **trop rigoureux** (il mémorise le bruit au lieu d'apprendre). C'est le compromis biais-variance [@bmc_bias_variance].
 
 ### Le Biais et le Sous-apprentissage
+
+C'est le défaut d'un modèle trop simpliste, comme un moule en métal rigide incapable d'épouser les courbes d'une figurine (le **sous-apprentissage** ou *underfitting*).
 
 Le **Biais** est l'erreur systématique d'un modèle trop simplet. Il "manque" les vraies tendances des données — comme un moule trop rigide qui ne parvient pas à épouser la forme de la figurine. Le modèle reste grossièrement plat, incapable de capter la structure réelle : c'est le **sous-apprentissage** (*underfitting*) [@cs229_bias_variance; @gfg_bias_variance; @ghadigaonkar_2025_bias].
 
@@ -19,6 +23,8 @@ L'espérance de la prédiction moins la vraie valeur — l'écart *moyen* et *sy
 :::
 
 ### La Variance et le Sur-apprentissage
+
+C'est le défaut d'un modèle trop zélé, comme un moule en silicone trop liquide qui moule aussi la poussière et les rayures de la figurine (le **sur-apprentissage** ou *overfitting*).
 
 La **Variance** représente l'erreur liée à une sensibilité excessive aux fluctuations du jeu d'entraînement. Le modèle procède à une mémorisation du bruit [@ibm_overfitting; @utd_bias_variance] au lieu d'une généralisation.
 
@@ -183,6 +189,8 @@ graph4 = {
 ```
 
 ### Le Phénomène de Double Descente
+
+Parfois, un très grand modèle que l'on pense condamné au sur-apprentissage recommence mystérieusement à s'améliorer : c'est la **double descente**, une zone où le modèle découvre des règles encore plus simples et robustes.
 
 La courbe classique en U montre que la variance augmente avec la complexité. Cependant, le Deep Learning montre parfois une **Double Descente** (la perte diminue de nouveau pour de très grands modèles).
 

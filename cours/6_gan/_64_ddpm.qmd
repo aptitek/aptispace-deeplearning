@@ -26,15 +26,15 @@ viewof ddpm_t = Inputs.range([0, 100], { value: 0, step: 1, label: "Pas t" })
 
 ::::: {.col-md-3 .d-flex .flex-column .justify-content-center .gap-2}
 
-::: {.card .border .p-2 .text-center}
+:::::: {.card .border .p-2 .text-center}
 **ᾱ_t**
 
-::: {#ddpm-alpha-display .font-monospace .fw-bold .fs-5}
+::::::: {#ddpm-alpha-display .font-monospace .fw-bold .fs-5}
 —
-:::
+:::::::
 
 Signal restant
-:::
+::::::
 
 :::::
 

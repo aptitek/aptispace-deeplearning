@@ -49,8 +49,8 @@ viewof n_fn = Inputs.select(["relu", "sigmoid"], { value: "relu", label: "Activa
 
 :::: {.card-body .p-3}
 
-::: {#neuron-diagram-container}
-:::
+::::: {#neuron-diagram-container}
+:::::
 
 ::::
 

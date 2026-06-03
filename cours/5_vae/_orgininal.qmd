@@ -6,11 +6,9 @@ Au sein de l'apprentissage non supervisé, le Module 3 constitue une rupture ép
 
 Ce module explore les trois piliers de cette transformation : la compression déterministe (Autoencodeur classique), la régularisation probabiliste (VAE) et la discrétisation vectorielle (VQ-VAE). Nous verrons que la capacité d'un modèle à "comprendre" et à générer dépend moins de la stochasticité de son processus que de la contrainte de compacité exercée sur son manifold latent. C'est dans ce goulot d'étranglement, où le bruit est sacrifié au profit de l'essence sémantique, que se forge la puissance des modèles génératifs modernes.
 
-
 --------------------------------------------------------------------------------
 
-
-2. L'Autoencodeur Classique (AE) : Fondations et Architecture
+1. L'Autoencodeur Classique (AE) : Fondations et Architecture
 
 L'autoencodeur classique ne doit pas être perçu comme un simple mécanisme de copie, mais comme une architecture de contrainte forçant l'extraction de caractéristiques sémantiques. En privant le réseau de ressources dimensionnelles, nous l'obligeons à résoudre un problème d'optimisation sous contrainte de goulot d'étranglement (bottleneck).
 
@@ -34,21 +32,17 @@ Mathématiquement, l'objectif est de minimiser la perte de reconstruction : L(\t
 
 Cependant, l'AE classique souffre d'une fragmentation du manifold : l'espace latent est discontinu, parsemé de "trous sémantiques" rendant l'interpolation et la génération instables. Ce constat impose le passage vers une régularisation plus rigoureuse.
 
-
 --------------------------------------------------------------------------------
 
-
-3. L'Évolution Probabiliste : Le Variational Autoencoder (VAE)
+1. L'Évolution Probabiliste : Le Variational Autoencoder (VAE)
 
 Le passage au VAE marque une transition d'un paradigme déterministe (un point unique) vers un paradigme probabiliste (une distribution). Ce saut conceptuel résout la fragmentation du manifold en remplaçant les coordonnées fixes par des régions de confiance, souvent conceptualisées sous le terme de "Gaussian Ball" [@Shi2024].
 
 L'encodeur ne produit plus un vecteur z, mais les paramètres (\mu, \sigma) d'une distribution gaussienne multivariée. Cette approche garantit que l'espace latent est un continuum où chaque région, et non plus seulement chaque point, possède une validité sémantique. L'optimisation repose sur l'Evidence Lower Bound (ELBO), qui arbitre le conflit entre fidélité de reconstruction (log-vraisemblance) et régularisation informationnelle (Divergence KL) [@Kingma2013]. Comme le souligne @Shi2024, le VAE établit un véritable "contrat" entre l'encodeur et le décodeur : l'un s'engage à compacter l'information, l'autre à apprendre à reconstruire à partir de n'importe quel échantillon au sein de l'ellipsoïde latent.
 
-
 --------------------------------------------------------------------------------
 
-
-4. Deep Dive : Dérivation de la Divergence KL entre Gaussiennes
+1. Deep Dive : Dérivation de la Divergence KL entre Gaussiennes
 
 Pour comprendre comment le VAE préserve la continuité de son espace latent, une dérivation rigoureuse de la Divergence de Kullback-Leibler (D_{KL}) est indispensable. Nous cherchons à quantifier l'écart entre la distribution postérieure apprise q_\phi(z|x) \sim N(\mu_1, \Sigma_1) et la distribution a priori p(z) \sim N(\mu_2, \Sigma_2), avec typiquement p(z) \sim N(0, I) [@Muñoz2024].
 
@@ -66,11 +60,9 @@ La sommation H_1 + H_2 - H_3 nous donne la formule standard utilisée dans les i
 
 Interprétation : La trace et le log-déterminant agissent comme un garde-fou contre l'effondrement des "Gaussian balls" en points déterministes (empêchant \sigma \to 0), tandis que la forme quadratique centre le manifold à l'origine.
 
-
 --------------------------------------------------------------------------------
 
-
-5. Le "Trick" de Reparamétrisation et la Géométrie du Latent
+1. Le "Trick" de Reparamétrisation et la Géométrie du Latent
 
 Le défi majeur du VAE réside dans la non-différentiabilité de l'échantillonnage. Le reparameterization trick déplace la stochasticité vers une variable externe \epsilon \sim N(0, I), permettant au gradient de s'écouler à travers les paramètres déterministes \mu et \sigma : z = \mu + \sigma \odot \epsilon
 
@@ -83,11 +75,9 @@ Une perspective récente, portée par @Shi2024, suggère que la reparamétrisati
 
 L'étude montre que l'on peut obtenir des résultats similaires au VAE via des méthodes de "Compactness Regularization" sans échantillonnage stochastique, comme l'Asymmetric Expansion (ReLU(-\log Var)) ou la Symmetric Stabilization. Cela démontre que le rôle de la KL est d'être un "bouclier géométrique" contre l'effondrement représentationnel.
 
-
 --------------------------------------------------------------------------------
 
-
-6. Discrétisation et VQ-VAE (Vector Quantized VAE)
+1. Discrétisation et VQ-VAE (Vector Quantized VAE)
 
 Le VQ-VAE propose une alternative radicale : la transition vers un espace latent discret, particulièrement adapté aux structures hiérarchiques (image, audio).
 
@@ -102,11 +92,9 @@ Sémantique et Risques
 
 La capacité générative du VQ-VAE ne provient pas d'un bruit de Gaussienne, mais de la compacité extrême induite par la perte de codebook (commitment loss). Le décodeur, forcé de travailler avec des tokens fixes, développe un mécanisme contractuel robuste. Le risque majeur est le Codebook Collapse (où une fraction des vecteurs capture toute la variance, laissant les autres inutilisés). Pour stabiliser l'apprentissage, on utilise souvent l'EMA (Exponential Moving Average) pour la mise à jour des vecteurs du dictionnaire. De plus, une augmentation excessive du codebook peut créer une "contrainte de compacité inverse", dispersant trop le manifold et nuisant à la cohérence.
 
-
 --------------------------------------------------------------------------------
 
-
-7. Synthèse et Perspectives du Module 3
+1. Synthèse et Perspectives du Module 3
 
 L'émergence de la sémantique est une fonction directe de la contrainte exercée sur l'espace latent.
 

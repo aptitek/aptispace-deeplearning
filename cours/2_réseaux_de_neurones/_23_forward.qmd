@@ -49,8 +49,8 @@ viewof fp_x2 = Inputs.range([-2, 2], { value: -0.5, step: 0.1, label: "Entrée x
 
 :::: {.card-body .p-2}
 
-::: {#forward-pass-container .p-1}
-:::
+::::: {#forward-pass-container .p-1}
+:::::
 
 ::::
 

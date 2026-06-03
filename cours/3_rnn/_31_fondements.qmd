@@ -34,6 +34,7 @@ Le pivot de l'architecture RNN est le **vecteur latent** $\mathbf{h}_t$ (ou éta
    $$\mathbf{y}_t = f_\theta(\mathbf{x}_t, \mathbf{h}_{t-1})$$
 
 Où :
+
 * $\mathbf{h}_{t-1}$ est l'état caché précédent (mémoire)
 * $\mathbf{x}_t$ est l'entrée au pas de temps actuel
 * $\mathbf{W}_h$ est la matrice de récurrence (poids de l'état caché)
@@ -474,11 +475,11 @@ renderRNNUnrolled = {
 
 Les RNN s'adaptent à quatre configurations selon la relation entre la séquence d'entrée et de sortie [@maurock2020] :
 
-| Mode | Description | Application |
-| :--- | :--- | :--- |
-| **Un-à-Un** | Pas de récurrence | MLP classique, classification d'image |
-| **Un-à-Plusieurs** | Une entrée, séquence de sortie | Légende d'image, génération de texte |
-| **Plusieurs-à-Un** | Séquence d'entrée, une sortie | Classification de sentiment |
-| **Plusieurs-à-Plusieurs** | Séquences d'entrée et de sortie | Traduction automatique |
+| Mode                      | Description                     | Application                           |
+| :------------------------ | :------------------------------ | :------------------------------------ |
+| **Un-à-Un**               | Pas de récurrence               | MLP classique, classification d'image |
+| **Un-à-Plusieurs**        | Une entrée, séquence de sortie  | Légende d'image, génération de texte  |
+| **Plusieurs-à-Un**        | Séquence d'entrée, une sortie   | Classification de sentiment           |
+| **Plusieurs-à-Plusieurs** | Séquences d'entrée et de sortie | Traduction automatique                |
 
 Cette flexibilité explique la domination passée des RNN en NLP avant l'avènement des Transformers.

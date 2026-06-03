@@ -10,8 +10,8 @@ Le pré-entraînement produit un modèle aux capacités générales remarquables
 
 :::: {.card-body .p-2}
 
-::: {#finetuning-chart-container .p-1}
-:::
+::::: {#finetuning-chart-container .p-1}
+:::::
 
 ::::
 
@@ -51,6 +51,7 @@ Les travaux de Pareja et al. (2025) sur les modèles 3B–7B démontrent que le 
 Pareja et al. (2025) révèlent une "recette secrète" basée sur les dynamiques précoces de l'entraînement [@Pareja2025] :
 
 **Hyperparamètres optimaux :**
+
 * **Batch size élevé** (ex. : 4K séquences) avec un **taux d'apprentissage bas** (ex. : 1e-5) : Cette combinaison stabilise les gradients et permet une convergence vers des minima plus plats.
 * **Gradient accumulation** : Permet de simuler un grand batch sur du matériel limité — accumuler $k$ mini-batchs avant chaque pas d'optimiseur.
 * **Warmup linéaire** suivi d'une **décroissance cosinus** du taux d'apprentissage.
@@ -61,11 +62,11 @@ Contre l'intuition, une **norme de gradient faible** couplée à des **valeurs d
 
 Ce diagnostic précoce permet d'**arrêter prématurément** les runs sous-optimaux sans attendre la convergence complète — économisant jusqu'à 70% du budget de calcul de fine-tuning.
 
-| Indicateur précoce | Bon signal | Mauvais signal |
-|:------------------|:-----------|:---------------|
-| Norme du gradient | Faible, stable | Élevée, oscillante |
-| Perte initiale | Haute (puis décroît) | Déjà basse (sous-fitté) |
-| Stabilité des poids | Faibles variations | Grandes mises à jour |
+| Indicateur précoce  | Bon signal           | Mauvais signal          |
+| :------------------ | :------------------- | :---------------------- |
+| Norme du gradient   | Faible, stable       | Élevée, oscillante      |
+| Perte initiale      | Haute (puis décroît) | Déjà basse (sous-fitté) |
+| Stabilité des poids | Faibles variations   | Grandes mises à jour    |
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🏃 Analogie : Diagnostiquer un Marathon en Km 1

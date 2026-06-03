@@ -20,8 +20,8 @@ viewof lora_r = Inputs.range([1, 32],  { value: 8,  step: 1, label: "Rang r" })
 
 :::: {.card-body .p-3}
 
-::: {#lora-diagram-container}
-:::
+::::: {#lora-diagram-container}
+:::::
 
 ::::
 
@@ -52,12 +52,12 @@ où $\mathbf{A} \in \mathbb{R}^{r \times d}$, $\mathbf{B} \in \mathbb{R}^{d \tim
 
 **Hyperparamètres clés [@Unsloth2026] :**
 
-| Hyperparamètre | Rôle | Valeurs typiques |
-|:--------------|:-----|:----------------|
-| $r$ (rang) | Capacité de la décomposition | 8, 16, 64 |
-| $\alpha$ (scaling) | Mise à l'échelle : $\frac{\alpha}{r}\mathbf{BA}$ | $r$, $2r$ |
-| `target_modules` | Quelles matrices adapter (Q, K, V, FFN) | Toutes les projections |
-| `dropout` | Régularisation des matrices A, B | 0.05–0.1 |
+| Hyperparamètre     | Rôle                                             | Valeurs typiques       |
+| :----------------- | :----------------------------------------------- | :--------------------- |
+| $r$ (rang)         | Capacité de la décomposition                     | 8, 16, 64              |
+| $\alpha$ (scaling) | Mise à l'échelle : $\frac{\alpha}{r}\mathbf{BA}$ | $r$, $2r$              |
+| `target_modules`   | Quelles matrices adapter (Q, K, V, FFN)          | Toutes les projections |
+| `dropout`          | Régularisation des matrices A, B                 | 0.05–0.1               |
 
 ### QLoRA : Quantification et Entraînement sur GPU Grand Public
 

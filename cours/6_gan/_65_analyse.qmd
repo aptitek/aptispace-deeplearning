@@ -32,14 +32,14 @@ En d'autres termes, l'U-Net n'est pas seulement un choix architectural pratique 
 
 ### Comparaison Pratique : GANs vs Diffusion
 
-| Critère | GANs | DDPM/Diffusion |
-|:--------|:-----|:---------------|
-| **Couverture de $p_0$** | Partielle (mode collapse) | Totale (couverture garantie) |
-| **Stabilité d'entraînement** | Fragile (équilibre Nash) | Robuste (objectif convexe par étape) |
-| **Vitesse de génération** | Rapide (1 passe) | Lente (T passes, améliorable via DDIM) |
-| **Qualité haute résolution** | Excellente (StyleGAN) | SOTA actuel |
-| **Fondement théorique** | Partiel | Optimalité minimax prouvée [@Kwon2026] |
-| **Contrôle de la génération** | Via conditioning | Via guidance (classifier, CFG) |
+| Critère                       | GANs                      | DDPM/Diffusion                         |
+| :---------------------------- | :------------------------ | :------------------------------------- |
+| **Couverture de $p_0$**       | Partielle (mode collapse) | Totale (couverture garantie)           |
+| **Stabilité d'entraînement**  | Fragile (équilibre Nash)  | Robuste (objectif convexe par étape)   |
+| **Vitesse de génération**     | Rapide (1 passe)          | Lente (T passes, améliorable via DDIM) |
+| **Qualité haute résolution**  | Excellente (StyleGAN)     | SOTA actuel                            |
+| **Fondement théorique**       | Partiel                   | Optimalité minimax prouvée [@Kwon2026] |
+| **Contrôle de la génération** | Via conditioning          | Via guidance (classifier, CFG)         |
 
 ### La Guidance sans Classificateur (CFG)
 

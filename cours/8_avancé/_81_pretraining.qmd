@@ -10,8 +10,8 @@ Le développement d'un grand modèle de langage (LLM) ne se résume pas à une p
 
 :::: {.card-body .p-2}
 
-::: {#pretraining-chart-container .p-1}
-:::
+::::: {#pretraining-chart-container .p-1}
+:::::
 
 ::::
 

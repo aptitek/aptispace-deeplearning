@@ -1,6 +1,8 @@
 ## Genèse et Évolution : La Grande Histoire de l'Apprentissage Automatique
 
-L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs fous, de désillusions et de renaissances — comme un pendule qui oscille entre deux grandes idées : faire obéir les machines à des règles écrites à la main (**IA symbolique**) ou leur apprendre à partir d'exemples, comme le ferait un enfant (**connexionnisme**) [@groumpos_2023_ai; @wiki_timeline_ml].
+L'histoire de l'IA est un match de ping-pong de 60 ans entre deux visions opposées : d'un côté, donner des règles toutes faites à la machine (l'**IA symbolique**, comme une recette de cuisine), et de l'autre, la laisser apprendre par elle-même à force d'exemples (le **connexionnisme**, comme un bébé qui découvre le monde).
+
+L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs fous, de désillusions et de renaissances — comme un pendule qui oscille entre ces deux grandes idées [@groumpos_2023_ai; @wiki_timeline_ml].
 
 ### Timeline
 
@@ -25,9 +27,9 @@ L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs
 ::::
 
 :::: {.event data-label="1980 - 1986"}
-| Systèmes Experts & Rétropropagation              | Le Double Visage des Années 80                                                                                                                            |
-| :----------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![](../../assets/expert_systems.png){width=80px} | *Paradoxe* : Domination de l'IA symbolique menant au 2nd Hiver, pendant que la Rétropropagation du gradient (Hinton, LeCun) est popularisée dans l'ombre. |
+| Systèmes Experts & Rétropropagation              | Le Double Visage des Années 80                                                                                                                           |
+| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ![](../../assets/expert_systems.png){width=80px} | *Paradoxe* : Domination de l'IA symbolique menant au 2nd Hiver, pendant que la Rétropropagation du gradient (Hinton, LeCun) is popularisée dans l'ombre. |
 ::::
 
 :::: {.event data-label="Années 1990"}
@@ -43,6 +45,9 @@ L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs
 ::::
 
 :::
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails : Les 4 grandes époques de l'histoire de l'IA
 
 ### Les Pionniers et l'Aube de l'Apprentissage (1950 - 1960)
 
@@ -75,3 +80,4 @@ Pourquoi des idées des années 80 ont-elles soudain dominé le monde trente ans
 3. **Les innovations algorithmiques :** De meilleures fonctions d'activation (ReLU) et techniques d'optimisation ont résolu les problèmes mathématiques qui empêchaient l'entraînement de réseaux très profonds (le problème de la disparition du gradient).
 
 L'année charnière est **2012**, lors de la compétition de vision par ordinateur *ImageNet*. Le réseau de neurones convolutif **AlexNet** pulvérise littéralement les méthodes statistiques classiques, divisant le taux d'erreur par deux. Cet événement signe la victoire éclatante du paradigme connexionniste et ouvre l'ère dans laquelle nous évoluons aujourd'hui, de la vision par ordinateur jusqu'aux modèles génératifs et larges modèles de langage (LLM).
+:::

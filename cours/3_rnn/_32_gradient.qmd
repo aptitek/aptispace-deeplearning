@@ -64,8 +64,8 @@ viewof rnn_T_grad   = Inputs.range([5, 50],    { value: 20,  step: 1,    label: 
 
 :::: {.card-body .p-2}
 
-::: {#plot-grad-magnitude .p-1}
-:::
+::::: {#plot-grad-magnitude .p-1}
+:::::
 
 ::::
 

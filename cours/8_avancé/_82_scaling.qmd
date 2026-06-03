@@ -10,8 +10,8 @@ Les lois d'échelle (*scaling laws*) établissent des relations quantitatives en
 
 :::: {.card-body .p-2}
 
-::: {#scaling-chart-container .p-1}
-:::
+::::: {#scaling-chart-container .p-1}
+:::::
 
 ::::
 
@@ -50,12 +50,12 @@ $$C_{\text{total}} = C_{\text{train}}(N, D) + Q \cdot C_{\text{inférence}}(N)$$
 
 $C_{\text{inférence}}(N)$ croît linéairement avec $N$ (plus de paramètres → plus de FLOPs par token généré). Pour $Q$ très grand, minimiser $C_{\text{total}}$ nécessite un modèle plus **petit** (moins coûteux à l'inférence), compensé par beaucoup plus de tokens d'entraînement.
 
-| Critère | Chinchilla-Optimal | Inférence-Optimal |
-|:--------|:------------------|:-----------------|
-| **Objectif** | Minimiser la perte d'entraînement | Minimiser le coût total (train + inférence) |
-| **Seuil d'usage** | Prototypage / Recherche | $> 10^9$ requêtes d'inférence |
-| **Tokens par paramètre** | ~20 | Jusqu'à 10 000+ |
-| **Exemple emblématique** | GPT-4 (estimation) | Llama 3 (15T tokens sur 8B) |
+| Critère                  | Chinchilla-Optimal                | Inférence-Optimal                           |
+| :----------------------- | :-------------------------------- | :------------------------------------------ |
+| **Objectif**             | Minimiser la perte d'entraînement | Minimiser le coût total (train + inférence) |
+| **Seuil d'usage**        | Prototypage / Recherche           | $> 10^9$ requêtes d'inférence               |
+| **Tokens par paramètre** | ~20                               | Jusqu'à 10 000+                             |
+| **Exemple emblématique** | GPT-4 (estimation)                | Llama 3 (15T tokens sur 8B)                 |
 
 **Calcul illustratif :** Pour 2 trillions de tokens d'inférence anticipés, choisir un modèle 7B entraîné intensivement plutôt qu'un 13B Chinchilla-optimal peut réduire le coût total de 17% — soit $1.7 \times 10^{22}$ FLOPs économisés [@Sardana2024].
 
@@ -65,10 +65,10 @@ Les lois d'échelle font apparaître une tension entre architecture et données.
 
 ### Jalons Pratiques : De LLaMA à LLaMA 3
 
-| Modèle | Paramètres | Tokens d'entraînement | Tokens/paramètre | Stratégie |
-|:-------|:----------|:---------------------|:----------------|:---------|
-| LLaMA 1 (2023) | 65B | 1.4T | ~21 | Chinchilla-proche |
-| LLaMA 2 (2023) | 7B–70B | 2T | 285 (7B) | Déjà sur-entraîné |
-| LLaMA 3 (2024) | 8B–70B | 15T | 1875 (8B) | Inférence-optimal |
+| Modèle         | Paramètres | Tokens d'entraînement | Tokens/paramètre | Stratégie         |
+| :------------- | :--------- | :-------------------- | :--------------- | :---------------- |
+| LLaMA 1 (2023) | 65B        | 1.4T                  | ~21              | Chinchilla-proche |
+| LLaMA 2 (2023) | 7B–70B     | 2T                    | 285 (7B)         | Déjà sur-entraîné |
+| LLaMA 3 (2024) | 8B–70B     | 15T                   | 1875 (8B)        | Inférence-optimal |
 
 Cette évolution illustre le basculement de paradigme : LLaMA 3 8B, entraîné sur 15T tokens, surpasse LLaMA 2 70B sur de nombreux benchmarks, confirmant empiriquement la supériorité de l'approche inférence-optimale pour les modèles déployés à grande échelle [@Sardana2024].

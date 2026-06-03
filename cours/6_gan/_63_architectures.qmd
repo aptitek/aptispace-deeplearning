@@ -20,8 +20,8 @@ viewof gan_arch = Inputs.select(GAN_ARCH_OPTIONS, { value: "GAN vanilla", label:
 
 :::: {.card-body .p-2}
 
-::: {#gan-arch-chart-container .p-1}
-:::
+::::: {#gan-arch-chart-container .p-1}
+:::::
 
 ::::
 

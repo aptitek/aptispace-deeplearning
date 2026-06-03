@@ -20,8 +20,8 @@ viewof bn_sigma = Inputs.range([0.3, 5], { value: 3.0, step: 0.1, label: "σ (é
 
 :::: {.card-body .p-2}
 
-::: {#batch-norm-container .p-1}
-:::
+::::: {#batch-norm-container .p-1}
+:::::
 
 ::::
 
@@ -62,6 +62,7 @@ Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algo
    $$\tilde{z}_i = \gamma \hat{z}_i + \beta$$
 
 **Guide des symboles :**
+
 * **$\mathcal{B}$** : le mini-lot (*mini-batch*) de données, c'est-à-dire le sous-ensemble d'échantillons calculés simultanément.
 * **$m$** : la taille (nombre d'exemples) du mini-lot.
 * **$\mu_{\mathcal{B}}$ (lettre grecque mu)** : la moyenne des pré-activations sur le mini-lot.
@@ -82,6 +83,7 @@ Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algo
 ## 🔍 L'approche par Portes : LSTM et GRU
 
 Dans les réseaux récurrents profonds (séquences longues), les architectures spécialisées introduisent des **portes** (gates) (comme dans le LSTM et GRU). Ces mécanismes agissent comme des valves mathématiques contrôlant le flux d'informations :
+
 * Elles permettent de préserver l'information importante sur de longues distances temporelles.
 * Elles créent des **voies rapides** (l'état de la cellule) où le gradient peut s'écouler sans atténuation, contournant ainsi structurellement la disparition du gradient [@Bourdois2019; @Rosique2017; @ApX_LSTM_GRU; @Scribouillard_Recurrente].
 :::

@@ -18,11 +18,11 @@ Variante de BPE utilisée par BERT, WordPiece fusionne les paires maximisant la 
 
 Opère directement sur les caractères Unicode sans pré-tokenisation par espaces, permettant un traitement uniforme du japonais, du chinois, et des langues sans espaces. Utilisé par T5 et LLaMA. La segmentation est apprise par BPE ou unigram LM [@Kudo2018].
 
-| Algorithme | Modèle | Avantage |
-|:-----------|:-------|:---------|
-| BPE | GPT-2, RoBERTa | Simple, fréquences brutes |
-| WordPiece | BERT | Optimisation probabiliste |
-| SentencePiece | T5, LLaMA | Multilingue, sans pré-tokenisation |
+| Algorithme    | Modèle         | Avantage                           |
+| :------------ | :------------- | :--------------------------------- |
+| BPE           | GPT-2, RoBERTa | Simple, fréquences brutes          |
+| WordPiece     | BERT           | Optimisation probabiliste          |
+| SentencePiece | T5, LLaMA      | Multilingue, sans pré-tokenisation |
 
 ::: {.card .card-window .mb-4}
 

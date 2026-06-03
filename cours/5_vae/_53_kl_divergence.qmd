@@ -61,12 +61,12 @@ Cette forme est remarquablement simple à calculer et à différencier. Son grad
 
 Chaque terme joue un rôle géométrique précis dans la régularisation de l'espace latent :
 
-| Terme | Mécanisme | Effet sur l'espace latent |
-|:------|:----------|:--------------------------|
-| $\mu_j^2$ | Pénalise l'éloignement de l'origine | Centre les "balles gaussiennes" à $\mathbf{0}$ |
-| $\sigma_j^2$ | Force une variance minimale | Interdit l'effondrement en points ($\sigma \to 0$) |
-| $-\log \sigma_j^2$ | Force une variance maximale | Interdit l'explosion en distributions infinies |
-| $-1$ | Terme de normalisation | Référence : $\sigma = 1$ (aucune pénalité) |
+| Terme              | Mécanisme                           | Effet sur l'espace latent                          |
+| :----------------- | :---------------------------------- | :------------------------------------------------- |
+| $\mu_j^2$          | Pénalise l'éloignement de l'origine | Centre les "balles gaussiennes" à $\mathbf{0}$     |
+| $\sigma_j^2$       | Force une variance minimale         | Interdit l'effondrement en points ($\sigma \to 0$) |
+| $-\log \sigma_j^2$ | Force une variance maximale         | Interdit l'explosion en distributions infinies     |
+| $-1$               | Terme de normalisation              | Référence : $\sigma = 1$ (aucune pénalité)         |
 
 La trace et le log-déterminant agissent conjointement comme un **garde-fou contre l'effondrement représentationnel** : si $\sigma_j \to 0$, le terme $-\log \sigma_j^2 \to +\infty$ force le gradient à résister à cet effondrement. C'est le mécanisme fondamental par lequel la divergence KL maintient la continuité de l'espace latent.
 
@@ -95,13 +95,13 @@ viewof kl_sigma = Inputs.range([0.1, 3], { value: 1.0, step: 0.05, label: "σ  d
 
 ::::: {.col-md-3 .d-flex .flex-column .justify-content-center .gap-2}
 
-::: {.card .border .p-2 .text-center}
+:::::: {.card .border .p-2 .text-center}
 **D_KL**
 
-::: {#kl-value-display .font-monospace .fw-bold .fs-5}
+::::::: {#kl-value-display .font-monospace .fw-bold .fs-5}
 —
-:::
-:::
+:::::::
+::::::
 
 :::::
 

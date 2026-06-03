@@ -30,8 +30,8 @@ viewof elmo_task = Inputs.select(ELMO_TASK_OPTIONS, { label: "Tâche NLP" })
 
 :::: {.card-body .p-2}
 
-::: {#elmo-chart-container .p-1}
-:::
+::::: {#elmo-chart-container .p-1}
+:::::
 
 ::::
 

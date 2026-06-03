@@ -69,11 +69,11 @@ Quand le discriminateur est trop performant, $D(\hat{\mathbf{x}}) \approx 0$ pou
 
 Le générateur converge vers un ensemble limité de sorties "sûres" qui trompent le discriminateur, ignorant la diversité de $p_0$. Au lieu d'apprendre toute la distribution, il "mémorise" quelques modes. Le discriminateur, confronté à ces faux répétitifs, converge vers une contre-stratégie locale, et le jeu oscille plutôt que de converger globalement [@PatSnap2025].
 
-| Pathologie | Symptôme | Cause |
-|:-----------|:---------|:------|
-| Vanishing gradients | Gradient nul pour $G$ | Discriminateur trop fort |
-| Mode collapse | Faible diversité des sorties | Générateur en boucle locale |
-| Oscillation | Poids qui ne convergent pas | Dynamique de Nash non-convexe |
+| Pathologie                  | Symptôme                                | Cause                                         |
+| :-------------------------- | :-------------------------------------- | :-------------------------------------------- |
+| Vanishing gradients         | Gradient nul pour $G$                   | Discriminateur trop fort                      |
+| Mode collapse               | Faible diversité des sorties            | Générateur en boucle locale                   |
+| Oscillation                 | Poids qui ne convergent pas             | Dynamique de Nash non-convexe                 |
 | Explosion du discriminateur | $D(\hat{\mathbf{x}}) \to 0$ brutalement | Désynchronisation des vitesses d'entraînement |
 
 ### L'Équilibre de Nash en Pratique

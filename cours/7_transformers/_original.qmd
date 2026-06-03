@@ -6,7 +6,7 @@ L'enjeu fondamental du Traitement du Langage Naturel (NLP) réside dans la conve
 
 Cette évolution repose sur l'hypothèse distributionnelle (Lenci, 2018), postulant que les mots apparaissant dans des contextes similaires partagent des significations apparentées. L'objectif stratégique du "Word Embedding" est de condenser la sémantique, la syntaxe et les thématiques globales dans une structure de taille fixe (vecteur dense). Ce voyage technologique commence par les méthodes de comptage, premières tentatives de quantification du sens.
 
-2. Les Approches Statistiques : Bag-Of-Words (BoW) et TF-IDF
+1. Les Approches Statistiques : Bag-Of-Words (BoW) et TF-IDF
 
 Avant l'avènement des modèles neuronaux, la quantification du texte s'appuyait sur la fréquence d'occurrence. Ces méthodes ont posé les bases de la vectorisation, bien qu'elles souffrent d'une déconnexion structurelle avec la sémantique profonde.
 
@@ -27,7 +27,7 @@ Inverse Document Frequency (IDF)	Pouvoir informatif	Agit comme un filtre global 
 
 Cependant, cette approche génère des vecteurs dont la dimension est égale à la taille du vocabulaire. Cette explosion dimensionnelle crée des matrices creuses (sparse) imposant un fardeau computationnel critique aux modèles d'apprentissage [@talkr_blog]. De plus, l'incapacité du TF-IDF à traiter la synonymie ou la polysémie a précipité la recherche vers les espaces denses.
 
-3. Plongements Statiques et Sous-mots : Word2Vec, GloVe et FastText
+1. Plongements Statiques et Sous-mots : Word2Vec, GloVe et FastText
 
 La rupture technologique des vecteurs denses permet de représenter chaque mot dans un espace continu de dimension réduite (typiquement 100 à 300), capturant des relations sémantiques par calcul géométrique.
 
@@ -41,7 +41,7 @@ Si GloVe (2014) améliore ces vecteurs par l'intégration de co-occurrences glob
 
 Cette granularité est vitale pour des langues comme le Hangeul (coréen). Dans ce système, une faute de frappe ne change pas simplement une lettre, elle provoque une rupture de la forme syllabique (ex: une consonne glissant en position de voyelle), rendant le mot méconnaissable pour un modèle classique [@kwon_2020]. Le modèle misK répond à ce défi par un CNN avec un mécanisme de Channel Attention. Plutôt que de sommer linéairement les sous-mots comme FastText, misK utilise l'attention pour sélectionner et accentuer les informations morphologiques vitales. Les tests montrent que la version fine-tunée (misK-ft) surpasse les benchmarks en environnement bruité [@kwon_2020].
 
-4. La Révolution du Contexte : Vers ELMo (Embeddings from Language Models)
+1. La Révolution du Contexte : Vers ELMo (Embeddings from Language Models)
 
 La limite des modèles précédents est leur caractère statique : le mot "avocat" possède un vecteur unique, qu'il désigne le fruit ou le juriste. ELMo (Peters et al., 2018) introduit la dynamicité contextuelle.
 
@@ -58,7 +58,7 @@ Le Mythe du Pré-entraînement sur Données Spécifiques
 
 Une analyse sur le corpus philosophique QUINE (Zhou, 2020) apporte une nuance pédagogique cruciale : le modèle ELMo pré-entraîné sur des données générales (E_{pre}) a obtenu des performances inférieures au Word2Vec fine-tuné sur ce domaine spécifique. Cela démontre que les modèles contextuels ne sont pas des solutions miracles pour les petits corpus spécialisés sans une étape d'adaptation. La supériorité est cependant retrouvée via la combinaison hybride : E_{mix} = \alpha E_{elmo} + (1-\alpha) E_{w2v} L'étude identifie un "point d'équilibre" (sweet point) pour \alpha situé entre 0.3 et 0.4, où l'apport sémantique d'ELMo et la précision lexicale de Word2Vec sur petit domaine se complètent optimalement [@zhou_2020].
 
-5. Conclusion : Synthèse de la Trajectoire Technologique
+1. Conclusion : Synthèse de la Trajectoire Technologique
 
 L'évolution des représentations textuelles dessine une trajectoire allant du comptage statistique à la prédiction contextuelle dynamique. Trois piliers soutiennent cette avancée :
 
@@ -90,11 +90,9 @@ Les architectures traditionnelles (CPU/GPU) échouent à traiter efficacement ce
 
 Avant d'entrer dans le bloc d'attention, ces vecteurs doivent impérativement intégrer une structure d'ordre, car le mécanisme d'attention pur est intrinsèquement agnostique à la position.
 
-
 --------------------------------------------------------------------------------
 
-
-2. L'Encodage Positionnel : Restaurer l'Ordre dans le Parallélisme
+1. L'Encodage Positionnel : Restaurer l'Ordre dans le Parallélisme
 
 L'enjeu stratégique est de redonner un sens sémantique à l'ordre des mots dans une architecture qui, contrairement aux RNN, traite tous les tokens simultanément.
 
@@ -110,11 +108,9 @@ La Problématique de l'Indépendance de la Position
 
 Sans encodage, le mécanisme d'attention ne ferait aucune distinction entre "dog bites cat" et "cat bites dog". Les poids d'attention seraient identiques pour les mêmes tokens, détruisant la syntaxe et la compréhension des rôles (sujet vs objet), ce qui est inacceptable pour des tâches comme la Reconnaissance d'Entités Nommées (NER).
 
-
 --------------------------------------------------------------------------------
 
-
-3. L'Approche Classique : Sinusoïdes et Trigonométrie
+1. L'Approche Classique : Sinusoïdes et Trigonométrie
 
 Dans l'article séminal Attention Is All You Need, Vaswani et al. proposent une solution d'ingénierie utilisant des fonctions périodiques pour encoder une progression géométrique de fréquences.
 
@@ -134,21 +130,17 @@ Cette propriété permet au mécanisme d'attention d'apprendre à "se focaliser"
 
 Le choix de sommer l'encodage aux embeddings (plutôt que de les concaténer) est une décision d'optimisation des paramètres. Le modèle apprend à isoler l'information positionnelle, souvent stockée dans les premières dimensions, tout en conservant une dimension de vecteur constante pour tout le réseau.
 
-
 --------------------------------------------------------------------------------
 
-
-4. Vers la Modernité : Approches Apprises et Évolutives
+1. Vers la Modernité : Approches Apprises et Évolutives
 
 L'évolution a conduit aux embeddings de position appris (utilisés dans BERT), où le modèle déduit lui-même la structure de position optimale pendant l'entraînement.
 
 Limites systémiques : Ces approches souffrent d'une incapacité critique à l'extrapolation. Un modèle entraîné sur 512 tokens est incapable de traiter le token 513, n'ayant jamais "appris" cette position. Pour pallier cela, des méthodes comme ALiBi ont introduit une pondération directe des biais d'attention dans la matrice de score, facilitant le traitement de contextes plus longs avant la percée de RoPE.
 
-
 --------------------------------------------------------------------------------
 
-
-5. L'Excellence Mathématique : Rotary Position Embedding (RoPE)
+1. L'Excellence Mathématique : Rotary Position Embedding (RoPE)
 
 Le RoPE (utilisé par Llama/Llama 2) combine les avantages des encodages absolus et relatifs en faisant pivoter les vecteurs dans un espace complexe.
 
@@ -166,11 +158,9 @@ L'implémentation dans Llama est un chef-d'œuvre d'optimisation logicielle. Plu
 1. precompute_freqs_cis : Calcule les fréquences sous forme polaire (complexe) à l'avance.
 2. apply_rotary_emb : Convertit les vecteurs xq_ en nombres complexes et applique la rotation par une simple multiplication complexe élément par élément. Cette astuce réduit drastiquement la charge de calcul tout en préservant la décroissance naturelle de l'attention avec la distance.
 
-
 --------------------------------------------------------------------------------
 
-
-6. Perspectives Systèmes : Optimisation du Pipeline (Ember & DAE)
+1. Perspectives Systèmes : Optimisation du Pipeline (Ember & DAE)
 
 Même les mathématiques les plus fines comme RoPE nécessitent une infrastructure capable de gérer le Marshaling des données. Le compilateur Ember résout ce problème via les architectures Decoupled Access-Execute (DAE).
 
@@ -188,11 +178,9 @@ Ember utilise une représentation intermédiaire nommée SLC IR (Structured Look
 
 Résultat : Ce co-design matériel-logiciel permet un gain de performance moyen de 5.8x et une efficacité énergétique 4 fois supérieure aux GPUs traditionnels sur ces tâches spécifiques.
 
-
 --------------------------------------------------------------------------------
 
-
-7. Conclusion : La Position comme Clé de Voûte de l'IA Générative
+1. Conclusion : La Position comme Clé de Voûte de l'IA Générative
 
 L'évolution de la simple sinusoïde vers des systèmes co-conçus (RoPE + DAE) définit la puissance des LLM actuels. La position n'est plus une simple donnée ajoutée, mais une information structurelle injectée au cœur du matériel. L'avenir de l'IA générative réside dans cette symbiose : des mathématiques élégantes (complexes et rotations) supportées par des compilateurs comme Ember capables d'extraire jusqu'au dernier cycle de performance des unités de marshaling. C'est dans ce mariage entre l'abstraction algébrique et la précision des systèmes que se construit l'intelligence à grande échelle.
 
@@ -206,7 +194,7 @@ L'avènement de l'architecture Transformer a instauré une rupture épistémolog
 
 Sur le plan stratégique, cette transition répond à une carence structurelle des RNN : le traitement séquentiel. Tandis que la récurrence impose une compression de l'information mot à mot, induisant un goulot d'étranglement pour les dépendances à longue distance, le mécanisme d'attention autorise un parallélisme massif [@kazemnejad2019]. Chaque unité de traitement, ou token, peut désormais interagir directement avec n'importe quel autre élément de la séquence, indépendamment de sa distance. Pour orchestrer cette compréhension mutuelle, il devient impératif de définir mathématiquement les rôles vectoriels — Query, Key et Value — afin de structurer dynamiquement l'espace latent.
 
-2. La Mécanique Fondamentale : Query, Key, et Value (Q, K, V)
+1. La Mécanique Fondamentale : Query, Key, et Value (Q, K, V)
 
 L'efficacité du bloc attention réside dans sa capacité à décomposer les plongements sémantiques en trois sous-espaces distincts, permettant un filtrage dynamique de l'information [@florian2023] :
 
@@ -222,7 +210,7 @@ a(m, n) = \text{softmax}\left(\frac{q_m k_n^T}{\sqrt{d}}\right)
 
 Ici, le facteur \sqrt{d} (Scaled Dot-Product) est crucial pour la stabilisation des gradients durant l'entraînement. Toutefois, une faille majeure subsiste : sans mécanisme additionnel, ce produit scalaire est commutatif et invariant par permutation. En l'état, l'attention est un mécanisme de "sac de mots" incapable de distinguer "le chat mange la souris" de "la souris mange le chat" [@florian2023]. Cette absence de structure ordonnée constitue une rupture de l'invariance positionnelle nécessaire à la grammaire.
 
-3. L'Évolution de l'Encodage Positionnel : Vers la Révolution RoPE
+1. L'Évolution de l'Encodage Positionnel : Vers la Révolution RoPE
 
 Pour injecter une structure temporelle, le modèle doit recevoir une information d'ordre. Les premières itérations utilisaient des encodages sinusoïdaux absolus [@kazemnejad2019], ajoutant une signature fixe à l'embedding. Cependant, ces méthodes souffrent d'une rigidité sémantique et peinent à généraliser sur des séquences dont la longueur excède celle du pré-entraînement.
 
@@ -235,7 +223,7 @@ Selon les travaux de Kazemnejad, un encodage positionnel optimal doit satisfaire
 
 C'est ici qu'interviennent les Rotary Position Embeddings (RoPE), transformant la position en une rotation vectorielle capable de préserver la dynamicité du signal sur de très longs contextes.
 
-4. Masterclass Mathématique : Dérivation et Principes de RoPE
+1. Masterclass Mathématique : Dérivation et Principes de RoPE
 
 L'élégance de RoPE réside dans l'utilisation des nombres complexes pour encoder la position relative au sein du produit scalaire [@florian2023]. L'objectif est de construire une fonction f telle que l'interaction entre q_m et k_n soit représentable par une fonction g(x_m, x_n, m-n).
 
@@ -255,7 +243,7 @@ En pratique, pour un vecteur de dimension d, RoPE décompose l'espace en d/2 pai
 
 Analyse Stratégique ("So What?") : Cette mécanique de rotation permet à des modèles comme Llama [@llama2] d'extrapoler leur fenêtre de contexte. Contrairement aux méthodes absolues, la rotation maintient une cohérence géométrique même pour des distances m-n jamais rencontrées lors du pré-entraînement, garantissant une robustesse exceptionnelle face à la croissance des séquences.
 
-5. Stabilisation et Passage de l'Information : Norm, MLP et Résiduels
+1. Stabilisation et Passage de l'Information : Norm, MLP et Résiduels
 
 Pour que la précision géométrique de RoPE soit exploitable, l'architecture doit stabiliser le flux d'information à travers les couches profondes. Les connexions résiduelles (Residuals) agissent comme des "autoroutes" logiques, préservant l'identité du signal original contre l'évanouissement du gradient [@kazemnejad2019]. Parallèlement, les couches de Normalisation (Norm) assurent une distribution homogène des activations.
 
@@ -266,7 +254,7 @@ Couches Résiduelles	Préservation de l'identité	Prévention de la dégradation
 Normalisation	Contrôle de la variance	Stabilité numérique pour les réseaux profonds.
 Couche MLP	Expansion & Non-linéarité	Projection et enrichissement des caractéristiques apprises.
 
-6. Optimisation Architecturale : Le cas des DAE (Decoupled Access-Execute)
+1. Optimisation Architecturale : Le cas des DAE (Decoupled Access-Execute)
 
 Une fois l'architecture mathématiquement stabilisée, le défi se déplace vers l'exécution physique. Les opérations de plongements (lookups) constituent un goulot d'étranglement majeur sur les architectures CPU/GPU traditionnelles. Ces accès mémoire sont intrinsèquement "irréguliers" : ils consistent à récupérer des vecteurs denses à partir d'index de tokens épars, ce qui sature les bus mémoire [@siracusa2025].
 
@@ -277,7 +265,7 @@ Le compilateur Ember introduit une optimisation via les architectures DAE (Decou
 
 Cette séparation permet d'augmenter radicalement l'intensité opérationnelle. Les bénéfices observés sur le système Ember montrent un gain moyen de 5,8× spécifiquement sur les opérations d'embedding [@siracusa2025], transformant une opération limitée par la latence mémoire en un flux continu pour le processeur.
 
-7. Synthèse Finale : La Beauté Mathématique au Service de l'Intelligence
+1. Synthèse Finale : La Beauté Mathématique au Service de l'Intelligence
 
 La convergence entre la rotation dans le plan complexe (RoPE) et la nécessité linguistique de position relative illustre parfaitement la puissance de la pensée mathématique appliquée à l'IA. En transformant la sémantique en géométrie rotationnelle, nous avons doté les LLM d'une capacité de généralisation sans précédent.
 

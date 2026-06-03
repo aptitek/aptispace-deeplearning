@@ -14,15 +14,18 @@ Les modèles d'apprentissage se structurent autour de quatre grands paradigmes, 
 Apprentissage Supervisé [Supervisé]{.badge .bg-primary .float-end}
 ::::::
 :::::: {.card-body}
-::::::: {.concept-details}
-L'algorithme apprend à partir de données d'entraînement étiquetées (couples entrée-sortie). Chaque observation est associée à une "vérité terrain" [@delua_supervised_unsupervised]. Le modèle ajuste ses paramètres pour minimiser l'écart avec les réponses attendues.
+Apprendre avec un enseignant qui donne les bonnes réponses.
 
-* **Régression :** Prédit une variable cible continue (ex. : prix de l'immobilier, température).
-* **Classification :** Prédit une étiquette ou catégorie discrète (ex. : spam vs. non-spam) [@lee_classification_regression].
+*Metaphore : Un enfant apprend à nommer des animaux à l'aide de cartes d'images portant le nom correct au dos.*
 
-:::::::: {.callout-example}
-**Cas d'usage :** Détection de fraudes bancaires, reconnaissance d'objets, diagnostic médical.
-::::::::
+::::::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
+L'algorithme s'entraîne sur des couples entrée-sortie étiquetés (contenant la "vérité terrain") et ajuste ses paramètres pour minimiser l'erreur [@delua_supervised_unsupervised].
+
+* **Régression :** Prédire une valeur numérique continue (ex. : prix de l'immobilier, température).
+* **Classification :** Prédire une catégorie ou classe discrète (ex. : e-mail indésirable vs légitime) [@lee_classification_regression].
+
+**Cas d'usage :** Détection de fraudes, reconnaissance d'objets, diagnostic médical.
 :::::::
 ::::::
 :::::
@@ -34,15 +37,18 @@ L'algorithme apprend à partir de données d'entraînement étiquetées (couples
 Apprentissage Non-Supervisé [Non-Supervisé]{.badge .bg-success .float-end}
 ::::::
 :::::: {.card-body}
-::::::: {.concept-details}
-L'algorithme reçoit des données brutes sans étiquettes. Il n'a pas de retour correcteur sur ses résultats [@analystprep_2021_unsupervised]. L'objectif est d'explorer les données pour en extraire des structures, des régularités ou des regroupements naturels.
+Apprendre à trouver des structures par soi-même, sans guide.
 
-* **Clustering :** Regroupement d'observations similaires en sous-groupes (ex. : segmentation client K-Means) [@google_kmeans].
-* **Réduction de dimension :** Simplification des données complexes en conservant l'information essentielle (ex. : PCA) [@shlens_2014_pca].
+*Metaphore : Un explorateur classe des plantes inconnues dans des paniers selon leur ressemblance visuelle, sans connaître leur nom.*
 
-:::::::: {.callout-example}
-**Cas d'usage :** Recommandation de produits, détection d'anomalies réseau, compression d'images.
-::::::::
+::::::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
+L'algorithme reçoit des données brutes sans étiquettes et cherche à découvrir des regroupements naturels ou à réduire la complexité des données [@analystprep_2021_unsupervised].
+
+* **Clustering :** Regroupement d'observations similaires (ex. : segmentation de clients via K-Means) [@google_kmeans].
+* **Réduction de dimension :** Simplification des données en ne gardant que l'information essentielle (ex. : PCA) [@shlens_2014_pca].
+
+**Cas d'usage :** Systèmes de recommandation, détection d'anomalies, compression de données.
 :::::::
 ::::::
 :::::
@@ -54,15 +60,18 @@ L'algorithme reçoit des données brutes sans étiquettes. Il n'a pas de retour 
 Apprentissage Semi-Supervisé [Semi-Supervisé]{.badge .bg-warning .float-end}
 ::::::
 :::::: {.card-body}
-::::::: {.concept-details}
-Une approche hybride combinant une petite quantité de données étiquetées avec un volume massif de données non étiquetées [@chapelle_2006_semi]. Elle permet de bénéficier de la puissance du supervisé tout en évitant le coût d'annotation manuelle.
+Utiliser quelques exemples corrigés pour s'aider à trier une montagne de données brutes.
 
-* **Pseudo-étiquetage :** Le modèle s'entraîne sur les données étiquetées puis étiquette lui-même les données non labellisées.
-* **Graphes de similarité :** Propagation des étiquettes connues aux observations non étiquetées les plus proches.
+*Metaphore : Un étudiant a seulement 3 exercices corrigés par son professeur, et doit s'en inspirer pour résoudre et classer 100 exercices non corrigés.*
 
-:::::::: {.callout-example}
-**Cas d'usage :** Classification de pages web, indexation d'images médicales, analyse automatique de la parole.
-::::::::
+::::::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
+Cette approche hybride associe une petite quantité de données étiquetées à un très grand volume de données brutes pour réduire le coût élevé de l'annotation manuelle [@chapelle_2006_semi].
+
+* **Pseudo-étiquetage :** Le modèle s'entraîne sur les données étiquetées puis étiquette lui-même les données brutes.
+* **Graphes de similarité :** Propagation des étiquettes connues aux observations les plus proches.
+
+**Cas d'usage :** Classification de pages web, indexation d'images médicales, reconnaissance de la parole.
 :::::::
 ::::::
 :::::
@@ -74,15 +83,18 @@ Une approche hybride combinant une petite quantité de données étiquetées ave
 Apprentissage par Renforcement [Renforcement]{.badge .bg-danger .float-end}
 ::::::
 :::::: {.card-body}
-::::::: {.concept-details}
-Un agent autonome interagit avec un environnement dynamique [@sutton_2018_reinforcement]. Sans jeu de données préalable, il apprend à prendre des décisions optimales en effectuant des actions et en maximisant des récompenses cumulatives au fil du temps.
+Apprendre par l'action, l'erreur, et la récompense.
 
-* **Exploration vs Exploitation :** Arbitrage entre tester de nouvelles actions (exploration) et exploiter les connaissances acquises.
-* **Algorithmes clés :** Q-learning, PPO (Proximal Policy Optimization), SAC (Soft Actor-Critic).
+*Metaphore : Dresser un chien en lui offrant des friandises (récompenses) pour ses bonnes actions ou en l'ignorant pour ses erreurs.*
 
-:::::::: {.callout-example}
-**Cas d'usage :** Véhicules autonomes, robotique industrielle, IA de jeux (AlphaGo, échecs), gestion de portefeuilles financiers.
-::::::::
+::::::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
+Un agent autonome interagit avec un environnement dynamique pour maximiser une récompense cumulative au fil du temps [@sutton_2018_reinforcement].
+
+* **Exploration vs Exploitation :** Arbitrage permanent entre tester de nouvelles actions et exploiter les connaissances déjà acquises.
+* **Algorithmes clés :** Q-Learning, PPO, SAC.
+
+**Cas d'usage :** Robotique industrielle, voitures autonomes, IA de jeux (AlphaGo, échecs), gestion de portefeuilles financiers.
 :::::::
 ::::::
 :::::

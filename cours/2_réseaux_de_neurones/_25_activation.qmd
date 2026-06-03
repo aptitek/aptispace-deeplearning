@@ -84,7 +84,6 @@ $$f(x) = x \cdot \text{sigmoid}(\beta x) = \frac{x}{1 + e^{-\beta x}}$$
 Où $\beta$ est un paramètre constant ou entraînable. Lorsque $\beta = 1$, la fonction est également appelée SiLU (Sigmoid Linear Unit).
 :::
 
-
 ::: {.card .card-window .mb-4 .activation-simulator}
 
 :::: {.card-header}

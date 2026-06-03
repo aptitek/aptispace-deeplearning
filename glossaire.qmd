@@ -6,8 +6,6 @@ number-sections: false
 
 Ce glossaire regroupe les termes techniques, abréviations et notations mathématiques abordés tout au long du cours. Il est conçu comme une référence rapide pour faire le lien entre la théorie et l'implémentation.
 
----
-
 ## Termes Techniques et Concepts {.unnumbered}
 
 ### A
@@ -108,44 +106,42 @@ Ce glossaire regroupe les termes techniques, abréviations et notations mathéma
 
 - **YOLO (You Only Look Once) :** Famille d'algorithmes de détection d'objets en temps réel très rapides, qui prédisent à la fois les boîtes englobantes et les classes associées en une seule passe à travers le réseau. [Voir cours (Détection)](cours/4_cnn/_44_detection.qmd).
 
----
-
 ## 🧮 Symboles Mathématiques & Notations {.unnumbered}
 
 Ce tableau résume les notations mathématiques fondamentales utilisées tout au long de ce cours pour faciliter la transition entre la théorie algébrique et l'implémentation.
 
-| Symbole / Notation | Signification | Exemple d'utilisation |
-| :--- | :--- | :--- |
-| **Lettres en gras** (ex: $\mathbf{x}, \mathbf{W}$) | Vecteurs ou matrices (tenseurs) | $\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$ |
-| $\in$ | Appartient à (indique l'espace vectoriel) | $\mathbf{W} \in \mathbb{R}^{d \times d}$ |
-| $\mathbb{R}$ | Ensemble des nombres réels | $\mathbb{R}^{n \times m}$ |
-| $\leftarrow$ | Opérateur d'affectation (mise à jour) | $w \leftarrow w - \eta \cdot \nabla_w \mathcal{L}$ |
-| $\eta$ (êta) | Taux d'apprentissage (*learning rate*) | $\eta_{\max}$, $\eta_{\min}$ |
-| $\nabla$ (nabla) | Gradient (vecteur des dérivées partielles) | $\nabla_w \mathcal{L}$ |
-| $\partial$ | Dérivée partielle | $\frac{\partial \mathcal{L}}{\partial w}$ |
-| $\odot$ | Produit de Hadamard (élément par élément) | $\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)$ |
-| $\mathbb{E}$ ou $E[\cdot]$ | Espérance mathématique (valeur moyenne théorique) | $\mathbb{E}_{x \sim p}[f(x)]$ |
-| $\sim$ | Suit la loi de / Échantillonné depuis | $\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$ |
-| $\|\cdot\|$ ou $\|\cdot\|^2$ | Norme Euclidienne ($L_2$) (éventuellement au carré) | $\|\mathbf{x} - g(f(\mathbf{x}))\|^2$ |
-| $\operatorname{diag}(\cdot)$ | Matrice diagonale construite à partir d'un vecteur | $\operatorname{diag}(\sigma'(z))$ |
-| $\rho$ (rho) | Rayon spectral (valeur propre maximale en module) | $\rho(\mathbf{W}_h) < 1$ |
-| $\arg\min$ / $\arg\max$ | Variable minimisant / maximisant la fonction | $k^* = \arg\min_k \|z - e_k\|^2$ |
-| $\mathbb{1}[\text{cond}]$ | Fonction indicatrice (vaut 1 si la condition est vraie, 0 sinon) | $\mathbb{1}[k^* = k]$ |
-| $\cap$ / $\cup$ | Intersection / Union d'ensembles | $\text{IoU} = \frac{B_1 \cap B_2}{B_1 \cup B_2}$ |
-| $\text{sg}[\cdot]$ | Stop-Gradient (bloque la rétropropagation du gradient) | $\text{sg}[z]$ |
-| $\mapsto$ | Associe à (définition de fonction) | $G : z \mapsto x$ |
-| $\approx$ | Approximativement égal | $a \approx b$ |
-| $\to$ | Tend vers | $x \to \infty$ |
-| $\mathcal{L}$ | Fonction de perte (*loss*) | $\mathcal{L}_{\text{MSE}}$, $\mathcal{L}_{\text{BCE}}$ |
-| $\epsilon$ (epsilon) | Constante positive de stabilité numérique | $\sqrt{v_t} + \epsilon$ |
-| $\gamma$ (gamma) | Paramètre apprenable d'échelle ou coefficient de décroissance | $\gamma \hat{z} + \beta$ |
-| $\beta$ (bêta) | Paramètre apprenable ou décroissance / calendrier de bruit | $\beta_1, \beta_2$ (Adam), $\beta_t$ (Diffusion) |
-| $t$ (indice) | Pas temporel / itération d'optimisation | $m_t, \mathbf{h}_t$ |
-| $l$ (exposant) | Indice de la couche d'un réseau de neurones | $\mathbf{a}^l, \mathbf{W}^l$ |
-| $\sigma$ (sigma) | Fonction d'activation (sigmoïde) ou écart-type | $\sigma(z)$, $\boldsymbol{\Sigma}$ |
-| $\mu$ (mu) | Moyenne empirique ou théorique | $\mu_{\mathcal{B}}$, $\boldsymbol{\mu}$ |
-| $T$ (exposant) | Transposée de matrice ou de vecteur | $\mathbf{Q}\mathbf{K}^T$ |
-| $|\mathbf{A}|$ | Déterminant d'une matrice carrée | $|\boldsymbol{\Sigma}|$ |
-| $\text{tr}(\mathbf{A})$ | Trace d'une matrice carrée | $\text{tr}(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1)$ |
-| $\Delta$ (delta) | Variation / incrément | $\Delta\mathbf{W}$ |
-| $\prod$ | Produit multiplicatif successif | $\prod_{s=1}^t \alpha_s$ |
+| Symbole / Notation                                 | Signification                                                    | Exemple d'utilisation                                         |                                  |     |                                                     |     |                                |     |
+| :------------------------------------------------- | :--------------------------------------------------------------- | :------------------------------------------------------------ | :------------------------------- | :-- | :-------------------------------------------------- | :-- | :----------------------------- | :-- |
+| **Lettres en gras** (ex: $\mathbf{x}, \mathbf{W}$) | Vecteurs ou matrices (tenseurs)                                  | $\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$              |                                  |     |                                                     |     |                                |     |
+| $\in$                                              | Appartient à (indique l'espace vectoriel)                        | $\mathbf{W} \in \mathbb{R}^{d \times d}$                      |                                  |     |                                                     |     |                                |     |
+| $\mathbb{R}$                                       | Ensemble des nombres réels                                       | $\mathbb{R}^{n \times m}$                                     |                                  |     |                                                     |     |                                |     |
+| $\leftarrow$                                       | Opérateur d'affectation (mise à jour)                            | $w \leftarrow w - \eta \cdot \nabla_w \mathcal{L}$            |                                  |     |                                                     |     |                                |     |
+| $\eta$ (êta)                                       | Taux d'apprentissage (*learning rate*)                           | $\eta_{\max}$, $\eta_{\min}$                                  |                                  |     |                                                     |     |                                |     |
+| $\nabla$ (nabla)                                   | Gradient (vecteur des dérivées partielles)                       | $\nabla_w \mathcal{L}$                                        |                                  |     |                                                     |     |                                |     |
+| $\partial$                                         | Dérivée partielle                                                | $\frac{\partial \mathcal{L}}{\partial w}$                     |                                  |     |                                                     |     |                                |     |
+| $\odot$                                            | Produit de Hadamard (élément par élément)                        | $\mathbf{h}_t = \mathbf{o}_t \odot \tanh(\mathbf{c}_t)$       |                                  |     |                                                     |     |                                |     |
+| $\mathbb{E}$ ou $E[\cdot]$                         | Espérance mathématique (valeur moyenne théorique)                | $\mathbb{E}_{x \sim p}[f(x)]$                                 |                                  |     |                                                     |     |                                |     |
+| $\sim$                                             | Suit la loi de / Échantillonné depuis                            | $\mathbf{z} \sim \mathcal{N}(0, \mathbf{I})$                  |                                  |     |                                                     |     |                                |     |
+| $\                                                 | \cdot\                                                           | $ ou $\                                                       | \cdot\                           | ^2$ | Norme Euclidienne ($L_2$) (éventuellement au carré) | $\  | \mathbf{x} - g(f(\mathbf{x}))\ | ^2$ |
+| $\operatorname{diag}(\cdot)$                       | Matrice diagonale construite à partir d'un vecteur               | $\operatorname{diag}(\sigma'(z))$                             |                                  |     |                                                     |     |                                |     |
+| $\rho$ (rho)                                       | Rayon spectral (valeur propre maximale en module)                | $\rho(\mathbf{W}_h) < 1$                                      |                                  |     |                                                     |     |                                |     |
+| $\arg\min$ / $\arg\max$                            | Variable minimisant / maximisant la fonction                     | $k^* = \arg\min_k \                                           | z - e_k\                         | ^2$ |                                                     |     |                                |     |
+| $\mathbb{1}[\text{cond}]$                          | Fonction indicatrice (vaut 1 si la condition est vraie, 0 sinon) | $\mathbb{1}[k^* = k]$                                         |                                  |     |                                                     |     |                                |     |
+| $\cap$ / $\cup$                                    | Intersection / Union d'ensembles                                 | $\text{IoU} = \frac{B_1 \cap B_2}{B_1 \cup B_2}$              |                                  |     |                                                     |     |                                |     |
+| $\text{sg}[\cdot]$                                 | Stop-Gradient (bloque la rétropropagation du gradient)           | $\text{sg}[z]$                                                |                                  |     |                                                     |     |                                |     |
+| $\mapsto$                                          | Associe à (définition de fonction)                               | $G : z \mapsto x$                                             |                                  |     |                                                     |     |                                |     |
+| $\approx$                                          | Approximativement égal                                           | $a \approx b$                                                 |                                  |     |                                                     |     |                                |     |
+| $\to$                                              | Tend vers                                                        | $x \to \infty$                                                |                                  |     |                                                     |     |                                |     |
+| $\mathcal{L}$                                      | Fonction de perte (*loss*)                                       | $\mathcal{L}_{\text{MSE}}$, $\mathcal{L}_{\text{BCE}}$        |                                  |     |                                                     |     |                                |     |
+| $\epsilon$ (epsilon)                               | Constante positive de stabilité numérique                        | $\sqrt{v_t} + \epsilon$                                       |                                  |     |                                                     |     |                                |     |
+| $\gamma$ (gamma)                                   | Paramètre apprenable d'échelle ou coefficient de décroissance    | $\gamma \hat{z} + \beta$                                      |                                  |     |                                                     |     |                                |     |
+| $\beta$ (bêta)                                     | Paramètre apprenable ou décroissance / calendrier de bruit       | $\beta_1, \beta_2$ (Adam), $\beta_t$ (Diffusion)              |                                  |     |                                                     |     |                                |     |
+| $t$ (indice)                                       | Pas temporel / itération d'optimisation                          | $m_t, \mathbf{h}_t$                                           |                                  |     |                                                     |     |                                |     |
+| $l$ (exposant)                                     | Indice de la couche d'un réseau de neurones                      | $\mathbf{a}^l, \mathbf{W}^l$                                  |                                  |     |                                                     |     |                                |     |
+| $\sigma$ (sigma)                                   | Fonction d'activation (sigmoïde) ou écart-type                   | $\sigma(z)$, $\boldsymbol{\Sigma}$                            |                                  |     |                                                     |     |                                |     |
+| $\mu$ (mu)                                         | Moyenne empirique ou théorique                                   | $\mu_{\mathcal{B}}$, $\boldsymbol{\mu}$                       |                                  |     |                                                     |     |                                |     |
+| $T$ (exposant)                                     | Transposée de matrice ou de vecteur                              | $\mathbf{Q}\mathbf{K}^T$                                      |                                  |     |                                                     |     |                                |     |
+| $                                                  | \mathbf{A}                                                       | $                                                             | Déterminant d'une matrice carrée | $   | \boldsymbol{\Sigma}                                 | $   |                                |     |
+| $\text{tr}(\mathbf{A})$                            | Trace d'une matrice carrée                                       | $\text{tr}(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1)$ |                                  |     |                                                     |     |                                |     |
+| $\Delta$ (delta)                                   | Variation / incrément                                            | $\Delta\mathbf{W}$                                            |                                  |     |                                                     |     |                                |     |
+| $\prod$                                            | Produit multiplicatif successif                                  | $\prod_{s=1}^t \alpha_s$                                      |                                  |     |                                                     |     |                                |     |

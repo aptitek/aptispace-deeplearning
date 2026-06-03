@@ -10,8 +10,8 @@ L'élégance du VAE repose sur un verrou algorithmique crucial : comment entraî
 
 :::: {.card-body .p-3}
 
-::: {#reparam-diagram-container}
-:::
+::::: {#reparam-diagram-container}
+:::::
 
 ::::
 
@@ -67,10 +67,10 @@ Un CV-NND **bas** indique une distribution géométriquement uniforme et bien di
 
 Évalue dans quelle mesure l'encodeur couvre le support de la distribution *a priori* $p(\mathbf{z})$ au cours de l'entraînement. Un DLC élevé en fin d'entraînement indique que l'espace latent est correctement ancré à $\mathcal{N}(\mathbf{0}, \mathbf{I})$ et ne présente pas de régions vides [@shrivastava_2024].
 
-| Métrique | Bonne valeur | Pathologie | Diagnostic |
-|:---------|:------------|:-----------|:-----------|
-| CV-NND | Faible | Élevé | Fragmentation du manifold |
-| DLC | Élevé | Faible | Effondrement postérieur (*posterior collapse*) |
+| Métrique | Bonne valeur | Pathologie | Diagnostic                                     |
+| :------- | :----------- | :--------- | :--------------------------------------------- |
+| CV-NND   | Faible       | Élevé      | Fragmentation du manifold                      |
+| DLC      | Élevé        | Faible     | Effondrement postérieur (*posterior collapse*) |
 
 ### Le Posterior Collapse
 

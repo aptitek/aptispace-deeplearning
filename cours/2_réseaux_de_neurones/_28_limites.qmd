@@ -46,8 +46,8 @@ viewof lr_epochs = Inputs.range([10, 100],     { value: 50,  step: 1,     label:
 
 :::: {.card-body .p-2}
 
-::: {#lr-schedulers-container .p-1}
-:::
+::::: {#lr-schedulers-container .p-1}
+:::::
 
 ::::
 

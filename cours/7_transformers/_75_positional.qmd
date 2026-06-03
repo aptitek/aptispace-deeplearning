@@ -6,12 +6,12 @@ Le mécanisme d'attention est par construction **invariant par permutation** : s
 
 Selon Kazemnejad (2019), un encodage positionnel optimal doit satisfaire quatre propriétés [@Kazemnejad2019] :
 
-| Critère | Description | Violation → Problème |
-|:--------|:------------|:---------------------|
-| **Unicité** | Chaque position a une signature distincte | Collisions sémantiques entre positions |
+| Critère                | Description                                                                       | Violation → Problème                                |
+| :--------------------- | :-------------------------------------------------------------------------------- | :-------------------------------------------------- |
+| **Unicité**            | Chaque position a une signature distincte                                         | Collisions sémantiques entre positions              |
 | **Distance cohérente** | La distance entre encodages dépend de l'écart relatif, pas de la position absolue | Le modèle ne peut apprendre les distances relatives |
-| **Généralisation** | Fonctionne pour des séquences plus longues que celles vues à l'entraînement | Échec sur contextes longs |
-| **Déterminisme** | Encodage fixe, sans paramètre aléatoire | Instabilité à l'inférence |
+| **Généralisation**     | Fonctionne pour des séquences plus longues que celles vues à l'entraînement       | Échec sur contextes longs                           |
+| **Déterminisme**       | Encodage fixe, sans paramètre aléatoire                                           | Instabilité à l'inférence                           |
 
 ::: {.card .card-window .mb-4}
 
@@ -70,6 +70,7 @@ pour $t$ la position et $k = 0, 1, \ldots, d/2 - 1$.
 **Intuition des fréquences géométriques :**
 
 Chaque paire de dimensions $(2k, 2k+1)$ oscille à une fréquence $\omega_k = 10000^{-2k/d}$ :
+
 - Les premières dimensions ($k \approx 0$) oscillent rapidement — elles encodent la parité et les distances très courtes (comme l'aiguille des secondes).
 - Les dernières dimensions ($k \approx d/2$) oscillent très lentement — elles encodent la structure globale de la séquence (comme l'aiguille des heures).
 

@@ -193,12 +193,12 @@ Un avantage majeur de RoPE sur les embeddings appris est sa capacité d'**extrap
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🔄 Résumé Comparatif des Encodages Positionnels
 
-| Méthode | Type | Extrapolation | Paramètres | Modèles |
-|:--------|:-----|:-------------|:-----------|:--------|
-| Sinusoïdal | Absolu, fixe | Partielle | 0 | Transformer original |
-| Appris | Absolu, appris | Non | $T_{\max} \times d$ | BERT, GPT-2 |
-| ALiBi | Relatif, fixe | Oui (linéaire) | 0 | MPT, BLOOM |
-| RoPE | Relatif, fixe | Oui (si rééchelonné) | 0 | LLaMA, Mistral, Gemma |
+| Méthode    | Type           | Extrapolation        | Paramètres          | Modèles               |
+| :--------- | :------------- | :------------------- | :------------------ | :-------------------- |
+| Sinusoïdal | Absolu, fixe   | Partielle            | 0                   | Transformer original  |
+| Appris     | Absolu, appris | Non                  | $T_{\max} \times d$ | BERT, GPT-2           |
+| ALiBi      | Relatif, fixe  | Oui (linéaire)       | 0                   | MPT, BLOOM            |
+| RoPE       | Relatif, fixe  | Oui (si rééchelonné) | 0                   | LLaMA, Mistral, Gemma |
 
 RoPE offre le meilleur compromis : pas de paramètres supplémentaires, information relative pure dans le produit scalaire, et extrapolation possible via ré-échelonnage des fréquences.
 :::

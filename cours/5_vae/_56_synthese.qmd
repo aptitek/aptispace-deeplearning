@@ -4,14 +4,14 @@ L'exploration des trois architectures d'espace latent révèle une **leçon unif
 
 ### Tableau Comparatif des Architectures
 
-| Critère | Autoencodeur (AE) | VAE | VQ-VAE |
-|:--------|:------------------|:----|:-------|
-| **Nature de l'espace latent** | Déterministe (point) | Probabiliste (distribution) | Discret (codebook) |
-| **Régularisation** | Bottleneck seul | Divergence KL | Commitment Loss |
-| **Méthode de génération** | Interpolation (fragile) | Échantillonnage gaussien | Autoregressif sur codes |
-| **Indicateur de qualité** | Erreur de reconstruction | CV-NND bas / DLC élevé | Utilisation uniforme du codebook |
-| **Pathologie principale** | Trous sémantiques | Posterior collapse | Codebook collapse |
-| **Applications typiques** | Débruitage, anomalies | Génération, disentanglement | Image/audio haute qualité |
+| Critère                       | Autoencodeur (AE)        | VAE                         | VQ-VAE                           |
+| :---------------------------- | :----------------------- | :-------------------------- | :------------------------------- |
+| **Nature de l'espace latent** | Déterministe (point)     | Probabiliste (distribution) | Discret (codebook)               |
+| **Régularisation**            | Bottleneck seul          | Divergence KL               | Commitment Loss                  |
+| **Méthode de génération**     | Interpolation (fragile)  | Échantillonnage gaussien    | Autoregressif sur codes          |
+| **Indicateur de qualité**     | Erreur de reconstruction | CV-NND bas / DLC élevé      | Utilisation uniforme du codebook |
+| **Pathologie principale**     | Trous sémantiques        | Posterior collapse          | Codebook collapse                |
+| **Applications typiques**     | Débruitage, anomalies    | Génération, disentanglement | Image/audio haute qualité        |
 
 ### La Hiérarchie des Contraintes
 

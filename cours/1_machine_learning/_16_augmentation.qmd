@@ -1,6 +1,8 @@
 ## Expansion du Savoir par l'Augmentation de Données
 
-L'augmentation de données est une solution pragmatique pour pallier le manque de diversité ou le faible volume des jeux de données. C'est une étape particulièrement critique pour assurer la robustesse d'un modèle lors de son déploiement en production, notamment dans les domaines de la vision par ordinateur [@ibm_overfitting; @sandru_2022_augmentation].
+L'**augmentation de données** consiste à tricher intelligemment en créant des variantes artificielles de nos exemples (rotation, zoom, bruit) pour forcer le modèle à comprendre la forme globale plutôt que de mémoriser les conditions de la photo.
+
+Si la régularisation consiste à contraindre le modèle pour l'empêcher d'apprendre le bruit, l'**augmentation de données** (*data augmentation*) s'attaque au problème par l'autre bout : en enrichissant le jeu d'entraînement d'exemples artificiels mais réalistes [@shorten_2019_data]. C'est une étape particulièrement critique pour assurer la robustesse d'un modèle lors de son déploiement en production, notamment dans les domaines de la vision par ordinateur [@ibm_overfitting; @sandru_2022_augmentation].
 
 ### Forger l'Invariance (L'Analogie du Moule)
 

@@ -60,8 +60,8 @@ viewof ae_input_dim  = Inputs.range([8, 64], { value: 32, step: 4, label: "Dimen
 
 :::: {.card-body .p-3}
 
-::: {#autoencoder-diagram-container}
-:::
+::::: {#autoencoder-diagram-container}
+:::::
 
 ::::
 

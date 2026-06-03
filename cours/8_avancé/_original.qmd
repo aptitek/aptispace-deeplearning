@@ -25,7 +25,7 @@ Exemple Concret	Llama 2 (2 billions de tokens).	Llama 3 (15 billions de tokens).
 
 L'impact financier est majeur : un développeur anticipant 2 billions de jetons d'inférence peut réduire son compute total de 17% (soit 1,7 \times 10^{22} FLOPs) en choisissant un modèle de 7B entraîné intensivement plutôt qu'un modèle de 13B Chinchilla-optimal. En poussant les modèles vers des "frontières de compute-optimalité" extrêmes, on réduit radicalement la latence et les coûts d'exploitation sans sacrifier la qualité.
 
-2. Le Fine-tuning sur Tâche Spécifique : Spécialisation et Formatage
+1. Le Fine-tuning sur Tâche Spécifique : Spécialisation et Formatage
 
 Le passage du "savoir" universel au "savoir-faire" métier s'opère par le fine-tuning. Cette phase sculpte le modèle de fondation pour qu'il adopte des protocoles de réponse précis et maîtrise les nuances sémantiques propres à une industrie.
 
@@ -45,7 +45,7 @@ Les méthodologies récentes de structuration des données d'instruction remette
 * Le Stacked training (mélange global des données de connaissances et de compétences) s'avère plus efficace en termes d'échantillonnage.
 * La méthode Phased, bien que séduisante théoriquement, n'apporte aucun gain de performance significatif et risque de provoquer un oubli partiel des premières phases.
 
-3. Fine-tuning Efficient et Alignement : L'État de l'Art Indispensable
+1. Fine-tuning Efficient et Alignement : L'État de l'Art Indispensable
 
 L'optimisation industrielle permet désormais d'atteindre des performances d'expert sur du matériel grand public, en utilisant des méthodes mathématiques de réduction de rang et une surveillance fine des dynamiques d'entraînement.
 

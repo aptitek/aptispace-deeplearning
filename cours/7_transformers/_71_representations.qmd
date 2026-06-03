@@ -62,8 +62,8 @@ viewof bow_mode = Inputs.radio(["bow", "tfidf"], { value: "bow", label: "Méthod
 
 :::: {.card-body .p-2}
 
-::: {#bow-tfidf-container .p-1}
-:::
+::::: {#bow-tfidf-container .p-1}
+:::::
 
 ::::
 

@@ -123,6 +123,8 @@ graph1 = {
 
 ### L'Anatomie du Modèle : Poids et Biais
 
+Pour ajuster notre moule à la bonne forme, nous tournons deux types de boutons : les **poids** (qui augmentent ou diminuent l'importance d'une information) et le **biais** (qui décale l'ensemble du moule vers le haut ou le bas).
+
 Dans cette matière à mouler, deux types de paramètres contrôlent tout [@ficus_weights_biases; @glander_parameters] :
 
 * **Les Poids :** Ce sont des "boutons de volume". Ils amplifient ou atténuent l'importance de chaque signal d'entrée. Plus le poids est grand, plus cette entrée compte dans la décision finale. C'est la malléabilité de notre moule.
@@ -304,6 +306,8 @@ graph2 = {
 ```
 
 ### La Fonction de Perte et la Boussole du Gradient
+
+La **fonction de perte** mesure l'erreur globale (combien notre moule est imparfait) tandis que le **gradient** est une boussole qui nous indique dans quelle direction modifier nos réglages pour réduire cette erreur.
 
 Pour ajuster le moule, il faut d'abord mesurer à quel point il est mauvais.
 
@@ -538,6 +542,8 @@ graph3 = {
 
 ### La Descente de Gradient et les Optimiseurs Modernes
 
+Pour trouver le réglage parfait, on lâche une bille dans notre paysage d'erreurs : elle roule vers la vallée la plus basse (la descente de gradient). Le **taux d'apprentissage** contrôle la vitesse de la bille, et les **optimiseurs** (comme Adam) ajustent automatiquement cette vitesse pour éviter qu'elle ne se perde.
+
 La **Descente de Gradient** est le mécanisme central : à chaque étape, on ajuste les paramètres dans le sens qui réduit l'erreur [@wiki_gradient_descent; @ruder_2016_gradient].
 
 Imaginez la fonction de perte comme un **paysage montagneux** : chaque combinaison possible de paramètres correspond à un point dans ce relief. Le but est de trouver le point le plus bas (l'erreur minimale). On lâche une "boule" sur la pente, et elle roule vers le bas guidée par le gradient.
@@ -611,7 +617,6 @@ Adam combine Momentum et RMSprop en maintenant à la fois une moyenne mobile des
 ```{ojs}
 //| echo: false
 
-
 mutable optType = "momentum"
 
 _optTypeWatcher = {
@@ -657,7 +662,6 @@ viewof optParam = {
   }
 }
 ```
-
 
 ::::
 

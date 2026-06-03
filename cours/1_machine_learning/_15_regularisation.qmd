@@ -1,10 +1,14 @@
 ## Stratégies de Régularisation et Généralisation
 
+La **régularisation** regroupe les techniques permettant d'empêcher un modèle de sur-apprendre (mémoriser le bruit), en agissant comme une contrainte ou une force externe qui le force à rester simple (comme un film plastique tendu sur le moule).
+
 Si le sur-apprentissage (une variance excessive) est la maladie, la régularisation en est le remède. La régularisation impose une contrainte mathématique de "lissage" pour favoriser la généralisation en pénalisant la complexité excessive du modèle [@wiki_early_stopping; @goyal_2021_overfitting].
 
 Pour reprendre notre analogie du moulage : si notre matière est devenue trop liquide et commence à s'infiltrer dans les micro-rayures de la figurine, la régularisation consiste à appliquer une force de tension externe (comme un film plastique tendu par-dessus). Cette contrainte empêche la matière de capter les détails superflus (le bruit) et la force à se concentrer uniquement sur la structure globale et pertinente (le signal).
 
 ### Pénalisation des Coefficients : Ridge (L2) et Lasso (L1)
+
+Pour garder le modèle simple, on punit les poids trop grands en ajoutant une amende à l'erreur globale. Le **Lasso (L1)** supprime complètement les variables inutiles en mettant leur poids à zéro (comme un tri sélectif strict), tandis que le **Ridge (L2)** réduit doucement tous les poids sans jamais en éliminer aucun (comme un amortisseur général).
 
 En apprentissage automatique, on applique cette contrainte en ajoutant une pénalité directement dans la fonction de perte. Cette pénalité sanctionne les paramètres (les poids ou coefficients) qui prennent trop d'importance. Deux approches géométriques s'opposent :
 
@@ -118,12 +122,16 @@ renderSimulator = {
 
 ### L'Équilibre et le Temps : Elastic Net et Early Stopping
 
+Pour réguler le modèle, on peut combiner les forces de tri et d'amortissement (**ElasticNet**), ou simplement interrompre l'entraînement en direct dès que le modèle commence à faire moins bien sur de nouvelles données (**Early Stopping**).
+
 Face à des jeux de données complexes, d'autres stratégies complètent l'arsenal du Data Scientist :
 
 * **ElasticNet :** Dans les cas où les données présentent de nombreuses variables fortement corrélées entre elles, on utilise cet hybride. Il combine littéralement le meilleur des deux mondes en fusionnant la contrainte circulaire (L2) et la contrainte en losange (L1) [@hastie_elastic_net; @neena_2024_elastic].
 * **Early Stopping (Arrêt prématuré) :** Il s'agit d'une régularisation purement temporelle. Au lieu de complexifier la fonction de perte, on observe la courbe d'apprentissage en direct. On interrompt l'entraînement au point critique exact où le modèle commence à mémoriser le bruit (c'est-à-dire le moment où l'erreur sur les données de validation commence à remonter, formant une courbe en U) [@wiki_early_stopping].
 
 ### L'Impact Stratégique : Le Lasso comme Outil de Gouvernance
+
+Utiliser le Lasso n'est pas qu'un choix technique, c'est aussi un choix stratégique : en éliminant les données inutiles, il permet de réduire les coûts opérationnels et de rendre les décisions de l'IA faciles à expliquer pour les régulateurs.
 
 L'impact d'une méthode comme le Lasso dépasse très largement la simple performance statistique. C'est un véritable outil de décision stratégique.
 

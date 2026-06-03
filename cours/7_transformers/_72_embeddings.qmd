@@ -48,21 +48,21 @@ Plutôt que de sommer linéairement les sous-mots comme FastText, misK utilise l
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🌐 Comparatif des Plongements Statiques
 
-| Modèle | Apprentissage | Forces | Limites |
-|:-------|:-------------|:-------|:--------|
-| Word2Vec | Prédiction locale (contexte) | Rapide, relations analogiques | OOV, un vecteur/mot |
-| GloVe | Co-occurrence globale | Statistiques globales | OOV, un vecteur/mot |
-| FastText | N-grammes de caractères | OOV résolu, morphologie | Un vecteur/mot (statique) |
+| Modèle   | Apprentissage                | Forces                        | Limites                   |
+| :------- | :--------------------------- | :---------------------------- | :------------------------ |
+| Word2Vec | Prédiction locale (contexte) | Rapide, relations analogiques | OOV, un vecteur/mot       |
+| GloVe    | Co-occurrence globale        | Statistiques globales         | OOV, un vecteur/mot       |
+| FastText | N-grammes de caractères      | OOV résolu, morphologie       | Un vecteur/mot (statique) |
 
 La limite commune à ces trois modèles : le vecteur d'un mot est **statique** — "avocat" a toujours le même vecteur, qu'il désigne le juriste ou le fruit. Cette polysémie est la motivation fondamentale du passage aux plongements contextuels (ELMo, BERT).
 
-::: {.card .card-window .mb-4}
+:::: {.card .card-window .mb-4}
 
-:::: {.card-header}
+::::: {.card-header}
 🌐 Visualiseur — Espace des Plongements 2D
-::::
+:::::
 
-:::: {.card-control-row .sim-controls-row}
+::::: {.card-control-row .sim-controls-row}
 
 ```{ojs}
 //| echo: false
@@ -70,16 +70,16 @@ import { ANALOGY_OPTIONS } from "../../assets/js/custom/word_embeddings.js"
 viewof emb_analogy = Inputs.select(ANALOGY_OPTIONS, { value: ANALOGY_OPTIONS[0], label: "Analogie" })
 ```
 
+:::::
+
+::::: {.card-body .p-2}
+
+:::::: {#embedding-chart-container .p-1}
+::::::
+
+:::::
+
 ::::
-
-:::: {.card-body .p-2}
-
-::: {#embedding-chart-container .p-1}
-:::
-
-::::
-
-:::
 
 ```{ojs}
 //| echo: false
