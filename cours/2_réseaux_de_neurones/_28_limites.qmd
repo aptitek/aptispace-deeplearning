@@ -1,8 +1,12 @@
 ## Limites Structurelles et Optimisation Continue
 
+Bien que puissants, les réseaux de neurones classiques (MLP) ont leurs limites : ils manquent de sens de l'espace pour analyser les images (ce que résoudront les CNN) et de mémoire pour analyser le texte ou les séries temporelles (ce que résoudront les RNN et les Transformers).
+
 Malgré sa polyvalence et son universalité théorique, le MLP souffre d'une **myopie structurelle** intrinsèque liée à sa connectivité totale. Comprendre ces limites est essentiel pour justifier l'émergence des architectures spécialisées qui font l'objet des chapitres suivants [@Traite_nd; @ResearchGate_MLP1_2026].
 
 ### L'incapacité à capturer les relations spatiales
+
+Un réseau classique traite chaque pixel d'une image de façon isolée, sans comprendre qu'un pixel voisin fait partie du même objet, ce qui fait exploser le nombre de calculs nécessaires pour une simple photo.
 
 Le MLP traite chaque dimension de l'entrée de manière **indépendante et isotrope** : il ne possède aucun a priori sur la structure spatiale des données. Cette approche est catastrophique pour les images.
 
@@ -11,6 +15,8 @@ Pour une image en niveaux de gris de $100 \times 100$ pixels ($10\,000$ entrées
 De plus, le MLP ignore la **corrélation locale** des pixels : deux pixels voisins ne sont pas traités différemment de deux pixels aux antipodes de l'image. Cette indifférence à la topologie spatiale est précisément ce que les CNN résolvent via la connectivité locale et le partage de poids.
 
 ### La rigidité face aux données séquentielles
+
+Les modèles classiques n'ont aucune mémoire : chaque mot d'une phrase est analysé individuellement, ignorant complètement le contexte des mots précédents.
 
 En l'absence de mécanisme de récurrence ou de mémoire, le MLP traite chaque exemple de manière **entièrement indépendante**. Pour une séquence de mots ou une série temporelle, chaque pas de temps est traité comme si le passé n'existait pas. Cette limitation fondamentale motive l'introduction des RNN, LSTM et GRU (chapitre 3), puis des Transformers.
 

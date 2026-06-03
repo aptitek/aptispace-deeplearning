@@ -1,5 +1,7 @@
 ## Rétropropagation (Backpropagation)
 
+La rétropropagation est le voyage retour de l'erreur : une fois la prédiction faite, le réseau calcule l'écart avec la bonne réponse et remonte à l'envers à travers toutes ses couches pour distribuer la responsabilité de l'erreur à chaque neurone (grâce à la règle de la chaîne).
+
 La rétropropagation est véritablement le moteur algorithmique de l'apprentissage. Si la propagation avant définit la vision ou la prédiction actuelle du réseau, la rétropropagation (ou passage arrière) est le mécanisme par lequel le système évalue ses propres lacunes pour s'améliorer. Historiquement, bien que ce concept ait été popularisé en 1986 par Rumelhart, Hinton et Williams, sa genèse remonte à 1970 grâce aux travaux de Seppo Linnainmaa [@Wiki_Retropropagation; @Espinasse2008]. Ce mécanisme permet au réseau d'ajuster ses paramètres internes en fonction de l'erreur qu'il vient de commettre.
 
 * **Le calcul de l'erreur (Loss Function) :** La fonction de coût (ex: l'erreur quadratique moyenne ou MSE) quantifie l'écart entre la prédiction du réseau et la vérité terrain [@DeeplyLearning_Loss; @Liora_Cout; @MoiAussi_IA].

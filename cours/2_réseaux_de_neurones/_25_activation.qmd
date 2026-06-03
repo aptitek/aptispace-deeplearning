@@ -1,5 +1,7 @@
 ## Les fonctions d'activation en détail
 
+Les fonctions d'activation sont les interrupteurs du réseau : elles décident si le signal d'un neurone est assez fort pour être transmis à la couche suivante, tout en tordant la réalité mathématique pour modéliser des courbes plutôt que de simples lignes droites.
+
 Les fonctions d'activation agissent comme des interrupteurs ou des variateurs, dictant la dynamique de transmission du signal au sein du réseau [@DeeplyLearning_Activation; @Daniella2024]. Elles sont le cœur de la non-linéarité et se divisent en deux grandes familles.
 
 * **Les fonctions classiques et leurs limitations :**
@@ -63,6 +65,9 @@ _updateClassic = {
 ```
 
 * **Les fonctions modernes :**
+
+  Ces fonctions plus récentes (comme GELU ou Swish) évitent les pannes sèches en laissant passer une petite partie du signal négatif de manière plus fluide.
+
   * **GELU (Gaussian Error Linear Unit) :** Fonction probabiliste douce pondérant le signal négatif, pilier des Transformers car elle maintient un flux de gradient fluide [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
   * **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, permettant aux réseaux profonds de converger sans normalisation externe [@PlanificationLR; @Stanford_CS230].
   * **Swish :** Version lissée de ReLU qui laisse passer les petites valeurs négatives pour éviter les coupures abruptes [@Lim2026].

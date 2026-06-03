@@ -1,5 +1,7 @@
 ## Anatomie du neurone artificiel
 
+Un neurone artificiel est une petite calculatrice qui prend plusieurs informations en entrée, leur donne plus ou moins d'importance (les poids), ajoute une tendance de base (le biais), puis fait la somme de tout cela pour décider s'il transmet le signal.
+
 Le neurone artificiel constitue l'atome de calcul fondamental de tout réseau de neurones [@Wiki_NeuroneFormel; @Djeffal_Part1]. Sa force réside dans l'application des concepts de **poids** ($w$) et de **biais** ($b$) — déjà introduits au chapitre 1 dans le cadre de l'optimisation générale — à l'échelle d'une unité de calcul unique. Pour en comprendre le fonctionnement de manière intuitive, on peut l'imaginer comme un **magasin connecté** situé au cœur d'une métropole complexe.
 
 * **L'analogie du magasin connecté à la ville :** Dans cette métropole, notre neurone est une enseigne commerciale dont les flux d'entrée proviennent de différents quartiers (les entrées $x_i$). Le but est de centraliser ces flux pour générer un indicateur global.

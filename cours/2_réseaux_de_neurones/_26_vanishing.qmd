@@ -1,5 +1,7 @@
 ## Le problème du gradient (Vanishing / Exploding)
 
+Dans un réseau très profond, le message d'erreur peut se perdre en route : soit il s'atténue à chaque étape jusqu'à disparaître (la **disparition du gradient**, comme un chuchotement répété 10 fois), soit il s'amplifie de manière démesurée jusqu'à tout saturer (l'**explosion du gradient**, comme un cri amplifié à chaque relais).
+
 L'entraînement des réseaux profonds se heurte souvent à ce que l'on pourrait qualifier de "stabilité instable". Lors de la phase de rétropropagation, la multiplication successive des gradients à travers les nombreuses couches du réseau peut mener à des phénomènes critiques : leur disparition ou leur explosion [@Sun2025; @Geeks_VanishingGradients; @Wiki_VanishingGradient].
 
 * **Le mécanisme du gradient (Vanishing & Exploding) :** Lors de la rétropropagation, calculer les gradients des premières couches nécessite de multiplier les dérivées des fonctions d'activation et les poids des couches suivantes en cascade (règle de la chaîne).

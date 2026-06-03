@@ -1,5 +1,7 @@
 ## Morphologie générale du réseau
 
+Un réseau de neurones artificiels fonctionne comme une ligne d'assemblage en usine : les données d'entrée passent d'une couche de travailleurs (les couches cachées) à une autre, chacun affinant et transformant la pièce jusqu'à ce que la couche de sortie délivre le produit fini.
+
 L'apprentissage profond s'appuie sur une révolution architecturale où la topologie même du réseau définit sa capacité à capturer et traiter la complexité du monde réel. Le fonctionnement global de ce système peut être visualisé comme une vaste toile d'araignée multicouche organisée de manière très rigoureuse [@IBM_DeepLearning; @Rivals1995; @Djeffal_Part1].
 
 * **La structure globale en "toile d'araignée" :**

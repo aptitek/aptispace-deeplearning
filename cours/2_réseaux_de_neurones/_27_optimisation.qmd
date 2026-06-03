@@ -1,5 +1,7 @@
 ## Solutions à la disparition du gradient et optimisation du paysage
 
+Pour rendre l'apprentissage stable et rapide, on applique plusieurs astuces : on initialise les poids intelligemment, on utilise des fonctions d'activation robustes (comme ReLU) et on normalise les signaux (Batch Normalization) pour aplanir les irrégularités de notre paysage d'erreurs.
+
 La résolution des problèmes de gradient a été un tournant majeur qui a permis l'émergence des modèles massifs actuels. L'enjeu principal est de transformer un paysage d'optimisation mathématiquement accidenté en une voie praticable et stable pour l'algorithme d'apprentissage [@Sun2025; @Bodin_Recher_3; @Martens_HessianFree].
 
 ::: {.card .card-window .mb-4}
@@ -41,6 +43,8 @@ _batchNorm = {
   * **Initialisation des poids :** Des techniques comme la *Sparse Initialization* (limitation des connexions non nulles par neurone) préviennent la saturation précoce [@Stanford_CS230].
 
 ### Batch Normalization : stabiliser le paysage d'optimisation
+
+La **Batch Normalization** agit comme un rouleau compresseur qui aplanit la route : elle recentre et redimensionne les signaux à chaque couche pour que l'apprentissage se fasse sur une autoroute lisse plutôt que sur un sentier de montagne chaotique.
 
 La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmschenk_2016] est une technique introduite par Ioffe et Szegedy (2015) pour stabiliser et accélérer l'apprentissage. Son rôle majeur est le **lissage du paysage d'optimisation**, rendant la descente de gradient plus stable et plus rapide (semblable à une autoroute damée ou une piste bleue) [@Ioffe2015; @Sarkar2024; @Youtube_BatchNorm].
 

@@ -1,5 +1,7 @@
 ## Propagation avant (Forward Propagation)
 
+La propagation avant est le voyage aller des données à travers le réseau : elles entrent sous forme brute d'un côté (comme les pixels d'une image), sont transformées à chaque étape par les calculs des neurones, et ressortent de l'autre côté sous forme de prédiction (comme le nom de l'objet sur l'image).
+
 La propagation avant constitue le flux tensorial unidirectionnel qui transforme une entrée brute en une prédiction [@Innovatiana_Forward]. C'est la phase d'inférence pure, où le réseau déploie sa structure et sa compréhension acquise pour interpréter de nouvelles activations.
 
 * **Le processus de sommation pondérée :** À chaque couche, les neurones reçoivent les activations de la couche précédente. Le réseau calcule systématiquement les produits scalaires entre les poids et ces activations pour obtenir la combinaison linéaire avant l'étape de filtrage [@Bodin_Recher_2] : $h = \sum_{i} w_i x_i + b$.
