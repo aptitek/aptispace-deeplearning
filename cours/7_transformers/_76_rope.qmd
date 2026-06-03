@@ -1,14 +1,24 @@
 ## Rotary Position Embedding (RoPE) : Géométrie Rotationnelle
 
+RoPE encode la position en faisant tourner les vecteurs. Deux mots proches ne sont pas seulement placés à des endroits différents : leur écart devient un angle que l'attention peut lire directement.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 RoPE (*Rotary Position Embedding*, Su et al. 2021) représente l'état de l'art des encodages positionnels pour les LLMs modernes (LLaMA, Llama 2, Mistral, Gemma). Son élégance réside dans l'injection de l'information de **position relative** directement dans le produit scalaire d'attention, via une rotation dans l'espace des nombres complexes [@June2023; @Krasser2022].
+:::
 
 ### L'Objectif Fonctionnel
 
+L'objectif de RoPE est simple : l'attention doit surtout connaître la distance entre deux tokens, pas seulement leurs numéros absolus dans la phrase.
+
+::: {.callout-note collapse="true"}
+## 🔢 Objectif mathématique
 Soit $f(\mathbf{q}, m)$ la transformation de la requête $\mathbf{q}$ à la position $m$, et $f(\mathbf{k}, n)$ la transformation de la clé $\mathbf{k}$ à la position $n$. RoPE cherche à construire $f$ telle que le produit scalaire $\langle f(\mathbf{q}, m), f(\mathbf{k}, n) \rangle$ soit une fonction de $\mathbf{q}$, $\mathbf{k}$, et de la **distance relative** $m - n$ uniquement [@June2023; @Krasser2022] :
 
 $$\langle f(\mathbf{q}, m), f(\mathbf{k}, n) \rangle = g(\mathbf{q}, \mathbf{k}, m - n)$$
 
 Cette propriété garantit que l'attention capturée entre deux tokens dépend de leur écart relatif, pas de leurs positions absolues — ce qui améliore la généralisation à différentes longueurs de séquence.
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -150,6 +160,10 @@ rope_tokens = rope_sentence.trim().split(/\s+/).map((w, i) => ({ id: i, word: w 
 
 ### Dérivation en Dimension 2
 
+En deux dimensions, RoPE ressemble à une aiguille qui tourne sur un cadran. La position du token détermine l'angle de rotation.
+
+::: {.callout-note collapse="true"}
+## 🔢 Dérivation 2D
 En dimension $d = 2$, représentons $\mathbf{q} = (q_0, q_1)$ comme un nombre complexe $q = q_0 + iq_1$. La transformation RoPE est simplement une **multiplication par une phase complexe** [@June2023] :
 
 $$f(q, m) = q \cdot e^{im\theta}$$
@@ -159,9 +173,14 @@ Le produit scalaire (partie réelle du produit de $f(\mathbf{q}, m)$ et du conju
 $$\text{Re}[f(q, m) \cdot \overline{f(k, n)}] = \text{Re}[q \cdot \bar{k} \cdot e^{i(m-n)\theta}]$$
 
 Le terme $e^{i(m-n)\theta}$ démontre que l'information de position est **purement relative** — seul l'écart $m - n$ apparaît dans le produit scalaire, jamais les positions absolues $m$ ou $n$ séparément.
+:::
 
 ### Généralisation aux Hautes Dimensions
 
+En grande dimension, le modèle utilise plusieurs petites horloges en parallèle. Certaines tournent vite pour les détails proches, d'autres lentement pour les longues distances.
+
+::: {.callout-note collapse="true"}
+## 🔢 Rotation par paires de dimensions
 Pour un vecteur de dimension $d$, RoPE décompose l'espace en $d/2$ **paires de dimensions** indépendantes. Chaque paire $(2i-1, 2i)$ est traitée comme un plan 2D où s'applique une rotation d'angle $m\theta_i$, avec des fréquences décroissantes [@June2023; @Kazemnejad2023] :
 
 $$\theta_i = 10000^{-2i/d}$$
@@ -171,9 +190,14 @@ Sous forme matricielle, la transformation de la requête $\mathbf{q}$ à la posi
 $$\mathbf{R}(m) \mathbf{q} = \begin{pmatrix} \cos(m\theta_1) & -\sin(m\theta_1) & & \\ \sin(m\theta_1) & \cos(m\theta_1) & & \\ & & \ddots & \\ & & & \cos(m\theta_{d/2}) & -\sin(m\theta_{d/2}) \\ & & & \sin(m\theta_{d/2}) & \cos(m\theta_{d/2}) \end{pmatrix} \mathbf{q}$$
 
 La matrice $\mathbf{R}(m)$ est orthogonale et creuse — elle préserve la norme des vecteurs (les rotations ne changent pas la magnitude) et peut être calculée efficacement.
+:::
 
 ### Implémentation dans LLaMA : Optimisation par Complexes
 
+Dans LLaMA, RoPE est calculé de manière efficace en exploitant les nombres complexes. L'idée mathématique reste la même, mais l'implémentation évite des calculs inutiles.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails d'implémentation
 L'implémentation de RoPE dans LLaMA est un exemple de co-design mathématique/logiciel [@Touvron2023; @Prabhakaran2025]. Plutôt que des multiplications de matrices 2D pour chaque paire, on exploite la correspondance avec les nombres complexes :
 
 1. **`precompute_freqs_cis`** : Précalcule pour chaque position $m$ et fréquence $\theta_i$ la valeur $e^{im\theta_i}$ sous forme polaire complexe (cosinus + i×sinus). Ce précalcul est fait une fois et réutilisé pour toutes les couches.
@@ -183,12 +207,18 @@ L'implémentation de RoPE dans LLaMA est un exemple de co-design mathématique/l
 $$(\text{Re}[q \cdot e^{im\theta}], \, \text{Im}[q \cdot e^{im\theta}])$$
 
 Cette multiplication complexe est 2× plus efficace que la multiplication matricielle 2D correspondante, et exploite les instructions SIMD modernes qui traitent naturellement des paires de flottants.
+:::
 
 ### Extrapolation de Contexte et LongRoPE
 
+RoPE peut fonctionner au-delà des longueurs vues à l'entraînement, mais il faut souvent réajuster ses fréquences. LongRoPE étire ces horloges pour gérer des contextes beaucoup plus longs.
+
+::: {.callout-note collapse="true"}
+## 🔍 Long contexte
 Un avantage majeur de RoPE sur les embeddings appris est sa capacité d'**extrapolation** : la définition de la rotation est valide pour tout $m$, même les positions non vues à l'entraînement [@Ding2024; @AIPaperSlopND]. En pratique, cependant, des fréquences d'interpolation ou de ré-échelonnage sont nécessaires pour dépasser significativement $T_{\max}$.
 
 **LongRoPE** (Ding et al. 2024) étend les modèles Llama au-delà de 2 millions de tokens en ajustant non-uniformément les fréquences de rotation selon la dimension : les dimensions basses (haute fréquence) sont étirées différemment des dimensions hautes (basse fréquence), permettant une extrapolation fine-granulaire sans dégradation des performances sur courtes séquences [@Ding2024].
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🔄 Résumé Comparatif des Encodages Positionnels

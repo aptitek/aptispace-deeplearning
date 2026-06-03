@@ -1,14 +1,29 @@
 ## Représentations Statistiques du Langage : BoW et TF-IDF
 
+Pour qu'un modèle lise du texte, il faut d'abord transformer les mots en nombres. Les premières méthodes font cela très simplement : elles comptent les mots, un peu comme on résume un document par son inventaire.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 L'enjeu fondamental du Traitement du Langage Naturel (NLP) réside dans la conversion du langage humain en une forme numérique exploitable. Avant l'avènement des plongements neuronaux, cette conversion s'appuyait sur la **fréquence d'occurrence** des mots — une quantification du sens par le comptage. Ces méthodes posent les bases conceptuelles essentielles pour comprendre pourquoi les représentations denses sont nécessaires [@murel_2025; @mayurji_2024].
+:::
 
 ### L'Hypothèse Distributionnelle
 
+Un mot se comprend souvent par ses voisins. Si deux mots apparaissent dans les mêmes types de phrases, ils ont probablement des sens proches.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails théoriques
 Toute représentation vectorielle de texte repose sur l'**hypothèse distributionnelle** de Harris (1954), reformulée par Lenci (2018) : les mots apparaissant dans des contextes similaires partagent des significations apparentées. Cette hypothèse transforme un problème sémantique (que signifie ce mot ?) en un problème statistique (dans quel contexte ce mot apparaît-il ?). Sa puissance est qu'elle permet d'inférer la sémantique sans annotation humaine — la co-occurrence fait office de supervision implicite.
+:::
 
 ### Bag-of-Words : Représentation Atomique
 
+Le *Bag-of-Words* transforme un texte en sac de mots : il garde ce qui apparaît, mais oublie l'ordre. C'est utile pour compter vite, mais dangereux dès que l'ordre change le sens.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Le *Bag-of-Words* (BoW) est le modèle le plus simple : chaque document devient un vecteur de dimension $|\mathcal{V}|$ (taille du vocabulaire), où la coordonnée $i$ est le nombre d'occurrences du mot $w_i$ dans le document. La représentation est complètement **agnostique à l'ordre** : "le chien a mordu l'homme" et "l'homme a mordu le chien" ont le même vecteur BoW [@murel_2025].
+:::
 
 Les limites du BoW sont structurelles :
 
@@ -19,12 +34,17 @@ Les limites du BoW sont structurelles :
 
 ### TF-IDF : Pondération Informative
 
+TF-IDF améliore le comptage brut : un mot compte plus s'il est fréquent dans ce document, mais rare dans les autres. C'est comme repérer les mots qui signent vraiment l'identité d'un texte.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule TF-IDF
 Le *Term Frequency-Inverse Document Frequency* (TF-IDF) raffine le BoW en introduisant une pondération qui équilibre la représentativité locale et le pouvoir discriminant global [@lesieutre_2026; @chiny_2026] :
 
 $$\text{TF-IDF}(w, d, \mathcal{D}) = \underbrace{\frac{f(w, d)}{|d|}}_{\text{TF}} \times \underbrace{\log\frac{|\mathcal{D}|}{|\{d' \in \mathcal{D} : w \in d'\}|}}_{\text{IDF}}$$
 
 * **TF (Term Frequency)** : Fréquence normalisée du mot $w$ dans le document $d$. Mesure la représentativité locale.
 * **IDF (Inverse Document Frequency)** : Logarithme du ratio entre le nombre total de documents et ceux contenant $w$. Les mots présents dans tous les documents ($\text{IDF} \approx 0$) sont filtrés ; les mots rares reçoivent un poids élevé.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🔍 Analogie : Fingerprint Documentaire
@@ -34,6 +54,10 @@ Un expert légiste identifie une personne non pas par les traits communs à tous
 
 ### Limites Communes et Transition vers les Espaces Denses
 
+BoW et TF-IDF restent des méthodes de comptage. Elles voient que deux mots sont différents, mais pas forcément qu'ils veulent dire presque la même chose.
+
+::: {.callout-note collapse="true"}
+## 🔍 Limites techniques
 Malgré son efficacité computationnelle, le TF-IDF partage avec le BoW des limitations fondamentales :
 
 * **Synonymie non gérée** : "voiture" et "automobile" ont des vecteurs entièrement orthogonaux, malgré leur sémantique identique.
@@ -42,6 +66,7 @@ Malgré son efficacité computationnelle, le TF-IDF partage avec le BoW des limi
 * **Incapacité à la généralisation OOV** : Un mot absent du vocabulaire d'entraînement est totalement invisible.
 
 Ces limitations ont précipité la recherche vers les **espaces vectoriels denses**, où chaque mot est représenté dans un espace continu de dimension réduite capturant des relations sémantiques par géométrie [@meurisse_2025].
+:::
 
 ::: {.card .card-window .mb-4}
 

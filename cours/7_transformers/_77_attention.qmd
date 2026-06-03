@@ -1,9 +1,18 @@
 ## Anatomie du Bloc Attention : Q, K, V et Optimisation Matérielle
 
+L'attention permet à chaque mot de demander : "quels autres mots m'aident à comprendre mon rôle dans cette phrase ?" C'est le cœur du Transformer.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 Le **bloc d'attention** est l'unité de calcul fondamentale du Transformer. Contrairement aux convolutions qui capturent les corrélations locales, l'attention permet à chaque token d'interagir directement avec tous les autres tokens de la séquence — quel que soit leur éloignement. C'est ce mécanisme de **connectivité globale** qui distingue fondamentalement les Transformers des RNNs et CNNs [@June2023; @KamarainenND].
+:::
 
 ### La Triade Q, K, V : Rôles Vectoriels
 
+Q, K et V ressemblent à un système de recherche : la Query pose une question, la Key indique ce que chaque token peut offrir, et la Value contient l'information à récupérer.
+
+::: {.callout-note collapse="true"}
+## 🔢 Projections Q, K, V
 Pour chaque token $i$ dans la séquence, l'attention compute trois vecteurs dérivés par projection linéaire de l'embedding $\mathbf{x}_i \in \mathbb{R}^{d_{\text{model}}}$ [@June2023] :
 
 $$\mathbf{q}_i = \mathbf{W}_Q \mathbf{x}_i, \quad \mathbf{k}_i = \mathbf{W}_K \mathbf{x}_i, \quad \mathbf{v}_i = \mathbf{W}_V \mathbf{x}_i$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -13,9 +22,14 @@ $$\mathbf{q}_i = \mathbf{W}_Q \mathbf{x}_i, \quad \mathbf{k}_i = \mathbf{W}_K \m
 * **Query $\mathbf{q}_i$** : La "requête" du token $i$ — ce qu'il cherche dans le contexte.
 * **Key $\mathbf{k}_j$** : La "signature" du token $j$ — ce qu'il offre comme information.
 * **Value $\mathbf{v}_j$** : Le contenu informationnel du token $j$.
+:::
 
 ### Le Scaled Dot-Product Attention
 
+L'attention compare les requêtes et les clés : plus elles se ressemblent, plus le token correspondant est écouté. Ensuite, le modèle fait une moyenne pondérée des valeurs utiles.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule d'attention
 Le score d'attention entre token $i$ (position de requête) et token $j$ (position de clé) est le produit scalaire normalisé [@KamarainenND] :
 
 $$a_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}$$
@@ -28,6 +42,7 @@ $$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\!\left(\
 * **$\mathbf{K}^T$** : transposée de la matrice des clés (indiquant la transposition par l'exposant $T$).
 * **$\text{softmax}(\cdot)$** : fonction d'activation normalisant les scores en probabilités (les poids d'attention).
 * **$\sqrt{d_k}$** : facteur d'échelle, racine carrée de la dimension des clés.
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -184,6 +199,10 @@ renderSelfAttention = {
 
 ### Multi-Head Attention : Sous-Espaces Parallèles
 
+Une seule tête d'attention ne suffit pas toujours. Plusieurs têtes permettent au modèle de regarder la phrase sous plusieurs angles : grammaire, référence, thème, relation longue distance.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule multi-tête
 Plutôt qu'une seule attention globale, l'architecture Transformer utilise $H$ têtes d'attention parallèles, chacune opérant dans un sous-espace de dimension $d_k = d_{\text{model}} / H$ [@KamarainenND] :
 
 $$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) \mathbf{W}_O$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -193,9 +212,14 @@ $$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{hea
 * **$\mathbf{W}_O$** : matrice de projection de sortie recombinante.
 
 Chaque tête apprend à se focaliser sur un type différent de dépendance : certaines têtes capturent la syntaxe (sujet-verbe), d'autres la coréférence (pronom-antécédent), d'autres encore les relations sémantiques thématiques. La concaténation des sorties puis la projection $\mathbf{W}_O$ recombinent ces représentations parallèles.
+:::
 
 ### Stabilisation : Résiduels, Normalisation et MLP
 
+Un bloc Transformer ne contient pas seulement l'attention. Il ajoute aussi des raccourcis, de la normalisation et un petit réseau MLP pour stabiliser et enrichir les représentations.
+
+::: {.callout-note collapse="true"}
+## 🔍 Composants de stabilisation
 Autour du bloc d'attention, trois composants stabilisent le flux d'information dans les réseaux profonds [@KamarainenND] :
 
 **Connexions Résiduelles :**
@@ -219,9 +243,14 @@ $$\text{FFN}(\mathbf{x}) = \text{GELU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\ma
 * **$\mathbf{W}_2, \mathbf{b}_2$** : poids et biais de la seconde couche linéaire (contraction de dimension).
 
 avec $d_{\text{ff}} = 4 d_{\text{model}}$ typiquement. Le MLP est responsable de 2/3 des paramètres du Transformer — c'est là que réside la "mémoire factuelle" du modèle.
+:::
 
 ### Optimisation Matérielle : DAE et Ember
 
+À grande échelle, comprendre l'attention ne suffit pas : il faut aussi l'exécuter vite. Certaines optimisations séparent la lecture des embeddings et le calcul pour éviter que le matériel attende la mémoire.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails matériel/compilateur
 La précision mathématique de l'attention ne suffit pas — l'efficacité d'exécution conditionne la scalabilité. Sur les architectures GPU standard, les opérations de lookup d'embeddings (décrites en section précédente) constituent un goulot d'étranglement que le compilateur **Ember** résout via l'architecture **DAE** (*Decoupled Access-Execute*) [@Siracusa2025] :
 
 **Le TMU (Tensor Marshaling Unit) :**
@@ -237,3 +266,4 @@ Ember utilise une représentation intermédiaire SLC IR (*Structured Lookup-Comp
 3. **Alignement de Queue** : Padding des scalaires pour maintenir l'alignement des lignes de cache et éviter les chargements vectoriels désalignés.
 
 **Résultat :** Un gain moyen de **5,8×** sur les opérations d'embedding, avec une efficacité énergétique 4× supérieure aux GPUs traditionnels sur ces opérations spécifiques [@Siracusa2025]. Ce co-design matériel-logiciel transforme une opération limitée par la latence mémoire en un flux continu haute performance.
+:::

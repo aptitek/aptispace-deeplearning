@@ -1,9 +1,18 @@
 ## Plongements Denses : Word2Vec, GloVe et FastText
 
+Un embedding place les mots sur une carte : des mots proches par le sens deviennent proches dans l'espace. "chat" et "chien" se retrouvent voisins, tandis que "moteur" part ailleurs.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 La rupture technologique des **plongements denses** (*dense embeddings*) permet de représenter chaque mot dans un espace continu de dimension réduite (typiquement 100 à 300), contre $|\mathcal{V}| \sim 10^5$ pour le BoW. La sémantique devient géométrie : deux mots sémantiquement proches sont voisins dans cet espace [@rong_2014; @pennington_2014].
+:::
 
 ### Word2Vec : Apprentissage par Prédiction de Contexte
 
+Word2Vec apprend en jouant à deviner : soit il devine un mot à partir de ses voisins, soit il devine les voisins à partir du mot. À force de jouer, il construit une carte utile du vocabulaire.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Introduit par Mikolov et al. (2013), Word2Vec s'entraîne non pas à compter des co-occurrences mais à **prédire** : soit le mot cible depuis son contexte (CBOW — *Continuous Bag-of-Words*), soit les mots du contexte depuis le mot cible (Skip-gram) [@rong_2014].
 
 **Architecture CBOW vs Skip-gram :**
@@ -21,17 +30,27 @@ Word2Vec maintient **deux matrices de poids** : $\mathbf{W} \in \mathbb{R}^{|\ma
 L'interaction entre $v_w$ et $v'_w$ durant l'entraînement crée un effet de "traction" ou "poussée" géométrique. C'est cet effet cumulatif qui génère les relations sémantiques arithmétiques célèbres :
 
 $$\mathbf{v}(\text{Roi}) - \mathbf{v}(\text{Homme}) + \mathbf{v}(\text{Femme}) \approx \mathbf{v}(\text{Reine})$$
+:::
 
 ### GloVe : Co-occurrences Globales
 
+GloVe regarde le corpus avec plus de recul : il ne se contente pas d'une fenêtre locale, il cherche les grands motifs de co-occurrence entre les mots.
+
+::: {.callout-note collapse="true"}
+## 🔢 Objectif GloVe
 GloVe (Pennington et al. 2014) adopte une approche complémentaire en modélisant explicitement les **statistiques globales de co-occurrence** [@pennington_2014]. Plutôt que de prédire localement le contexte, GloVe minimise la différence entre le produit scalaire des vecteurs et le logarithme de la fréquence de co-occurrence sur l'ensemble du corpus :
 
 $$\mathcal{L}_{\text{GloVe}} = \sum_{i,j} f(X_{ij}) \left(v_i^T v_j + b_i + b_j - \log X_{ij}\right)^2$$
 
 où $X_{ij}$ est le nombre de co-occurrences des mots $i$ et $j$ dans une fenêtre de contexte, et $f$ est une fonction de pondération diminuant le poids des co-occurrences très fréquentes. GloVe capture les associations globales que Word2Vec, entraîné localement, peut manquer.
+:::
 
 ### FastText : Granularité Morphologique et OOV
 
+FastText ne regarde pas seulement le mot entier : il regarde aussi ses petits morceaux. Cela lui permet de fabriquer une représentation pour un mot jamais vu, à partir de fragments déjà connus.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Word2Vec et GloVe traitent chaque mot comme une unité atomique — un mot absent du vocabulaire d'entraînement (*Out-Of-Vocabulary*, OOV) ne peut pas être représenté. FastText (Bojanowski et al. 2017) résout ce problème en décomposant les mots en **n-grammes de caractères** [@bojanowski_2017] :
 
 Le vecteur du mot $w$ est la somme des vecteurs de ses n-grammes de caractères :
@@ -44,6 +63,7 @@ Ainsi, le vecteur de "apprentissage" est construit depuis "<app", "app", "ppr", 
 Cette granularité morphologique est vitale pour les langues agglutinantes. En Hangeul coréen, les caractères sont des syllabes composées de consonnes et voyelles. Une faute de frappe ne déplace pas une lettre — elle brise la structure syllabique, rendant le mot méconnaissable pour un modèle basé sur les mots entiers. Le modèle **misK** (Kwon et al. 2020) répond à ce défi via un CNN avec **Channel Attention** [@kwon_2020] :
 
 Plutôt que de sommer linéairement les sous-mots comme FastText, misK utilise l'attention pour sélectionner et accentuer dynamiquement les fragments morphologiques les plus informatifs selon le contexte. Les tests sur des textes coréens bruités montrent que la version fine-tunée (misK-ft) surpasse les benchmarks Word2Vec et FastText en présence d'erreurs structurelles [@kwon_2020].
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🌐 Comparatif des Plongements Statiques
