@@ -1,6 +1,11 @@
 ## Lois d'Échelle et Optimisation du Compute
 
+Les lois d'échelle répondent à une question très concrète : avec un budget donné, vaut-il mieux agrandir le modèle, lui donner plus de données, ou faire les deux ?
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 Les lois d'échelle (*scaling laws*) établissent des relations quantitatives entre les trois ressources fondamentales du pré-entraînement : **la taille du modèle** $N$ (nombre de paramètres), **le volume de données** $D$ (nombre de tokens), et le **budget de calcul** $C \approx 6ND$ (FLOPs). L'arbitrage entre ces trois ressources est l'une des décisions stratégiques les plus importantes dans le développement d'un LLM.
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -28,11 +33,16 @@ _scaling = {
 
 ### La Loi de Chinchilla : Optimal d'Entraînement
 
+La règle Chinchilla dit : ne construisez pas seulement un modèle énorme ; donnez-lui aussi assez de texte. Un grand cerveau sous-entraîné reste mal utilisé.
+
+::: {.callout-note collapse="true"}
+## 🔢 Règle Chinchilla
 Hoffmann et al. (DeepMind, 2022) établissent que pour un budget de calcul $C$ fixé, la perte de validation est minimisée quand la taille du modèle $N$ et le volume de données $D$ sont **augmentés proportionnellement** [@Hoffmann2022] :
 
 $$N^* \propto C^{0.5}, \qquad D^* \propto C^{0.5}, \qquad N^* \approx \frac{D^*}{20}$$
 
 La règle pratique est la suivante : **entraîner sur environ 20 tokens par paramètre**. Llama 2 (7B paramètres) entraîné sur 2 trillions de tokens ($\approx 285$ tokens/paramètre) dépasse déjà significativement cet optimum d'entraînement.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## ⚠️ Un Optimum Mal Défini
@@ -42,6 +52,10 @@ L'approche Chinchilla minimise la *perte finale d'entraînement* pour un budget 
 
 ### L'Approche Inférence-Optimale : Scalabilité du Déploiement
 
+Quand un modèle sert des milliards de requêtes, le coût d'utilisation devient aussi important que le coût d'entraînement. Parfois, un modèle plus petit mais mieux entraîné coûte moins cher au total.
+
+::: {.callout-note collapse="true"}
+## 🔢 Coût total
 Sardana et Frankle (2024) reformulent le problème : pour une organisation qui déploiera le modèle sur $Q$ requêtes d'inférence, quel est le point d'opération optimal ? [@Sardana2024]
 
 Le coût total sur le cycle de vie est la somme du coût d'entraînement et du coût d'inférence :
@@ -58,12 +72,20 @@ $C_{\text{inférence}}(N)$ croît linéairement avec $N$ (plus de paramètres �
 | **Exemple emblématique** | GPT-4 (estimation)                | Llama 3 (15T tokens sur 8B)                 |
 
 **Calcul illustratif :** Pour 2 trillions de tokens d'inférence anticipés, choisir un modèle 7B entraîné intensivement plutôt qu'un 13B Chinchilla-optimal peut réduire le coût total de 17% — soit $1.7 \times 10^{22}$ FLOPs économisés [@Sardana2024].
+:::
 
 ### Lois d'Échelle et Architecture
 
+Les lois d'échelle ne remplacent pas le choix d'architecture. Selon la tâche, un modèle génératif ou un encodeur spécialisé peut rester plus adapté.
+
+::: {.callout-note collapse="true"}
+## 🔍 Architecture et cas d'usage
 Les lois d'échelle font apparaître une tension entre architecture et données. Concernant les modèles encoder-only (BERT-like) vs decoder-only (GPT-like), GisserotBoukhlef et al. (2026) montrent que les encodeurs pré-entraînés avec MLM (*Masked Language Modeling*) maintiennent des avantages spécifiques pour les tâches de classification en régime de peu de données, même à l'ère des LLMs génératifs. La question "faut-il encore pré-entraîner des encodeurs ?" reste ouverte et dépend du cas d'usage [@GisserotBoukhlef2026].
+:::
 
 ### Jalons Pratiques : De LLaMA à LLaMA 3
+
+L'évolution de LLaMA illustre le changement : les modèles récents sont souvent entraînés beaucoup plus longtemps sur plus de tokens, même quand leur taille reste modérée.
 
 | Modèle         | Paramètres | Tokens d'entraînement | Tokens/paramètre | Stratégie         |
 | :------------- | :--------- | :-------------------- | :--------------- | :---------------- |

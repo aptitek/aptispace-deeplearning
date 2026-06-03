@@ -1,6 +1,11 @@
 ## Fine-Tuning : Du Savoir Général au Savoir-Faire Métier
 
+Le pré-entraînement donne une culture générale au modèle. Le fine-tuning lui apprend ensuite un comportement précis : répondre dans un format, respecter un domaine, ou suivre des instructions.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 Le pré-entraînement produit un modèle aux capacités générales remarquables mais dont le comportement est non aligné avec les attentes utilisateurs : il prédit le prochain token, pas nécessairement des réponses utiles et sûres. Le **fine-tuning** est le processus qui sculpte ce modèle brut en un assistant spécialisé, adapté à un domaine ou à un format d'interaction particulier [@HuggingFaceSFT2026; @Vo2026].
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -28,6 +33,10 @@ _finetuning = {
 
 ### Transfer Learning vs Fine-Tuning Complet
 
+Adapter un modèle peut être léger ou profond. Si le domaine ressemble déjà à ce que le modèle connaît, on change peu de choses ; si le domaine est très différent, il faut ajuster davantage.
+
+::: {.callout-note collapse="true"}
+## 🔍 Niveaux d'adaptation
 Le choix de la profondeur d'adaptation dépend de l'ampleur du **Domain Shift** — l'écart entre la distribution des données générales du web et celle du domaine cible [@Vo2026] :
 
 **Transfer Learning (Head-only)** : Les poids du "backbone" (corps du Transformer) sont gelés. Seule la "tête" (classification head ou adapter layers) est réentraînée. Adapté quand le corpus cible est petit (<100K exemples) et le jargon est couvert par le pré-entraînement.
@@ -35,9 +44,14 @@ Le choix de la profondeur d'adaptation dépend de l'ampleur du **Domain Shift** 
 **Fine-Tuning Complet** : Toutes les couches sont mises à jour. Nécessaire quand la logique métier diverge radicalement (médical, juridique, code propriétaire). Le risque est l'**oubli catastrophique** (*catastrophic forgetting*) : le modèle oublie les connaissances générales en sur-optimisant sur le domaine cible [@Schweighofer2025].
 
 **Domain-Adaptive Post-Training** : Une phase intermédiaire de pré-entraînement sur des données du domaine (sans supervision), avant le fine-tuning supervisé. Particulièrement efficace pour les domaines à terminologie spécialisée (finance, biomédical) [@Ke2025].
+:::
 
 ### SFT : La Structure des Données d'Instruction
 
+Le Supervised Fine-Tuning (SFT) entraîne le modèle avec des exemples du type : instruction → bonne réponse. C'est une façon directe de lui montrer le comportement attendu.
+
+::: {.callout-note collapse="true"}
+## 🔍 Organisation des données SFT
 Le **Supervised Fine-Tuning** (SFT) entraîne le modèle sur des paires instruction-réponse. La structure de ces données d'instruction conditionne directement la qualité finale [@HuggingFaceSFT2026].
 
 **Stacked vs Phased Training :**
@@ -45,9 +59,14 @@ Le **Supervised Fine-Tuning** (SFT) entraîne le modèle sur des paires instruct
 Une controverse active porte sur l'ordonnancement optimal des données. L'approche *Phased* (Orca-style) entraîne d'abord sur des données "connaissances" puis sur des données "compétences" selon une progression de difficulté. L'approche *Stacked* mélange toutes les données dès le début [@Pareja2025].
 
 Les travaux de Pareja et al. (2025) sur les modèles 3B–7B démontrent que le **Stacked training** est systématiquement plus efficace en termes d'échantillonnage : la méthode *Phased* n'apporte aucun gain mesurable et risque de provoquer un oubli partiel des premières phases lors des transitions [@Pareja2025].
+:::
 
 ### Recette de Succès : Early Dynamics et Hyperparamètres
 
+On peut souvent repérer très tôt si un entraînement part bien. Comme pour une course longue, un départ régulier vaut mieux qu'un départ brutal.
+
+::: {.callout-note collapse="true"}
+## 🔍 Hyperparamètres et signaux précoces
 Pareja et al. (2025) révèlent une "recette secrète" basée sur les dynamiques précoces de l'entraînement [@Pareja2025] :
 
 **Hyperparamètres optimaux :**
@@ -61,6 +80,7 @@ Pareja et al. (2025) révèlent une "recette secrète" basée sur les dynamiques
 Contre l'intuition, une **norme de gradient faible** couplée à des **valeurs de perte initiales élevées** durant les premiers centaines de pas sont des **prédicteurs de succès final** [@Pareja2025]. Cette dynamique indique que le modèle se trouve dans un bassin d'attraction large et régulier, plutôt qu'un optimum local étroit. À l'inverse, une norme de gradient élevée dès le début signale une instabilité probable.
 
 Ce diagnostic précoce permet d'**arrêter prématurément** les runs sous-optimaux sans attendre la convergence complète — économisant jusqu'à 70% du budget de calcul de fine-tuning.
+:::
 
 | Indicateur précoce  | Bon signal           | Mauvais signal          |
 | :------------------ | :------------------- | :---------------------- |

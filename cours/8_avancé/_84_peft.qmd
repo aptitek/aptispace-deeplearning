@@ -1,6 +1,11 @@
 ## PEFT, LoRA et Alignement : L'Expertise à Grande Échelle
 
+Le fine-tuning complet coûte cher. Le Parameter-Efficient Fine-Tuning (PEFT) cherche une idée plus légère : garder le grand modèle presque intact et n'entraîner que de petits modules d'adaptation.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 Le fine-tuning complet d'un LLM de 7 milliards de paramètres requiert plusieurs dizaines de GPU A100 pendant plusieurs jours — prohibitif pour la grande majorité des praticiens. Le **PEFT** (*Parameter-Efficient Fine-Tuning*) permet d'atteindre des performances comparables en ne mettant à jour qu'une fraction infime des paramètres [@HuggingFacePEFT2026; @Balne2024].
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -38,6 +43,10 @@ _loraViz = {
 
 ### LoRA : Adaptation par Matrices de Bas Rang
 
+LoRA ajoute de petites pièces entraînables sur un modèle gelé. C'est comme corriger une grande machine avec quelques réglages externes plutôt que de reconstruire tout le moteur.
+
+::: {.callout-note collapse="true"}
+## 🔢 Décomposition LoRA
 **LoRA** (*Low-Rank Adaptation*, Hu et al. 2021) est la méthode PEFT la plus répandue. L'intuition fondamentale : la mise à jour des poids lors du fine-tuning a un **rang intrinsèquement bas** — elle n'explore qu'un sous-espace restreint de l'espace des paramètres [@Wikipedia2026].
 
 Plutôt que de modifier directement une matrice de poids $\mathbf{W} \in \mathbb{R}^{d \times d}$, LoRA ajoute une décomposition de bas rang apprise :
@@ -58,9 +67,14 @@ où $\mathbf{A} \in \mathbb{R}^{r \times d}$, $\mathbf{B} \in \mathbb{R}^{d \tim
 | $\alpha$ (scaling) | Mise à l'échelle : $\frac{\alpha}{r}\mathbf{BA}$ | $r$, $2r$              |
 | `target_modules`   | Quelles matrices adapter (Q, K, V, FFN)          | Toutes les projections |
 | `dropout`          | Régularisation des matrices A, B                 | 0.05–0.1               |
+:::
 
 ### QLoRA : Quantification et Entraînement sur GPU Grand Public
 
+QLoRA pousse l'économie plus loin : le modèle de base est stocké en très basse précision, et seuls les petits adaptateurs restent entraînés finement.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails QLoRA
 **QLoRA** (Dettmers et al. 2023) combine LoRA avec la **quantification en 4 bits** du modèle de base, permettant le fine-tuning d'un modèle 65B sur **un seul GPU de 48 Go** [@Dettmers2023] :
 
 1. **NF4 (NormalFloat 4-bit)** : Format de quantification optimal pour les poids normalement distribués — chaque poids est stocké sur 4 bits avec une grille de quantification adaptée à $\mathcal{N}(0,1)$.
@@ -68,9 +82,14 @@ où $\mathbf{A} \in \mathbb{R}^{r \times d}$, $\mathbf{B} \in \mathbb{R}^{d \tim
 3. **Paged Optimizers** : Gestion de la mémoire GPU/CPU pour éviter les OOM (*Out Of Memory*) lors des pics de gradient.
 
 L'inférence QLoRA reste en 4 bits ; seuls les adaptateurs LoRA sont en précision complète (bf16). Les performances sont comparables au fine-tuning complet en bf16 sur les benchmarks standards [@Dettmers2023].
+:::
 
 ### L'Alignement : Du Prédicteur Statistique à l'Agent Professionnel
 
+Après le fine-tuning, il reste une question : le modèle répond-il de façon utile, sûre et conforme aux attentes humaines ? L'alignement sert à régler ce comportement.
+
+::: {.callout-note collapse="true"}
+## 🔍 Méthodes d'alignement
 Le SFT produit un modèle qui *suit les instructions* mais pas nécessairement de façon **utile et sûre** (*helpful and harmless*). L'alignement est la dernière étape du pipeline post-entraînement, garantissant que l'expert métier produit des réponses conformes aux valeurs et aux besoins de l'utilisateur [@ApXMachineLearning2024a].
 
 **RLHF (Reinforcement Learning from Human Feedback) :**
@@ -88,13 +107,14 @@ Dans les déploiements production, les modèles sont continuellement mis à jour
 * **Replay de données** : Mélanger des données du pré-entraînement original dans le fine-tuning.
 * **EWC (Elastic Weight Consolidation)** : Pénalise les modifications des poids les plus importants pour les tâches précédentes.
 * **LoRA pour l'isolation** : Les adaptateurs LoRA séparent physiquement les connaissances générales (poids gelés) des spécialisations (matrices A, B).
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🔑 Synthèse du Chapitre 8 : Le Cycle de Vie d'un LLM
 
-* **Pré-entraînement** : Construction du capital de connaissances par next-token prediction. Erreur in-sample en $O(1/NT)$ ; out-of-sample liée à $\tau_{\text{mix}}$.
-* **Scaling Laws** : Pour $Q > 10^9$ inférences, l'approche inférence-optimale (LLaMA 3 : 15T tokens sur 8B) domine la Chinchilla-optimale.
-* **SFT** : Stacked training supérieur au Phased pour les petits modèles. Diagnostiquer le succès par les dynamiques précoces (gradient faible + perte élevée au départ).
-* **LoRA** : Rang $r \ll d$, décomposition $\mathbf{W} + \mathbf{BA}$, zéro surcoût à l'inférence. QLoRA étend LoRA aux GPU grand public via quantification NF4.
-* **Alignement** : RLHF ou DPO transforment le prédicteur statistique en agent professionnel fiable, utile et sûr.
+* **Pré-entraînement** : Le modèle apprend une culture générale en lisant beaucoup de texte et en devinant la suite.
+* **Lois d'échelle** : Choisir la bonne taille de modèle dépend aussi du nombre de tokens disponibles et du coût futur d'utilisation.
+* **SFT** : Le modèle apprend à suivre des instructions grâce à des exemples instruction-réponse.
+* **LoRA** : Adapter un grand modèle peut se faire en entraînant de petites matrices plutôt que tous les poids.
+* **Alignement** : RLHF ou DPO aident à transformer un prédicteur de texte en assistant plus fiable, utile et sûr.
 :::
