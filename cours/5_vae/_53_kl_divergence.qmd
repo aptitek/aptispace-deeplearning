@@ -58,3 +58,55 @@ Chaque terme joue un rôle géométrique précis dans la régularisation de l'es
 | $-1$ | Terme de normalisation | Référence : $\sigma = 1$ (aucune pénalité) |
 
 La trace et le log-déterminant agissent conjointement comme un **garde-fou contre l'effondrement représentationnel** : si $\sigma_j \to 0$, le terme $-\log \sigma_j^2 \to +\infty$ force le gradient à résister à cet effondrement. C'est le mécanisme fondamental par lequel la divergence KL maintient la continuité de l'espace latent.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📐 Simulateur — Divergence KL entre deux Gaussiennes
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof kl_mu    = Inputs.range([-3, 3],  { value: 0.5, step: 0.05, label: "μ  de q(z|x)" })
+viewof kl_sigma = Inputs.range([0.1, 3], { value: 1.0, step: 0.05, label: "σ  de q(z|x)" })
+```
+
+::::
+
+:::: {.row .g-3 .px-3 .pb-2}
+
+::::: {.col-md-9}
+:::::: {#kl-chart-container .card-body .p-1}
+::::::
+:::::
+
+::::: {.col-md-3 .d-flex .flex-column .justify-content-center .gap-2}
+
+::: {.card .border .p-2 .text-center}
+**D_KL**
+
+::: {#kl-value-display .font-monospace .fw-bold .fs-5}
+—
+:::
+:::
+
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateKLViz } from "../../assets/js/custom/kl_divergence.js"
+
+_klViz = {
+  updateKLViz(
+    document.getElementById("kl-chart-container"),
+    document.getElementById("kl-value-display"),
+    { mu: kl_mu, sigma: kl_sigma }
+  );
+}
+```

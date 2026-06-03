@@ -61,7 +61,18 @@ _updateClassic = {
 * **GELU (Gaussian Error Linear Unit) :** Devenue aujourd'hui un pilier des architectures avancées comme les Transformers, GELU is une fonction "douce" et probabiliste. Plutôt que de bloquer brutalement le signal négatif comme le ferait ReLU, elle le pondère subtilement, permettant une meilleure fluidité du gradient [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
 
 * **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, elle permet aux réseaux très profonds de converger sans nécessiter de couches de normalisation externes complexes [@PlanificationLR; @Stanford_CS230].
-* **Swish :** Développée pour lisser l'activation mathématique ($f(x) = x \cdot \text{sigmoid}(x)$), elle permet à de petites valeurs négatives de passer, ce qui surpasse souvent ReLU dans les architectures très profondes en évitant les coupures d'information abruptes [@Lim2026].
+* **Swish :** Développée pour lisser l'activation, elle permet à de petites valeurs négatives de passer, ce qui surpasse souvent ReLU dans les architectures très profondes en évitant les coupures d'information abruptes [@Lim2026].
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule de l'activation Swish
+
+La fonction Swish s'écrit :
+
+$$f(x) = x \cdot \text{sigmoid}(\beta x) = \frac{x}{1 + e^{-\beta x}}$$
+
+Où $\beta$ est un paramètre constant ou entraînable. Lorsque $\beta = 1$, la fonction est également appelée SiLU (Sigmoid Linear Unit).
+:::
+
 
 ::: {.card .card-window .mb-4 .activation-simulator}
 

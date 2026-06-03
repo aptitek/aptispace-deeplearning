@@ -1,6 +1,6 @@
 ## Typologie des Paradigmes et Architectures Profondes
 
-La distinction entre les différents paradigmes d'apprentissage n'est pas une simple nomenclature académique ; elle constitue la pierre angulaire de toute architecture stratégique en science des données. Le succès d'un déploiement industriel (et la pertinence de notre "moule", pour reprendre notre analogie) repose sur l'adéquation parfaite entre la structure des données disponibles et le choix du paradigme. C'est cette adéquation qui transforme des données brutes en leviers de décision exploitables [@bmc_bias_variance].
+Avant de choisir un modèle, il faut répondre à une question : **qu'est-ce qu'on a comme données, et qu'est-ce qu'on veut faire avec ?** La réponse détermine tout. C'est comme choisir le bon outil avant de commencer un chantier — un marteau ne remplace pas une scie [@bmc_bias_variance].
 
 ### Cartographie des Fondations : Les Quatre Paradigmes de l'Apprentissage
 
@@ -92,9 +92,9 @@ Un agent autonome interagit avec un environnement dynamique [@sutton_2018_reinfo
 
 **L'impact stratégique :** Le choix entre classification et clustering modifie radicalement l'objectif métier. Là où la classification répond à une question fermée sur une catégorie connue (ex: "ce client va-t-il résilier ?"), le clustering permet la découverte de segments de marché "cachés". Cela offre une opportunité de différenciation par la révélation de niches comportementales jusqu'alors invisibles.
 
-### L'Ère de l'Apprentissage Profond (Deep Learning) pour les Données Complexes
+### L'Ère de l'Apprentissage Profond pour les Données Complexes
 
-Cette transition vers la complexité métier nous amène naturellement à l'étude des structures héritées du Deep Learning. L'émergence de l'apprentissage profond répond à l'incapacité des algorithmes statistiques classiques à traiter la complexité des **données non structurées** (images, texte brut, séries temporelles ou audio).
+Les algorithmes classiques sont bons avec des tableaux bien rangés. Mais pour des **données non structurées** — images, sons, textes, vidéos — ils sont dépassés. C'est là qu'entre en jeu le Deep Learning.
 
 Pour le volet supervisé, deux grandes architectures dominent la perception automatisée :
 
@@ -111,6 +111,4 @@ Si les CNN et les RNN ont excellé dans la classification, de nouvelles architec
 
 ### L'Impact Stratégique de la Perception Automatisée
 
-Ces réseaux profonds ne se contentent pas de reproduire des données ; ils automatisent la perception humaine en apprenant des **caractéristiques invariantes**.
-
-La puissance de ces architectures réside dans l'ajustement de leurs paramètres internes (les poids et les filtres) : une IA moderne ne se contente plus de suivre une règle statique ("un chat a deux oreilles pointues"). Elle identifie une sémantique visuelle ou textuelle capable de résister aux variations infinies du monde réel (un chat de dos, un chat dans l'ombre, un chat stylisé) [@ficus_weights_biases]. Cette flexibilité structurelle repose intégralement sur une mécanique mathématique précise d'ajustement des paramètres, que nous explorerons dans le chapitre suivant avec la descente de gradient.
+Ces réseaux ne suivent pas des règles écrites à la main. Ils *apprennent* à reconnaître les choses — un chat de dos, dans l'ombre, stylisé — parce qu'ils ont absorbé des milliers d'exemples. Cette flexibilité vient de l'ajustement de millions de petits paramètres internes, que nous allons explorer dans le chapitre suivant avec la descente de gradient [@ficus_weights_biases].

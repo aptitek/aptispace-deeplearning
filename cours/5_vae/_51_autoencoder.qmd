@@ -41,3 +41,40 @@ La contrainte du goulot d'étranglement génère plusieurs capacités utiles :
 Malgré ces qualités, l'autoencodeur classique souffre d'un défaut architectural critique : **la fragmentation du manifold latent**. L'espace $\mathbf{z}$ est discontinu, parsemé de "trous sémantiques" entre les clusters correspondant aux différentes classes. Interpoler entre deux points latents valides peut produire des reconstructions incohérentes [@shrivastava_2024].
 
 Ce constat est fondamental : si l'on tire un point $\mathbf{z}$ aléatoire dans l'espace latent, rien ne garantit que $g_\phi(\mathbf{z})$ produira une donnée sémantiquement valide. L'espace latent n'est pas un *continuum* utilisable — il est une collection de régions valides entourées de régions vides. C'est précisément cette limitation qui motive le passage au Variational Autoencoder.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🗜️ Simulateur — Architecture Autoencodeur
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof ae_bottleneck = Inputs.range([1, 16], { value: 4, step: 1, label: "Dimension latente z" })
+viewof ae_input_dim  = Inputs.range([8, 64], { value: 32, step: 4, label: "Dimension d'entrée" })
+```
+
+::::
+
+:::: {.card-body .p-3}
+
+::: {#autoencoder-diagram-container}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateAutoencoderViz } from "../../assets/js/custom/autoencoder.js"
+
+_autoencoder = {
+  updateAutoencoderViz(document.getElementById("autoencoder-diagram-container"), {
+    bottleneckDim: ae_bottleneck,
+    inputDim: ae_input_dim
+  });
+}
+```

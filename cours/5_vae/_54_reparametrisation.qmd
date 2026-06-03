@@ -2,6 +2,30 @@
 
 L'élégance du VAE repose sur un verrou algorithmique crucial : comment entraîner par rétropropagation un réseau qui **échantillonne** ? L'opération $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)$ est stochastique et non-différentiable — le gradient ne peut pas traverser un nœud d'échantillonnage.
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🎲 Diagramme — L'Astuce de Reparamétrisation
+::::
+
+:::: {.card-body .p-3}
+
+::: {#reparam-diagram-container}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { createReparamViz } from "../../assets/js/custom/reparam.js"
+
+_reparam = {
+  createReparamViz(document.getElementById("reparam-diagram-container"));
+}
+```
+
 ### Le Reparameterization Trick
 
 La solution, introduite par le VAE original, déplace la stochasticité vers une variable externe $\boldsymbol{\epsilon}$ indépendante des paramètres [@leclaire_nd] :

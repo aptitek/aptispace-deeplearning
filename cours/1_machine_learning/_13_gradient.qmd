@@ -1,6 +1,6 @@
 ## Fondements et Mécanique de l'Optimisation : Du Gradient aux Optimiseurs
 
-La performance d'un modèle n'est pas uniquement le fruit de son architecture algorithmique, mais de l'efficacité de son processus d'apprentissage itératif. C'est ici que les concepts mathématiques abstraits rencontrent la mécanique physique de l'optimisation.
+Un modèle qui prédit bien, ce n'est pas qu'une bonne architecture — c'est surtout un apprentissage bien guidé. Comment une machine apprend-elle ? En commettant des erreurs, en les mesurant, et en se corrigeant — encore et encore. C'est cette mécanique qu'on appelle l'**optimisation**.
 
 ### Les Fondements : Modèles, Données et Apprentissage
 
@@ -123,12 +123,20 @@ graph1 = {
 
 ### L'Anatomie du Modèle : Poids et Biais
 
-Dans cette matière à mouler, il convient de distinguer les **Coefficients** (utilisés dans les modèles linéaires simples) des **Poids** (utilisés dans les réseaux de neurones complexes) [@ficus_weights_biases; @glander_parameters].
+Dans cette matière à mouler, deux types de paramètres contrôlent tout [@ficus_weights_biases; @glander_parameters] :
 
-Mathématiquement, le calcul basique d'un neurone peut s'exprimer par $y = w \cdot x + b$ [@trofimov_2020_neural].
+* **Les Poids :** Ce sont des "boutons de volume". Ils amplifient ou atténuent l'importance de chaque signal d'entrée. Plus le poids est grand, plus cette entrée compte dans la décision finale. C'est la malléabilité de notre moule.
+* **Le Biais :** Un paramètre souvent sous-estimé. Imaginez-le comme le **revenu de base** du modèle — le niveau de réponse minimal même quand toutes les entrées sont nulles. Il donne la flexibilité de décaler la réponse du modèle vers le haut ou le bas.
 
-* **Les Poids ($w$) :** Ils agissent comme des "boutons de volume" amplifiant ou diminuant l'importance d'un signal d'entrée ($x$). C'est la malléabilité de notre moule.
-* **Le Biais ($b$) :** C'est un paramètre souvent négligé mais crucial. Il sert de "seuil" ou d'offset. Il permet au neurone de s'activer (ou non) même lorsque les entrées sont proches de zéro. Cela offre la flexibilité nécessaire pour modéliser des phénomènes qui ne passent pas par l'origine du repère mathématique [@ficus_weights_biases].
+::: {.callout-note collapse="true"}
+## 🔢 Détail mathématique
+
+Le calcul de base d'un neurone s'écrit [@trofimov_2020_neural] :
+
+$$y = w \cdot x + b$$
+
+où $x$ est l'entrée, $w$ le poids (importance), $b$ le biais (décalage). Le but de l'apprentissage : trouver les valeurs de $w$ et $b$ qui minimisent l'erreur.
+:::
 
 ::: {.card .card-window}
 :::: {.card-header}
@@ -297,10 +305,16 @@ graph2 = {
 
 ### La Fonction de Perte et la Boussole du Gradient
 
-Pour savoir comment ajuster notre moule, nous devons mesurer nos erreurs.
+Pour ajuster le moule, il faut d'abord mesurer à quel point il est mauvais.
 
-* **La Fonction de Perte (Loss Function) :** Elle mesure l'écart précis entre le moule actuel et la figurine originale. Plus cet écart est grand, plus la valeur de la perte est élevée. Notre but mathématique est de minimiser cette fonction [@grover_loss_functions; @wiki_mse; @mitra_2023_unboxing].
-* **Le Gradient :** Puisque nos paramètres sont des nombres, nous utilisons le calcul différentiel. Le gradient est un vecteur de dérivées partielles. Dans notre analogie, c'est une boussole qui nous indique exactement *dans quelle direction* et *avec quelle force* nous devons presser ou tirer la matière du moule pour réduire l'écart avec l'original.
+* **La Fonction de Perte :** C'est le thermomètre de l'erreur. Elle mesure l'écart entre la prédiction du modèle et la réalité. Plus l'écart est grand, plus la valeur est élevée. L'objectif : la faire descendre le plus possible [@grover_loss_functions; @wiki_mse; @mitra_2023_unboxing].
+* **Le Gradient :** Une fois l'erreur mesurée, comment savoir dans quel sens corriger ? Le gradient est une **boussole** : il indique la direction et la force avec laquelle ajuster chaque paramètre pour réduire l'erreur.
+
+::: {.callout-note collapse="true"}
+## 🔢 Ce qu'est un gradient
+
+Le gradient est un vecteur de dérivées partielles de la fonction de perte par rapport à chaque paramètre. Intuitivement : si vous êtes perdu dans un paysage montagneux et voulez atteindre la vallée, le gradient vous dit quelle pente descendre à chaque pas. Mathématiquement, pour un paramètre $w$ : $\frac{\partial \mathcal{L}}{\partial w}$.
+:::
 
 ::: {.card .card-window}
 :::: {.card-header}
@@ -524,23 +538,28 @@ graph3 = {
 
 ### La Descente de Gradient et les Optimiseurs Modernes
 
-L'optimisation repose sur la **Descente de Gradient**, qui minimise la fonction de perte en ajustant itérativement les poids [@wiki_gradient_descent; @ruder_2016_gradient].
+La **Descente de Gradient** est le mécanisme central : à chaque étape, on ajuste les paramètres dans le sens qui réduit l'erreur [@wiki_gradient_descent; @ruder_2016_gradient].
 
-Visualisons la fonction de perte non plus comme un écart, mais comme un paysage montagneux en 3D généré par toutes les combinaisons possibles de paramètres. Le but est de trouver le point le plus bas de la vallée (le minimum global de l'erreur). L'algorithme lâche une "boule" dans ce paysage, et le gradient lui indique la pente à suivre pour descendre.
+Imaginez la fonction de perte comme un **paysage montagneux** : chaque combinaison possible de paramètres correspond à un point dans ce relief. Le but est de trouver le point le plus bas (l'erreur minimale). On lâche une "boule" sur la pente, et elle roule vers le bas guidée par le gradient.
 
-Deux paramètres entrent alors en jeu :
+Deux réglages clés :
 
-* **Le pas d'apprentissage (Learning Rate) :** La taille des bonds que fait la boule. Trop petit, l'apprentissage est interminable. Trop grand, la boule rebondit d'une paroi à l'autre sans jamais atteindre le fond [@you_learning_rate; @dharanalakota_2025_pinns].
-* **Le Momentum (L'inertie) :** Permet à la boule de prendre de l'élan pour traverser de petits replats (plateaux) ou remonter de petites cuvettes (minima locaux) afin de continuer sa quête du point le plus bas [@chawla_momentum; @wilson_2018_lyapunov; @dauphin_saddle_point].
+* **Le pas d'apprentissage (Learning Rate) :** La taille des bonds. Trop petit → apprentissage lent. Trop grand → la boule rebondit dans tous les sens sans jamais se stabiliser [@you_learning_rate; @dharanalakota_2025_pinns].
+* **L'inertie (Momentum) :** La boule garde un peu de son élan, ce qui lui permet de franchir les petits plateaux et de ne pas rester coincée dans une fausse vallée [@chawla_momentum; @dauphin_saddle_point].
 
-Les flux de gradients à travers les poids assurent la stabilité, évitant ainsi le phénomène des "neurones morts" [@ficus_weights_biases]. Les optimiseurs modernes affinent cette trajectoire de descente [@lecture2_optimization; @bottou_2010_sgd] :
+Les **optimiseurs modernes** automatisent ces réglages [@lecture2_optimization; @bottou_2010_sgd] :
 
-* **Adam :** Utilise des taux d'apprentissage adaptatifs et des moyennes mobiles des gradients pour une convergence rapide et sûre [@patsnap_adam].
-* **RMSprop :** Ajuste le taux d'apprentissage paramètre par paramètre pour stabiliser les oscillations.
-* **Momentum :** Accélère le gradient dans les directions persistantes.
-* **AdaGrad :** Particulièrement efficace pour les données éparses (*sparsity*).
+* **Adam :** L'optimiseur par défaut aujourd'hui — il adapte automatiquement le pas d'apprentissage pour chaque paramètre [@patsnap_adam].
+* **RMSprop :** Stabilise les oscillations en ajustant le pas selon l'historique récent des gradients.
+* **AdaGrad :** Efficace quand certaines variables apparaissent rarement (*données éparses*).
 
-**L'impact stratégique :** Le choix d'un optimiseur comme Adam garantit la stabilité de la convergence et réduit drastiquement les coûts computationnels. C'est un levier d'efficience opérationnelle majeur qui permet de naviguer plus sûrement vers l'équilibre critique entre précision mathématique et généralisation au monde réel.
+::: {.callout-note collapse="true"}
+## 🔢 Mécanisme des optimiseurs
+
+La mise à jour des poids à chaque étape : $w \leftarrow w - \eta \cdot \nabla_w \mathcal{L}$, où $\eta$ est le taux d'apprentissage et $\nabla_w \mathcal{L}$ le gradient.
+
+**Adam** maintient deux moyennes mobiles — le gradient moyen ($m_t$) et le gradient carré moyen ($v_t$) — pour adapter le pas à chaque paramètre : $\hat{w} = w - \eta \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$.
+:::
 
 ### Simulation de la Trajectoire d'Optimisation
 

@@ -2,6 +2,59 @@
 
 Les Denoising Diffusion Probabilistic Models (DDPM) représentent un **changement de paradigme** par rapport aux GANs. Inspirés par la physique statistique, ils déplacent la charge générative de la compétition adversariale vers la **reconstruction thermodynamique** : apprendre à inverser un processus de dégradation progressive [@Ho2020; @Weng2021].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🌡️ Simulateur — Processus de Diffusion Forward (DDPM)
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof ddpm_t = Inputs.range([0, 100], { value: 0, step: 1, label: "Pas t" })
+```
+
+::::
+
+:::: {.row .g-3 .px-3 .pb-2}
+
+::::: {.col-md-9}
+:::::: {#ddpm-chart-container .card-body .p-1}
+::::::
+:::::
+
+::::: {.col-md-3 .d-flex .flex-column .justify-content-center .gap-2}
+
+::: {.card .border .p-2 .text-center}
+**ᾱ_t**
+
+::: {#ddpm-alpha-display .font-monospace .fw-bold .fs-5}
+—
+:::
+
+Signal restant
+:::
+
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateDiffusionViz } from "../../assets/js/custom/diffusion.js"
+
+_ddpmViz = {
+  updateDiffusionViz(
+    document.getElementById("ddpm-chart-container"),
+    document.getElementById("ddpm-alpha-display"),
+    { t: ddpm_t, T: 100 }
+  );
+}
+```
+
 ### Le Processus Forward : Destruction Contrôlée
 
 Le processus *forward* (ou de diffusion) dégrade itérativement une donnée $\mathbf{x}_0 \sim p_0$ en ajoutant du bruit gaussien à chaque pas de temps $t \in \{1, \ldots, T\}$ [@Singh2024; @SixSimpleSteps2024]. Ce processus est **markovien** et défini par :

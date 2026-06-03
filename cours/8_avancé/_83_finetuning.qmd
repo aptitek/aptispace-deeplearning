@@ -2,6 +2,30 @@
 
 Le pré-entraînement produit un modèle aux capacités générales remarquables mais dont le comportement est non aligné avec les attentes utilisateurs : il prédit le prochain token, pas nécessairement des réponses utiles et sûres. Le **fine-tuning** est le processus qui sculpte ce modèle brut en un assistant spécialisé, adapté à un domaine ou à un format d'interaction particulier [@HuggingFaceSFT2026; @Vo2026].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📊 Dynamiques précoces — bon run vs mauvais run
+::::
+
+:::: {.card-body .p-2}
+
+::: {#finetuning-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateFinetuningViz } from "../../assets/js/custom/learning_curves.js"
+
+_finetuning = {
+  updateFinetuningViz(document.getElementById("finetuning-chart-container"));
+}
+```
+
 ### Transfer Learning vs Fine-Tuning Complet
 
 Le choix de la profondeur d'adaptation dépend de l'ampleur du **Domain Shift** — l'écart entre la distribution des données générales du web et celle du domaine cible [@Vo2026] :

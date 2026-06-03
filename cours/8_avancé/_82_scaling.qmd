@@ -2,6 +2,30 @@
 
 Les lois d'échelle (*scaling laws*) établissent des relations quantitatives entre les trois ressources fondamentales du pré-entraînement : **la taille du modèle** $N$ (nombre de paramètres), **le volume de données** $D$ (nombre de tokens), et le **budget de calcul** $C \approx 6ND$ (FLOPs). L'arbitrage entre ces trois ressources est l'une des décisions stratégiques les plus importantes dans le développement d'un LLM.
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📐 Lois d'échelle : perte vs taille du modèle (log-log)
+::::
+
+:::: {.card-body .p-2}
+
+::: {#scaling-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateScalingViz } from "../../assets/js/custom/learning_curves.js"
+
+_scaling = {
+  updateScalingViz(document.getElementById("scaling-chart-container"));
+}
+```
+
 ### La Loi de Chinchilla : Optimal d'Entraînement
 
 Hoffmann et al. (DeepMind, 2022) établissent que pour un budget de calcul $C$ fixé, la perte de validation est minimisée quand la taille du modèle $N$ et le volume de données $D$ sont **augmentés proportionnellement** [@Hoffmann2022] :

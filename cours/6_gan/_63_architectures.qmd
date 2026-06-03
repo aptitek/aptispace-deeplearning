@@ -2,6 +2,40 @@
 
 L'évolution des GANs est une histoire de stabilisation progressive : chaque architecture répond à une pathologie spécifique identifiée dans les GANs naïfs. Trois axes de progression dominent : les **biais structurels** (convolutions), le **contrôle de la synthèse** (style/conditioning), et la **régularisation théorique** (distance de Wasserstein).
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📉 Courbes d'entraînement — Stabilité des architectures GAN
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+import { GAN_ARCH_OPTIONS } from "../../assets/js/custom/learning_curves.js"
+viewof gan_arch = Inputs.select(GAN_ARCH_OPTIONS, { value: "GAN vanilla", label: "Architecture" })
+```
+
+::::
+
+:::: {.card-body .p-2}
+
+::: {#gan-arch-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateGANArchViz } from "../../assets/js/custom/learning_curves.js"
+
+_ganArch = {
+  updateGANArchViz(document.getElementById("gan-arch-chart-container"), gan_arch);
+}
+```
+
 ### DCGAN : Les Convolutions comme Ancrage Structurel
 
 Le DCGAN (*Deep Convolutional GAN*, Radford et al. 2015) est la première architecture systématiquement stable [@Radford2015arXiv]. Son apport fondamental : remplacer les couches entièrement connectées par des **convolutions** dans le générateur et le discriminateur. Ce choix force les deux réseaux à exploiter les corrélations spatiales locales plutôt que de traiter chaque pixel indépendamment.

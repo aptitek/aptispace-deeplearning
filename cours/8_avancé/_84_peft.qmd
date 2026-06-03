@@ -2,6 +2,40 @@
 
 Le fine-tuning complet d'un LLM de 7 milliards de paramètres requiert plusieurs dizaines de GPU A100 pendant plusieurs jours — prohibitif pour la grande majorité des praticiens. Le **PEFT** (*Parameter-Efficient Fine-Tuning*) permet d'atteindre des performances comparables en ne mettant à jour qu'une fraction infime des paramètres [@HuggingFacePEFT2026; @Balne2024].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔑 Simulateur — Décomposition LoRA : W vs B·A
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof lora_d = Inputs.range([8, 128], { value: 64, step: 8, label: "Dimension d" })
+viewof lora_r = Inputs.range([1, 32],  { value: 8,  step: 1, label: "Rang r" })
+```
+
+::::
+
+:::: {.card-body .p-3}
+
+::: {#lora-diagram-container}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateLoRAViz } from "../../assets/js/custom/lora.js"
+
+_loraViz = {
+  updateLoRAViz(document.getElementById("lora-diagram-container"), { d: lora_d, r: lora_r });
+}
+```
+
 ### LoRA : Adaptation par Matrices de Bas Rang
 
 **LoRA** (*Low-Rank Adaptation*, Hu et al. 2021) est la méthode PEFT la plus répandue. L'intuition fondamentale : la mise à jour des poids lors du fine-tuning a un **rang intrinsèquement bas** — elle n'explore qu'un sous-espace restreint de l'espace des paramètres [@Wikipedia2026].

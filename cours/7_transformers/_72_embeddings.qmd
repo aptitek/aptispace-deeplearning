@@ -55,4 +55,41 @@ Plutôt que de sommer linéairement les sous-mots comme FastText, misK utilise l
 | FastText | N-grammes de caractères | OOV résolu, morphologie | Un vecteur/mot (statique) |
 
 La limite commune à ces trois modèles : le vecteur d'un mot est **statique** — "avocat" a toujours le même vecteur, qu'il désigne le juriste ou le fruit. Cette polysémie est la motivation fondamentale du passage aux plongements contextuels (ELMo, BERT).
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🌐 Visualiseur — Espace des Plongements 2D
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+import { ANALOGY_OPTIONS } from "../../assets/js/custom/word_embeddings.js"
+viewof emb_analogy = Inputs.select(ANALOGY_OPTIONS, { value: ANALOGY_OPTIONS[0], label: "Analogie" })
+```
+
+::::
+
+:::: {.card-body .p-2}
+
+::: {#embedding-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateEmbeddingViz } from "../../assets/js/custom/word_embeddings.js"
+
+_embViz = {
+  updateEmbeddingViz(
+    document.getElementById("embedding-chart-container"),
+    emb_analogy === ANALOGY_OPTIONS[0] ? "" : emb_analogy
+  );
+}
+```
 :::

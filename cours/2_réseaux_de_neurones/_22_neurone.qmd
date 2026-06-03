@@ -2,18 +2,65 @@
 
 Le neurone artificiel constitue l'atome de calcul fondamental de tout réseau de neurones [@Wiki_NeuroneFormel; @Djeffal_Part1]. Sa force réside dans l'application des concepts de **poids** ($w$) et de **biais** ($b$) — déjà introduits au chapitre 1 dans le cadre de l'optimisation générale — à l'échelle d'une unité de calcul unique. Pour en comprendre le fonctionnement de manière intuitive, on peut l'imaginer comme un **magasin connecté** situé au cœur d'une métropole complexe.
 
-* **L'analogie du magasin connecté à la ville :**
-* Dans cette métropole, notre neurone est une enseigne commerciale dont les flux d'entrée proviennent de différents quartiers (les entrées $x_i$). Le but est de centraliser ces flux pour générer un indicateur global.
+* **L'analogie du magasin connecté à la ville :** Dans cette métropole, notre neurone est une enseigne commerciale dont les flux d'entrée proviennent de différents quartiers (les entrées $x_i$). Le but est de centraliser ces flux pour générer un indicateur global.
+* **Les Poids (Weights) — Voies d'accès et trafic :** Les poids ($w_i$) modulent l'importance de chaque entrée [@EITCA_PoidsBiais; @Djeffal_Part2; @SITAMS_Notes]. Ils représentent **l'état et la capacité des routes** menant au magasin. Une route large et fluide possède un **poids élevé** ; une route fermée ou dégradée possède un **poids proche de zéro**, neutralisant l'influence du signal.
+* **Le Biais (Bias) — Chiffre d'affaires de base :** Le biais ($b$) s'apparente au **revenu minimal garanti** du magasin [@EITCA_PoidsBiais; @Maths_IA]. Il décale l'activation pour définir le niveau d'excitation minimal requis pour que le neurone transmette un signal, même lorsque les entrées sont nulles.
+* **La Sommation Pondérée — Synthèse de l'unité de calcul :** Le neurone combine ces éléments en effectuant la sommation pondérée de l'ensemble de ces signaux routiers pour obtenir la **pré-activation** (le résultat intermédiaire avant filtrage non linéaire) [@Bodin_Recher_1; @Buzer2022].
 
-* **Application des Poids (Weights) — Voies d'accès et trafic :**
-* Comme nous l'avons vu, les poids ($w_i$) modulent l'importance de chaque entrée [@EITCA_PoidsBiais; @Djeffal_Part2; @SITAMS_Notes]. Dans notre métropole, ils représentent directement **l'état et la capacité des routes** menant au magasin. Une route large et fluide possède un **poids élevé** et amplifie le signal entrant. À l'inverse, une route dégradée ou fermée possède un **poids proche de zéro**, neutralisant l'influence de son quartier.
+::: {.callout-note collapse="true"}
+## 🔢 Formule de la pré-activation
 
-* **Application du Biais (Bias) — Chiffre d'affaires de base :**
-* Le biais ($b$) agit ici comme le seuil de réactivité propre au neurone [@EITCA_PoidsBiais; @Maths_IA]. Dans l'analogie urbaine, il s'apparente au **revenu minimal garanti** ou aux services automatiques du magasin (ce que l'enseigne génère sans aucun client). Mathématiquement, il décale l'activation sur l'axe des abscisses pour définir le niveau d'excitation minimal requis pour que le neurone transmette un signal, même lorsque les entrées sont nulles.
-
-* **Synthèse de l'unité de calcul (Sommation pondérée) :**
-* Pour prendre sa décision, le neurone combine ces éléments en effectuant la sommation pondérée de l'ensemble de ces signaux routiers :
+Le calcul de la sommation pondérée s'écrit :
 
 $$h = \sum_{i} w_i x_i + b$$
 
-* Ce résultat intermédiaire, appelé **pré-activation**, agrège l'ensemble des influences urbaines avant son filtrage non linéaire [@Bodin_Recher_1; @Buzer2022].
+Où $x_i$ représente les signaux d'entrée, $w_i$ les poids et $b$ le biais.
+:::
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🧠 Simulateur — Anatomie du Neurone Artificiel
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof n_x1 = Inputs.range([-2, 2], { value: 1.0, step: 0.1, label: "x₁" })
+viewof n_x2 = Inputs.range([-2, 2], { value: 0.5, step: 0.1, label: "x₂" })
+viewof n_x3 = Inputs.range([-2, 2], { value: -0.5, step: 0.1, label: "x₃" })
+```
+
+```{ojs}
+//| echo: false
+viewof n_w1 = Inputs.range([-2, 2], { value: 0.8, step: 0.1, label: "w₁" })
+viewof n_w2 = Inputs.range([-2, 2], { value: -0.5, step: 0.1, label: "w₂" })
+viewof n_w3 = Inputs.range([-2, 2], { value: 1.2, step: 0.1, label: "w₃" })
+viewof n_bias = Inputs.range([-2, 2], { value: 0.3, step: 0.1, label: "Biais b" })
+viewof n_fn = Inputs.select(["relu", "sigmoid"], { value: "relu", label: "Activation" })
+```
+
+::::
+
+:::: {.card-body .p-3}
+
+::: {#neuron-diagram-container}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateNeuronDiagram } from "../../assets/js/custom/neuron.js"
+
+_neuron = {
+  updateNeuronDiagram(document.getElementById("neuron-diagram-container"), {
+    x1: n_x1, x2: n_x2, x3: n_x3,
+    w1: n_w1, w2: n_w2, w3: n_w3,
+    bias: n_bias, activationFn: n_fn
+  });
+}
+```

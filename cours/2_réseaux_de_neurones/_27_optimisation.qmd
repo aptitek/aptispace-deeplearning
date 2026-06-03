@@ -2,6 +2,40 @@
 
 La résolution des problèmes de gradient a été un tournant majeur qui a permis l'émergence des modèles massifs actuels. L'enjeu principal est de transformer un paysage d'optimisation mathématiquement accidenté en une voie praticable et stable pour l'algorithme d'apprentissage [@Sun2025; @Bodin_Recher_3; @Martens_HessianFree].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📊 Simulateur — Batch Normalization : avant vs après
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof bn_mu    = Inputs.range([-4, 4], { value: 2.0, step: 0.1, label: "μ (moyenne brute)" })
+viewof bn_sigma = Inputs.range([0.3, 5], { value: 3.0, step: 0.1, label: "σ (écart-type brut)" })
+```
+
+::::
+
+:::: {.card-body .p-2}
+
+::: {#batch-norm-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateBatchNormViz } from "../../assets/js/custom/learning_curves.js"
+
+_batchNorm = {
+  updateBatchNormViz(document.getElementById("batch-norm-container"), { mu: bn_mu, sigma: bn_sigma });
+}
+```
+
 * **L'utilisation de la fonction ReLU et l'initialisation des poids :**
 * En évitant la saturation pour les valeurs positives, la fonction ReLU maintient un flux de gradient sain à travers les couches.
 
@@ -9,17 +43,27 @@ La résolution des problèmes de gradient a été un tournant majeur qui a permi
 
 ### Batch Normalization : stabiliser le paysage d'optimisation
 
-La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmschenk_2016] est une technique introduite par Ioffe et Szegedy (2015) pour stabiliser et accélérer l'apprentissage. Elle a été longtemps attribuée à la réduction du **glissement de covariable interne** (*Internal Covariate Shift*) : au fil des mises à jour des poids, la distribution des activations d'une couche change continuellement, forçant les couches suivantes à s'adapter en permanence. Cependant, une étude du MIT en 2018 a démontré que son véritable succès réside également dans le **lissage du paysage d'optimisation**, rendant le paysage comparable à une autoroute damée ou une piste bleue bien lisse [@Ioffe2015; @Sarkar2024; @Youtube_BatchNorm].
+La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmschenk_2016] est une technique introduite par Ioffe et Szegedy (2015) pour stabiliser et accélérer l'apprentissage. Son rôle majeur est le **lissage du paysage d'optimisation**, rendant la descente de gradient plus stable et plus rapide (semblable à une autoroute damée ou une piste bleue) [@Ioffe2015; @Sarkar2024; @Youtube_BatchNorm].
 
-Pour un mini-lot de pré-activations $\{z_1, \dots, z_m\}$, la BN effectue :
+::: {.callout-note collapse="true"}
+## 🔢 Formules de la Batch Normalization
 
-$$
-\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}
-\qquad \text{puis} \qquad
-\tilde{z}_i = \gamma \hat{z}_i + \beta
-$$
+Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algorithme normalise et met à l'échelle chaque valeur $z_i$ :
 
-où $\mu_{\mathcal{B}}$ et $\sigma_{\mathcal{B}}^2$ sont la moyenne et la variance du mini-lot, $\epsilon$ est un terme de stabilisation numérique, et $\gamma$, $\beta$ sont des **paramètres apprenables** permettant au réseau de retrouver la distribution optimale pour chaque couche.
+1. **Calcul de la moyenne du mini-lot :**
+   $$\mu_{\mathcal{B}} = \frac{1}{m} \sum_{i=1}^m z_i$$
+
+2. **Calcul de la variance du mini-lot :**
+   $$\sigma_{\mathcal{B}}^2 = \frac{1}{m} \sum_{i=1}^m (z_i - \mu_{\mathcal{B}})^2$$
+
+3. **Normalisation :**
+   $$\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}$$
+   *(où $\epsilon$ est une constante de stabilité numérique pour éviter la division par zéro)*
+
+4. **Mise à l'échelle et décalage (Scaling & Shift) :**
+   $$\tilde{z}_i = \gamma \hat{z}_i + \beta$$
+   *(où $\gamma$ et $\beta$ sont deux paramètres apprenables par le réseau pour restituer le pouvoir de représentation)*
+:::
 
 * **L'ordre stratégique :** La pratique standard place la BN entre la transformation linéaire et la fonction d'activation : $\text{Linear} \to \text{BN} \to \text{Activation}$. Cet ordre assure que les entrées de la non-linéarité sont normalisées avant leur application, maximisant la région de sensibilité de la fonction d'activation.
 

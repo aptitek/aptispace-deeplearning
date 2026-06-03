@@ -1,22 +1,30 @@
 ## La Physique du Modèle : Le Compromis Biais-Variance
 
-Le succès d'un modèle se mesure à sa capacité à naviguer entre deux sources d'erreurs fondamentales, définies rigoureusement par la statistique [@bmc_bias_variance]. C'est l'équilibre précaire entre apprendre de ses erreurs et apprendre par cœur.
+Un bon modèle doit trouver le juste milieu entre deux défauts opposés : **trop simpliste** (il rate les vraies tendances) ou **trop rigoureux** (il mémorise le bruit au lieu d'apprendre). C'est le compromis biais-variance [@bmc_bias_variance].
 
 ### Le Biais et le Sous-apprentissage
 
-Le **Biais** se définit mathématiquement par :
-$Biais(\hat{Y})=E(\hat{Y})-Y$
+Le **Biais** est l'erreur systématique d'un modèle trop simplet. Il "manque" les vraies tendances des données — comme un moule trop rigide qui ne parvient pas à épouser la forme de la figurine. Le modèle reste grossièrement plat, incapable de capter la structure réelle : c'est le **sous-apprentissage** (*underfitting*) [@cs229_bias_variance; @gfg_bias_variance; @ghadigaonkar_2025_bias].
 
-Il représente l'erreur systématique due à des hypothèses trop simplistes. Le modèle "manque" les tendances réelles des données.
+::: {.callout-note collapse="true"}
+## 🔢 Définition formelle (Biais)
 
-Si l'on reprend notre analogie du moulage, un biais élevé correspond à une matière beaucoup trop visqueuse ou rigide. Lorsque vous la pressez sur la figurine originale pour en prendre l'empreinte, elle reste grossièrement plate et ne parvient pas à épouser les formes de l'objet. Le modèle n'a pas réussi à capter la structure sous-jacente des données : c'est ce qu'on appelle le **sous-apprentissage** (*underfitting*) [@cs229_bias_variance; @gfg_bias_variance; @ghadigaonkar_2025_bias].
+$$\text{Biais}(\hat{Y}) = E[\hat{Y}] - Y$$
+
+L'espérance de la prédiction moins la vraie valeur — l'écart *moyen* et *systématique* entre ce que le modèle prédit et la réalité.
+:::
 
 ### La Variance et le Sur-apprentissage
 
-La **Variance** se définit par :
-$Variance=E[(\hat{Y}-E[\hat{Y}])^2]$
+La **Variance** représente l'erreur liée à une sensibilité excessive aux fluctuations du jeu d'entraînement. Le modèle procède à une mémorisation du bruit [@ibm_overfitting; @utd_bias_variance] au lieu d'une généralisation.
 
-Elle représente l'erreur liée à une sensibilité excessive aux fluctuations du jeu d'entraînement. Le modèle procède à une mémorisation du bruit [@ibm_overfitting; @utd_bias_variance] au lieu d'une généralisation.
+::: {.callout-note collapse="true"}
+## 🔢 Définition formelle (Variance)
+
+$$\text{Variance}(\hat{Y}) = E\left[(\hat{Y} - E[\hat{Y}])^2\right]$$
+
+La mesure de la dispersion des prédictions du modèle autour de sa moyenne pour différents jeux d'entraînement.
+:::
 
 Dans notre analogie, la matière du moule est ici beaucoup trop liquide et réactive. Non seulement elle capture parfaitement la forme générale de la figurine, mais elle va jusqu'à s'infiltrer dans la moindre micro-rayure et englober chaque grain de poussière présent sur cet exemplaire précis. Le résultat est un **sur-apprentissage** (*overfitting*). Si vous essayez d'utiliser ce moule ultra-spécifique pour valider une nouvelle figurine légèrement différente, il sera totalement inadapté et produira une erreur importante.
 

@@ -42,3 +42,41 @@ Malgré son efficacité computationnelle, le TF-IDF partage avec le BoW des limi
 * **Incapacité à la généralisation OOV** : Un mot absent du vocabulaire d'entraînement est totalement invisible.
 
 Ces limitations ont précipité la recherche vers les **espaces vectoriels denses**, où chaque mot est représenté dans un espace continu de dimension réduite capturant des relations sémantiques par géométrie [@meurisse_2025].
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📊 Simulateur — BoW vs TF-IDF : scores par document
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+import { CORPUS_LABELS } from "../../assets/js/custom/bow_tfidf.js"
+viewof bow_doc  = Inputs.select(CORPUS_LABELS, { label: "Document" })
+viewof bow_mode = Inputs.radio(["bow", "tfidf"], { value: "bow", label: "Méthode", format: x => x === "bow" ? "Bag-of-Words" : "TF-IDF" })
+```
+
+::::
+
+:::: {.card-body .p-2}
+
+::: {#bow-tfidf-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateBowTfIdfViz } from "../../assets/js/custom/bow_tfidf.js"
+
+_bowTfIdf = {
+  updateBowTfIdfViz(document.getElementById("bow-tfidf-container"), {
+    docIndex: CORPUS_LABELS.indexOf(bow_doc),
+    mode: bow_mode
+  });
+}
+```

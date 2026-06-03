@@ -226,6 +226,10 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
   let realGraph = null;
   let destroyed = false;
 
+  // Queue method calls made before the library finishes loading so they can
+  // be replayed on the real instance once it is available.
+  const pendingCalls = [];
+
   const stub = {
     isProxy: true,
     destroy: () => {
@@ -255,6 +259,13 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
         }
         return val;
       }
+      // Library not yet loaded: return a shim that records the call for replay
+      if (typeof prop === "string" && prop !== "then") {
+        return (...args) => {
+          pendingCalls.push({ prop, args });
+          return proxy;  // preserve chaining
+        };
+      }
       return target[prop];
     },
     set: (target, prop, value) => {
@@ -267,7 +278,7 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     }
   });
 
-  const libPromise = is3D 
+  const libPromise = is3D
     ? Promise.all([forceGraph3DPromise, spriteTextPromise])
     : forceGraphPromise;
 
@@ -275,7 +286,14 @@ export function createGraph(container, graphData, optionsOr3d = {}) {
     if (destroyed) return;
     try {
       realGraph = initGraphSync(targetEl, graphData, is3D, customOptions);
-      // Copy any properties that were set on the proxy stub in the meantime
+      // Replay any method calls that were made while the library was loading
+      for (const { prop, args } of pendingCalls) {
+        if (typeof realGraph[prop] === "function") {
+          realGraph[prop](...args);
+        }
+      }
+      pendingCalls.length = 0;
+      // Copy any scalar properties that were set on the proxy stub
       for (const key of Object.keys(stub)) {
         if (key !== "isProxy" && key !== "destroy" && key !== "refresh") {
           realGraph[key] = stub[key];

@@ -35,62 +35,30 @@ Un taux d'apprentissage (LR) fixe est rarement optimal tout au long de l'entraî
 ::::
 
 :::: {.card-control-row .sim-controls-row}
+
 ```{ojs}
 //| echo: false
-viewof lr_init   = Inputs.range([0.001, 0.5],  { value: 0.1,  step: 0.001, label: "LR initial (η₀)" })
-viewof lr_epochs = Inputs.range([10, 100],      { value: 50,   step: 1,     label: "Époques totales" })
+viewof lr_init   = Inputs.range([0.001, 0.5], { value: 0.1, step: 0.001, label: "LR initial (η₀)" })
+viewof lr_epochs = Inputs.range([10, 100],     { value: 50,  step: 1,     label: "Époques totales" })
 ```
+
 ::::
 
-:::: {#plot-lr-schedulers .plot-wrapper}
+:::: {.card-body .p-2}
+
+::: {#lr-schedulers-container .p-1}
+:::
+
 ::::
 
 :::
 
 ```{ojs}
 //| echo: false
-lr_renderChart = {
-  const el = document.getElementById("plot-lr-schedulers");
-  if (!el) return;
+import { updateLRSchedulerViz } from "../../assets/js/custom/learning_curves.js"
 
-  const T = lr_epochs;
-  const eta0 = lr_init;
-  const epochs = Array.from({length: T}, (_, i) => i + 1);
-
-  const stepLR     = epochs.map(e => eta0 * Math.pow(0.5, Math.floor((e - 1) / (T / 5))));
-  const plateau    = epochs.map(e => {
-    // Simule ReduceLROnPlateau : réduit à chaque 1/4 de l'entraînement
-    const reductions = Math.floor((e - 1) / (T / 4));
-    return eta0 * Math.pow(0.5, reductions);
-  });
-  const cosine     = epochs.map(e => eta0 * 0.5 * (1 + Math.cos(Math.PI * (e - 1) / (T - 1))));
-  const warmup     = epochs.map(e => {
-    const w = Math.floor(T * 0.1);
-    return e <= w ? eta0 * (e / w) : eta0 * Math.sqrt(w / e);
-  });
-
-  const traces = [
-    { x: epochs, y: stepLR,  name:"StepLR",              line:{color:"#268bd2", width:2.5} },
-    { x: epochs, y: plateau, name:"ReduceLROnPlateau",    line:{color:"#859900", width:2.5} },
-    { x: epochs, y: cosine,  name:"CosineAnnealingLR",   line:{color:"#dc322f", width:2.5} },
-    { x: epochs, y: warmup,  name:"Warmup + 1/√t Decay", line:{color:"#d33682", width:2.5} },
-  ].map(t => ({ ...t, type:"scatter", mode:"lines" }));
-
-  const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
-  const bg    = isDark ? "#002b36" : "#fdf6e3";
-  const fg    = isDark ? "#839496" : "#657b83";
-  const grid  = isDark ? "#073642" : "#eee8d5";
-
-  const layout = {
-    paper_bgcolor:"transparent", plot_bgcolor:"transparent",
-    xaxis: { title:"Époque", gridcolor:grid, zerolinecolor:fg, tickfont:{color:fg} },
-    yaxis: { title:"Taux d'apprentissage η", gridcolor:grid, zerolinecolor:fg, tickfont:{color:fg} },
-    legend: { orientation:"h", y:-0.25, font:{color:fg} },
-    margin: { t:20, b:70, l:65, r:20 },
-    font: { color:fg }
-  };
-
-  Plotly.react(el, traces, layout, { responsive:true, displayModeBar:false });
+_lrScheduler = {
+  updateLRSchedulerViz(document.getElementById("lr-schedulers-container"), { eta0: lr_init, T: lr_epochs });
 }
 ```
 

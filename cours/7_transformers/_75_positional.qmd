@@ -13,6 +13,52 @@ Selon Kazemnejad (2019), un encodage positionnel optimal doit satisfaire quatre 
 | **Généralisation** | Fonctionne pour des séquences plus longues que celles vues à l'entraînement | Échec sur contextes longs |
 | **Déterminisme** | Encodage fixe, sans paramètre aléatoire | Instabilité à l'inférence |
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🌊 Simulateur — Matrice d'Encodage Positionnel Sinusoïdal
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+viewof pe_seq_len  = Inputs.range([4, 64],  { value: 32, step: 4,  label: "Longueur de séquence" })
+viewof pe_d_model  = Inputs.range([8, 64],  { value: 32, step: 8,  label: "Dimension d" })
+viewof pe_highlight = Inputs.range([0, 63], { value: 0,  step: 1,  label: "Position t" })
+```
+
+::::
+
+:::: {.row .g-3 .px-3 .pb-2}
+
+::::: {.col-12}
+:::::: {#pe-heatmap-container .card-body .p-1}
+::::::
+:::::
+
+::::: {.col-12}
+:::::: {#pe-line-container .card-body .p-1}
+::::::
+:::::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updatePEViz } from "../../assets/js/custom/positional_encoding.js"
+
+_peViz = {
+  updatePEViz(
+    document.getElementById("pe-heatmap-container"),
+    document.getElementById("pe-line-container"),
+    { seqLen: pe_seq_len, dModel: pe_d_model, highlightPos: Math.min(pe_highlight, pe_seq_len - 1) }
+  );
+}
+```
+
 ### L'Encodage Sinusoïdal : La Solution Originale
 
 Vaswani et al. (*Attention Is All You Need*, 2017) proposent un encodage fixe basé sur des fonctions sinusoïdales à fréquences géométriques [@Kazemnejad2019; @Azazi2025] :

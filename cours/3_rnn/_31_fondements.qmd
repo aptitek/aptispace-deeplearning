@@ -4,29 +4,43 @@ Le passage des architectures *feedforward* (MLP) aux réseaux de neurones récur
 
 ### La limite de l'hypothèse markovienne
 
-Dans les systèmes dynamiques réels, l'hypothèse markovienne de premier ordre — selon laquelle l'état futur ne dépend que de l'état immédiatement précédent — s'avère structurellement insuffisante. Prédire la prochaine occurrence d'une séquence exige que le modèle estime la **loi de probabilité conditionnelle** :
+Dans les systèmes dynamiques réels, l'hypothèse markovienne de premier ordre — selon laquelle l'état futur ne dépend que de l'état immédiatement précédent — s'avère structurellement insuffisante. Prédire la prochaine occurrence d'une séquence exige de prendre en compte tout l'historique des données passées.
 
-$$
-P(\mathbf{x}_t \mid \mathbf{x}_1, \dots, \mathbf{x}_{t-1})
-$$
+Un MLP standard traite chaque élément de façon indépendante, ignorant l'historique et le rendant aveugle aux dépendances temporelles. À l'inverse, l'état caché d'un RNN agit comme un **filtre temporel** : il moyenne et stabilise l'information utile contre le bruit à travers les pas de temps [@Franck2024; @Modelisation2024].
 
-Un MLP standard traite chaque vecteur $\mathbf{x}_t$ de façon indépendante, ignorant l'historique $(\mathbf{x}_1, \dots, \mathbf{x}_{t-1})$. Il est donc structurellement aveugle aux dépendances inter-temporelles. En traitement du signal, l'état caché d'un RNN agit comme un **filtre temporel** : il moyenne et stabilise l'information utile contre le bruit aléatoire à travers les trames, de la même façon qu'une moyenne mobile réduit la variance d'un signal parasite [@Franck2024; @Modelisation2024].
+::: {.callout-note collapse="true"}
+## 🔢 Loi de probabilité conditionnelle d'une séquence
+
+Pour modéliser une séquence temporelle, le modèle doit estimer la distribution conditionnelle suivante pour chaque pas de temps $t$ :
+
+$$P(\mathbf{x}_t \mid \mathbf{x}_1, \dots, \mathbf{x}_{t-1})$$
+
+Où $\mathbf{x}_t$ est l'observation actuelle et $(\mathbf{x}_1, \dots, \mathbf{x}_{t-1})$ représente l'historique complet de la séquence.
+:::
 
 ### Le vecteur d'état caché $\mathbf{h}_t$
 
-Le pivot de l'architecture RNN est le **vecteur latent** $\mathbf{h}_t$, ou état caché, qui compresse l'historique des entrées passées. Il transforme une séquence de taille variable en un flux de sortie :
+Le pivot de l'architecture RNN est le **vecteur latent** $\mathbf{h}_t$ (ou état caché), qui compresse l'historique des entrées passées. Il permet de mapper une séquence d'entrée de taille variable vers un état de taille fixe, mis à jour à chaque pas de temps [@Wang2023; @Grosse2017].
 
-$$
-\mathbf{y}_t = f_\theta(\mathbf{x}_t, \mathbf{h}_{t-1})
-$$
+::: {.callout-note collapse="true"}
+## 🔢 Formules de mise à jour de l'état caché et de sortie
 
-L'état caché est mis à jour à chaque pas de temps selon la récurrence :
+À chaque pas de temps $t$, l'état caché $\mathbf{h}_t$ et la sortie $\mathbf{y}_t$ sont calculés par récurrence :
 
-$$
-\mathbf{h}_t = \tanh\!\left(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}\right)
-$$
+1. **Mise à jour de l'état caché :**
+   $$\mathbf{h}_t = \tanh\!\left(\mathbf{W}_h \mathbf{h}_{t-1} + \mathbf{W}_x \mathbf{x}_t + \mathbf{b}\right)$$
 
-où $\mathbf{W}_h$ est la matrice de récurrence (poids sur l'état précédent), $\mathbf{W}_x$ est la matrice d'entrée, et $\mathbf{b}$ est le biais. Le même jeu de poids $(\mathbf{W}_h, \mathbf{W}_x, \mathbf{b})$ est partagé à **tous les pas de temps** — c'est ce partage qui confère aux RNN leur capacité à traiter des séquences de longueur variable [@Wang2023; @Grosse2017].
+2. **Calcul de la sortie :**
+   $$\mathbf{y}_t = f_\theta(\mathbf{x}_t, \mathbf{h}_{t-1})$$
+
+Où :
+* $\mathbf{h}_{t-1}$ est l'état caché précédent (mémoire)
+* $\mathbf{x}_t$ est l'entrée au pas de temps actuel
+* $\mathbf{W}_h$ est la matrice de récurrence (poids de l'état caché)
+* $\mathbf{W}_x$ est la matrice de projection de l'entrée
+* $\mathbf{b}$ est le biais
+* Le même jeu de paramètres $(\mathbf{W}_h, \mathbf{W}_x, \mathbf{b})$ est partagé à tous les pas de temps $t$.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🏪 Analogie : La Trésorerie du Magasin Connecté

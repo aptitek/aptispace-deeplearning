@@ -2,6 +2,30 @@
 
 Le développement d'un grand modèle de langage (LLM) ne se résume pas à une phase de calcul massive et indifférenciée. Le pré-entraînement est l'étape où le modèle acquiert son **capital de connaissances** initial, sa structure cognitive et sa compréhension statistique du monde. La qualité de cette fondation détermine la capacité de généralisation et l'efficacité de toutes les spécialisations ultérieures [@Yuksel2025; @GoPenAI2026].
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📉 Perte d'entraînement vs tokens traités
+::::
+
+:::: {.card-body .p-2}
+
+::: {#pretraining-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updatePretrainingViz } from "../../assets/js/custom/learning_curves.js"
+
+_pretraining = {
+  updatePretrainingViz(document.getElementById("pretraining-chart-container"));
+}
+```
+
 ### La Modélisation Autoregressive : Chaînes de Markov d'Ordre $k$
 
 Sous l'angle mathématique, le pré-entraînement autorégressif par **prédiction du prochain token** (*next-token prediction*) modélise le langage comme une chaîne de Markov d'ordre $k$. Pour un corpus de $N$ séquences de tokens, l'objectif est de maximiser la vraisemblance [@Yuksel2025] :

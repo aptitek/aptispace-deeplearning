@@ -47,51 +47,24 @@ viewof rnn_T_grad   = Inputs.range([5, 50],    { value: 20,  step: 1,    label: 
 ```
 ::::
 
-:::: {#plot-grad-magnitude .plot-wrapper}
+:::: {.card-body .p-2}
+
+::: {#plot-grad-magnitude .p-1}
+:::
+
 ::::
 
 :::
 
 ```{ojs}
 //| echo: false
-grad_renderChart = {
-  const el = document.getElementById("plot-grad-magnitude");
-  if (!el) return;
+import { updateGradientMagnitudeViz } from "../../assets/js/custom/learning_curves.js"
 
-  const T = rnn_T_grad;
-  const rho = rho_spectral;
-  const steps = Array.from({length: T}, (_, i) => i + 1);
-  const sigma_prime = 0.25; // max of tanh'(x)
-  const mags = steps.map(t => Math.pow(rho * sigma_prime, t - 1));
-
-  const colorFn = rho > 1 ? "#dc322f" : rho < 0.95 ? "#268bd2" : "#859900";
-  const labelFn = rho > 1 ? "Explosion (ρ > 1)" : rho < 0.95 ? "Disparition (ρ < 1)" : "Zone marginale";
-
-  const isDark = document.documentElement.getAttribute("data-bs-theme") === "dark";
-  const fg    = isDark ? "#839496" : "#657b83";
-  const grid  = isDark ? "#073642" : "#eee8d5";
-
-  const traces = [{
-    x: steps, y: mags, name: `ρ = ${rho} — ${labelFn}`,
-    type:"scatter", mode:"lines+markers",
-    line:{ color: colorFn, width: 2.5 },
-    marker:{ size:5, color: colorFn }
-  }, {
-    x: [1, T], y: [0.01, 0.01], name:"Seuil critique (0.01)",
-    type:"scatter", mode:"lines",
-    line:{ color: fg, width: 1.5, dash:"dot" }
-  }];
-
-  const layout = {
-    paper_bgcolor:"transparent", plot_bgcolor:"transparent",
-    xaxis: { title:"Pas de temps t", gridcolor:grid, tickfont:{color:fg} },
-    yaxis: { title:"‖∂hₜ/∂h₁‖", type:"log", gridcolor:grid, tickfont:{color:fg} },
-    legend: { font:{color:fg}, x:0.5, y:0.95 },
-    margin:{ t:20, b:55, l:65, r:20 },
-    font:{ color:fg }
-  };
-
-  Plotly.react(el, traces, layout, { responsive:true, displayModeBar:false });
+_gradMag = {
+  updateGradientMagnitudeViz(document.getElementById("plot-grad-magnitude"), {
+    rho: rho_spectral,
+    T:   rnn_T_grad
+  });
 }
 ```
 

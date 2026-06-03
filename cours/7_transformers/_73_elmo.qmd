@@ -12,6 +12,40 @@ $$\mathcal{L}_{\text{biLM}} = \sum_{k=1}^{N} \left[\log p(w_k | w_1, \ldots, w_{
 
 $$\text{ELMo}_k^{\text{task}} = \gamma^{\text{task}} \sum_{j=0}^{L} s_j^{\text{task}} \mathbf{h}_{k,j}^{\text{biLM}}$$
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+📈 Simulateur — Poids des couches ELMo par tâche
+::::
+
+:::: {.card-control-row .sim-controls-row}
+
+```{ojs}
+//| echo: false
+import { ELMO_TASK_OPTIONS } from "../../assets/js/custom/word_embeddings.js"
+viewof elmo_task = Inputs.select(ELMO_TASK_OPTIONS, { label: "Tâche NLP" })
+```
+
+::::
+
+:::: {.card-body .p-2}
+
+::: {#elmo-chart-container .p-1}
+:::
+
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { updateElmoViz } from "../../assets/js/custom/word_embeddings.js"
+
+_elmoViz = {
+  updateElmoViz(document.getElementById("elmo-chart-container"), elmo_task);
+}
+```
+
 ### Spécialisation des Couches par Niveau d'Abstraction
 
 Un résultat clé de Peters et al. est la spécialisation hiérarchique des couches du biLM [@peters_2018] :

@@ -1,6 +1,6 @@
 ## Genèse et Évolution : La Grande Histoire de l'Apprentissage Automatique
 
-Pour comprendre les architectures modernes et faire des choix technologiques éclairés aujourd'hui, il est indispensable de comprendre comment notre discipline s'est construite. L'histoire de l'Intelligence Artificielle et du Machine Learning n'est pas une ligne droite ; c'est un pendule qui a longuement oscillé entre deux grands paradigmes : l'**IA symbolique** (basée sur la logique et des règles explicites) et le **connexionnisme** (inspiré de la biologie et de l'apprentissage par l'expérience) [@groumpos_2023_ai; @wiki_timeline_ml].
+L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs fous, de désillusions et de renaissances — comme un pendule qui oscille entre deux grandes idées : faire obéir les machines à des règles écrites à la main (**IA symbolique**) ou leur apprendre à partir d'exemples, comme le ferait un enfant (**connexionnisme**) [@groumpos_2023_ai; @wiki_timeline_ml].
 
 ### Timeline
 
@@ -46,7 +46,7 @@ Pour comprendre les architectures modernes et faire des choix technologiques éc
 
 ### Les Pionniers et l'Aube de l'Apprentissage (1950 - 1960)
 
-Tout commence véritablement en 1950 avec Alan Turing. Dans son article fondateur *Computing Machinery and Intelligence*, il pose une question provocatrice : « Les machines peuvent-elles penser ? ». Il y introduit le fameux **Test de Turing**, déplaçant le débat de la philosophie vers l'ingénierie et posant l'imitation du comportement humain comme standard de réussite.
+Tout commence en 1950 avec Alan Turing et une question simple mais vertigineuse : « Les machines peuvent-elles penser ? ». Son **Test de Turing** transforme ce débat philosophique en défi d'ingénierie : imiter le comportement humain devient la mesure du succès.
 
 C'est quelques années plus tard, en 1958, que le premier jalon technique du Machine Learning est posé par le psychologue Frank Rosenblatt. Il invente le **Perceptron** [@rosenblatt_1958_perceptron]. C'est le premier réseau de neurones artificiel, modélisé à partir des neurones biologiques. À l'époque, il s'agissait d'une machine physique (le Mark I Perceptron) capable d'apprendre à reconnaître des formes simples par essais et erreurs. Rosenblatt pensait alors que le Perceptron finirait par être capable de marcher, parler, voir et écrire.
 
@@ -68,7 +68,7 @@ Toutefois, dans les années 90, les réseaux de neurones sont encore boudés car
 
 ### Le Big Bang du Deep Learning (2012 - Présent)
 
-Pourquoi l'apprentissage profond (Deep Learning), basé sur des concepts des années 80, a-t-il soudainement dominé le monde trente ans plus tard ? L'explication tient en trois vecteurs qui se sont percutés au début des années 2010 :
+Pourquoi des idées des années 80 ont-elles soudain dominé le monde trente ans plus tard ? Parce que trois ingrédients manquants sont enfin arrivés en même temps :
 
 1. **L'explosion des données (Big Data) :** L'avènement d'Internet et des réseaux sociaux a fourni les quantités massives de données étiquetées nécessaires pour entraîner de grands réseaux.
 2. **La puissance de calcul matérielle :** Le détournement des cartes graphiques (GPU), initialement conçues pour le jeu vidéo, a permis de paralléliser les calculs matriciels du Machine Learning, réduisant les temps d'entraînement de plusieurs mois à quelques jours.

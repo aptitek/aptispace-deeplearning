@@ -2,13 +2,20 @@
 
 L'entraînement des réseaux profonds se heurte souvent à ce que l'on pourrait qualifier de "stabilité instable". Lors de la phase de rétropropagation, la multiplication successive des gradients à travers les nombreuses couches du réseau peut mener à des phénomènes critiques : leur disparition ou leur explosion [@Sun2025; @Geeks_VanishingGradients; @Wiki_VanishingGradient].
 
-* **Le mécanisme mathématique (La multiplication des dérivées) :**
-* Pour calculer l'ajustement des poids dans les premières couches du réseau, l'algorithme utilise la règle de la chaîne, ce qui implique de multiplier en cascade les dérivées des fonctions d'activation couche après couche.
-*
-**Disparition du gradient (Vanishing Gradient) :** Si les dérivées des fonctions d'activation sont systématiquement inférieures à 1 (comme c'est souvent le cas avec la fonction Sigmoïde), la multiplication successive de ces petites fractions fait que leur produit tend très rapidement vers zéro. Le signal d'apprentissage s'atténue alors jusqu'à devenir un murmure inaudible. Conséquence : les premières couches du réseau ne reçoivent plus de signal d'erreur significatif et deviennent incapables de se mettre à jour [@RisingScholars_Sigmoid].
+* **Le mécanisme du gradient (Vanishing & Exploding) :** Lors de la rétropropagation, calculer les gradients des premières couches nécessite de multiplier les dérivées des fonctions d'activation et les poids des couches suivantes en cascade (règle de la chaîne).
+  * **Disparition (Vanishing) :** Si ces termes sont inférieurs à 1 (ex: avec la fonction Sigmoïde), le produit tend exponentiellement vers zéro, bloquant l'apprentissage des premières couches [@RisingScholars_Sigmoid].
+  * **Explosion (Exploding) :** Si ces termes sont supérieurs à 1, le produit grandit de manière exponentielle, rendant les mises à jour chaotiques et déstabilisant le modèle [@Geeks_VanishingGradients; @Geeks_GradientClipping].
 
-*
-**Explosion du gradient (Exploding Gradient) :** À l'inverse, si les dérivées ou les poids initiaux sont supérieurs à 1, leur produit en cascade provoque une croissance exponentielle du gradient. Le signal se transforme en un bruit assourdissant et chaotique qui va générer des mises à jour démesurées, déstabilisant totalement l'apprentissage du modèle [@Geeks_VanishingGradients; @Geeks_GradientClipping].
+::: {.callout-note collapse="true"}
+## 🔢 Formulation mathématique du problème
+
+Dans un réseau à $L$ couches, le gradient de la perte par rapport à un poids $w^1$ de la première couche s'exprime sous la forme d'un produit :
+
+$$\frac{\partial \mathcal{L}}{\partial w^1} = \frac{\partial \mathcal{L}}{\partial a^L} \cdot \left( \prod_{k=2}^{L} w^k \sigma'(z^{k-1}) \right) \sigma'(z^1) x^0$$
+
+Si $\forall k, |w^k \sigma'(z^{k-1})| < 1$, alors le terme de produit $\prod_{k=2}^{L}$ tend vers $0$ lorsque $L$ augmente (gradients évanescents).
+Si $\forall k, |w^k \sigma'(z^{k-1})| > 1$, alors ce terme grandit exponentiellement (gradients explosifs).
+:::
 
 * **Illustration concrète avec l'analogie de la transmission humaine :**
 * Imaginez une chaîne de transmission composée de 10 personnes en ligne.
