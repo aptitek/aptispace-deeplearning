@@ -1,8 +1,12 @@
 ## La GRU : Efficacité et Compromis
 
+La GRU est une version allégée de la LSTM qui fusionne deux de ses trois portes en une seule, ce qui la rend plus rapide à entraîner tout en conservant l'essentiel de sa capacité à mémoriser le long terme.
+
 La *Gated Recurrent Unit* (GRU), proposée par Cho et al. en 2014, simplifie la cellule LSTM tout en préservant ses propriétés fondamentales de stabilité. Son idée directrice est d'**unifier les portes d'oubli et d'entrée** en une seule porte de mise à jour, et de fusionner l'état de cellule avec l'état caché [@Zhang2021; @Articsledge2024; @Pluralsight2024].
 
 ### Architecture simplifiée
+
+Comme un agenda qui se met à jour en écrasant les vieilles entrées plutôt qu'en rajoutant des colonnes, la GRU gère mémoire courte et longue au même endroit, sans état de cellule séparé.
 
 La GRU opère avec seulement deux portes et ne possède pas d'état de cellule séparé — l'état caché $\mathbf{h}_t$ joue simultanément les rôles de mémoire courte et longue terme :
 
@@ -50,6 +54,8 @@ graph LR
 ```
 
 ### Nombre de paramètres de la GRU
+
+Avec seulement 3 portes au lieu de 4, la GRU a environ un quart de paramètres en moins que la LSTM — ce qui se traduit directement par un entraînement plus rapide et moins gourmand en mémoire.
 
 Avec trois sous-réseaux (z, r, h) au lieu de quatre pour la LSTM [@Sycorax2018; @Orucov2019] :
 

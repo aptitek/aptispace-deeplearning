@@ -1,8 +1,12 @@
 ## Fondements des RNN : Mémoire et Récurrence
 
+Un RNN (réseau de neurones récurrent) est un réseau qui possède une **mémoire** : au lieu de traiter chaque donnée de manière isolée, il conserve un résumé de ce qu'il a vu avant pour interpréter ce qu'il voit maintenant — comme un lecteur qui relit mentalement le début de la phrase avant d'en comprendre la fin.
+
 Le passage des architectures *feedforward* (MLP) aux réseaux de neurones récurrents (RNN) représente une **rupture paradigmatique** nécessaire pour le traitement des dépendances temporelles. Contrairement aux modèles statiques qui postulent l'indépendance de chaque observation, les RNN intègrent une dimension séquentielle où l'ordre des données est constitutif de leur signification. Un mot n'a de sens que dans son contexte phrastique ; une valeur boursière n'est informative que par rapport à sa trajectoire passée [@Franck2024; @AWS2024; @DATAROCKSTARS2025].
 
 ### La limite de l'hypothèse markovienne
+
+Un modèle sans mémoire suppose que chaque instant n'a besoin que de l'instant juste précédent pour prévoir le suivant — mais en réalité, prédire la fin d'une série temporelle complexe exige souvent de remonter loin dans l'historique.
 
 Dans les systèmes dynamiques réels, l'hypothèse markovienne de premier ordre — selon laquelle l'état futur ne dépend que de l'état immédiatement précédent — s'avère structurellement insuffisante. Prédire la prochaine occurrence d'une séquence exige de prendre en compte tout l'historique des données passées.
 
@@ -19,6 +23,8 @@ Où $\mathbf{x}_t$ est l'observation actuelle et $(\mathbf{x}_1, \dots, \mathbf{
 :::
 
 ### Le vecteur d'état caché $\mathbf{h}_t$
+
+L'état caché est le **carnet de notes** du réseau : à chaque pas de temps, il résume tout l'historique pertinent vu jusqu'ici dans un vecteur de taille fixe, qui sera relu au pas suivant.
 
 Le pivot de l'architecture RNN est le **vecteur latent** $\mathbf{h}_t$ (ou état caché), qui compresse l'historique des entrées passées. Il permet de mapper une séquence d'entrée de taille variable vers un état de taille fixe, mis à jour à chaque pas de temps [@Wang2023; @Grosse2017].
 
@@ -377,6 +383,8 @@ layoutAdjustRNN = {
 ```
 
 ### Topologies fondamentales : Elman et Jordan
+
+Il existe deux façons de "boucler" la mémoire : soit on réutilise l'**état interne** du réseau (Elman, la plus courante), soit on réutilise sa **dernière sortie** (Jordan, utile pour les robots qui doivent savoir ce qu'ils viennent de faire).
 
 Deux architectures définissent le comportement de la récurrence [@Modelisation2024; @Franck2024] :
 

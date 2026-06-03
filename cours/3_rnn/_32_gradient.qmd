@@ -1,8 +1,12 @@
 ## Instabilité du Gradient dans les RNN
 
+Quand on entraîne un RNN sur de longues séquences, le même problème de gradient évanescent ou explosif du chapitre 2 se réapparaît mais de façon encore plus sévère : chaque pas de temps rajouté équivaut à ajouter une couche supplémentaire au réseau.
+
 La robustesse d'un RNN ne se mesure pas à sa profondeur structurelle, mais à sa capacité à propager l'information sans distorsion sur de **longs horizons temporels**. L'apprentissage par rétropropagation à travers le temps (*Backpropagation Through Time*, BPTT) expose les limites intrinsèques de l'architecture récurrente basique lorsque les séquences deviennent longues [@Pascanu2013; @Grosse2017; @wabbit2019].
 
 ### Backpropagation Through Time (BPTT)
+
+Pour entraîner un RNN, on "déplie" le réseau dans le temps comme si chaque pas de temps était une couche supplémentaire d'un réseau profond, puis on applique la rétropropagation standard sur ce réseau étiré.
 
 Le BPTT est la généralisation de la rétropropagation au cas séquentiel. On "déplie" (*unroll*) le RNN sur $T$ pas de temps pour obtenir un réseau profond de $T$ couches partageant les mêmes poids. Le gradient de la perte totale $\mathcal{L} = \sum_t \mathcal{L}_t$ par rapport aux poids $\mathbf{W}_h$ nécessite de calculer, pour chaque pas $t$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
@@ -29,6 +33,8 @@ $$
 La stabilité de ce produit est dictée par son **rayon spectral** (la valeur propre dominante de la matrice de poids récurrents $\mathbf{W}_h$, notée $\rho(\mathbf{W}_h)$ où $\rho$ est la lettre grecque rho) [@Pascanu2013; @Franck2024].
 
 ### Disparition et explosion du gradient (version temporelle)
+
+Ici, c'est la **longueur de la séquence** — et non la profondeur du réseau — qui multiplie les gradients : une phrase de 50 mots équivaut à remonter dans 50 couches successives. Si les poids sont légèrement inférieurs à 1, le signal d'erreur s'efface complètement avant d'atteindre les premiers mots.
 
 Le problème de la disparition et de l'explosion du gradient — introduit au chapitre 2 sous l'angle de la profondeur spatiale — prend ici une forme **temporelle** particulièrement sévère.
 
@@ -84,6 +90,8 @@ _gradMag = {
 ```
 
 ### Remèdes pratiques
+
+En attendant des architectures mieux conçues (LSTM, GRU), deux rustines existent : **limiter l'amplitude des gradients** quand ils s'emballent, et **raccourcir la fenêtre de mémoire** pour ne pas remonter trop loin dans le temps.
 
 Deux stratégies palliatives existent pour les RNN simples, avant d'adopter des architectures à portes [@Pascanu2013; @Xu2024] :
 
