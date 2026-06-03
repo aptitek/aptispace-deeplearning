@@ -1,5 +1,7 @@
 ## Synthèse : La Contrainte comme Source de Sémantique
 
+Trois approches, un même principe : plus on contraint l'espace latent, plus le modèle est forcé à apprendre des représentations compactes et généralisables. AE serre légèrement, VAE serre avec des garde-fous probabilistes, VQ-VAE impose un alphabet fini.
+
 L'exploration des trois architectures d'espace latent révèle une **leçon unificatrice** : la sémantique émergente est une fonction directe de la contrainte exercée sur l'espace latent. Plus la contrainte est rigoureuse et structurée, plus le modèle est forcé à distiller l'essence informative des données [@fournier_2021; @shrivastava_2024].
 
 ### Tableau Comparatif des Architectures
@@ -26,6 +28,8 @@ Les trois architectures forment une hiérarchie de contraintes croissantes :
 Paradoxalement, c'est l'architecture la plus contrainte (VQ-VAE) qui produit souvent les meilleures représentations pour les données haute dimension, car elle force le modèle à apprendre des abstractions véritablement discrètes et compositionnelles.
 
 ### Connexion avec les Modèles de Fondation
+
+Les VAE ne sont pas seulement un exercice académique : Stable Diffusion, l'un des modèles génératifs les plus populaires du monde, utilise un VAE pour comprimer les images en espace latent avant d'y appliquer la diffusion.
 
 Les autoencodeurs variationnels constituent une **fondation théorique essentielle** pour les architectures modernes. Les modèles de diffusion latente (Latent Diffusion Models, dont Stable Diffusion) s'appuient explicitement sur un VAE pour comprimer les images en un espace latent, dans lequel le processus de diffusion opère. Cette séparation des préoccupations — compression sémantique (VAE) et modélisation générative (diffusion) — permet de combiner les avantages des deux paradigmes.
 

@@ -1,8 +1,12 @@
 ## L'Autoencodeur Classique : Compression Contrainte et Espace Latent
 
+Un autoencodeur apprend à compresser puis à reconstruire ses données d'entrée en passant par un goulot d'étranglement très étroit — comme résumer un livre en dix mots, puis tenter de le réécrire depuis ce résumé.
+
 L'autoencodeur classique ne doit pas être appréhendé comme un simple mécanisme de copie, mais comme une **architecture de contrainte** forçant l'extraction de caractéristiques sémantiques. En privant le réseau de ressources dimensionnelles, on l'oblige à résoudre un problème d'optimisation sous contrainte de goulot d'étranglement (*bottleneck*). Toute l'astuce réside dans cette privation délibérée : c'est le manque de capacité qui génère la représentation utile [@giguere_nd; @canziani_2020].
 
 ### Le Triptyque Architectural
+
+L'autoencodeur a trois pièces : l'encodeur qui compresse, le goulot qui étranglé, et le décodeur qui tente de reconstruire. C'est la petitesse du goulot qui force la compression à être sémantiquement utile.
 
 Le système s'articule autour de trois composantes fondamentales [@mlberkeley_nd; @talbi_2021] :
 
@@ -13,6 +17,8 @@ Le système s'articule autour de trois composantes fondamentales [@mlberkeley_nd
 * **Le Décodeur** ($\hat{\mathbf{x}} = g_\phi(\mathbf{z})$) : La fonction réciproque qui tente de reconstruire le signal original à partir de la représentation compressée. Il est souvent symétrique à l'encodeur.
 
 ### L'Objectif de Reconstruction
+
+Le modèle est entraîné à reproduire fidèlement sa propre entrée après l'avoir comprimée : plus l'écart entre l'original et la reconstruction est petit, mieux le goulot a retenu l'essentiel.
 
 Mathématiquement, l'entraînement minimise la **perte de reconstruction** :
 
@@ -28,6 +34,8 @@ Imaginons devoir transmettre un discours complet via un télégramme à coût fi
 
 ### Applications Pratiques
 
+Grâce à sa capacité à distiller l'essentiel, l'autoencodeur sert de débruiteur, de détecteur d'anomalies (tout ce qu'il ne sait pas reconstruire est "anormal"), et d'outil de visualisation de l'espace latent.
+
 La contrainte du goulot d'étranglement génère plusieurs capacités utiles :
 
 * **Compression et Réduction de Dimension** : La représentation latente $\mathbf{z}$ constitue une représentation compacte, exploitable pour la visualisation (t-SNE sur $\mathbf{z}$) ou comme entrée d'un modèle aval [@fournier_2021].
@@ -37,6 +45,8 @@ La contrainte du goulot d'étranglement génère plusieurs capacités utiles :
 * **Détection d'Anomalies** : Pour une donnée hors-distribution, la perte de reconstruction $\|\mathbf{x} - \hat{\mathbf{x}}\|^2$ est structurellement élevée, le modèle n'ayant pas de "vocabulaire latent" pour la représenter. Ce signal constitue un détecteur d'anomalies sans supervision.
 
 ### La Limite Fondamentale : Fragmentation du Manifold
+
+L'espace latent de l'autoencodeur ressemble à un archipel : des îles valides entourées de vide. Tirer un point aléatoire dans ce vide produit un décodage incohérent — c'est ce qui motive le VAE.
 
 Malgré ces qualités, l'autoencodeur classique souffre d'un défaut architectural critique : **la fragmentation du manifold latent**. L'espace $\mathbf{z}$ est discontinu, parsemé de "trous sémantiques" entre les clusters correspondant aux différentes classes. Interpoler entre deux points latents valides peut produire des reconstructions incohérentes [@shrivastava_2024].
 

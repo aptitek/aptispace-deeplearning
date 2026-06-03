@@ -1,8 +1,12 @@
 ## Dérivation de la Divergence de Kullback-Leibler
 
+La divergence KL mesure à quel point deux courbes de probabilité diffèrent l'une de l'autre — dans le VAE, c'est le thermomètre qui indique si les nuages gaussiens appris restent proches du nuage de référence centré à l'origine.
+
 Pour comprendre comment le VAE préserve la continuité de son espace latent, une dérivation rigoureuse de la **Divergence de Kullback-Leibler** (D~KL~) entre deux distributions gaussiennes est indispensable. Cette forme fermée est la clé qui rend le VAE entraînable efficacement [@munoz_nd].
 
 ### Définition et Problème
+
+Cette étape consiste à formaliser mathématiquement l'écart entre la distribution latente apprise par l'encodeur et la distribution normale standard choisie comme référence.
 
 On cherche à quantifier l'écart entre la distribution postérieure apprise $q_\phi(\mathbf{z}|\mathbf{x}) \sim \mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ et la distribution *a priori* $p(\mathbf{z}) \sim \mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$, avec typiquement $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$. La définition générale est :
 
@@ -46,6 +50,8 @@ $$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma
 
 ### Cas Pratique du VAE : Gaussiennes Diagonales
 
+Dans la pratique, puisqu'on ne considère que des gaussiennes sans corrélations entre dimensions, la formule complexe se réduit à une simple somme sur chaque dimension latente — facile à calculer et à différencier.
+
 Dans l'implémentation standard du VAE, les covariances sont **diagonales** : $\boldsymbol{\Sigma}_1 = \text{diag}(\sigma_1^2, \ldots, \sigma_k^2)$ et $\boldsymbol{\Sigma}_2 = \mathbf{I}$ (l'*a priori* standard). La formule se simplifie considérablement ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \mathcal{N}(\mathbf{0}, \mathbf{I})\right) = \frac{1}{2} \sum_{j=1}^{k} \left(\sigma_j^2 + \mu_j^2 - 1 - \log \sigma_j^2\right)$$
@@ -58,6 +64,8 @@ $$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \
 Cette forme est remarquablement simple à calculer et à différencier. Son gradient est disponible analytiquement, sans nécessiter d'échantillonnage.
 
 ### Interprétation Géométrique
+
+Chaque terme de la formule KL joue un rôle de gardien : l'un évite que les nuages s'éloignent trop de l'origine, l'autre empêche qu'ils s'effondrent en points ou explose à l'infini.
 
 Chaque terme joue un rôle géométrique précis dans la régularisation de l'espace latent :
 

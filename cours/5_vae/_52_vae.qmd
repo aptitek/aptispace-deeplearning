@@ -1,8 +1,12 @@
 ## Le VAE : Du Déterminisme au Probabilisme
 
+Là où l'autoencodeur encode chaque donnée en un point fixe, le VAE l'encode en une **zone floue** : plutôt que d'un point précis dans l'espace latent, on obtient un nuage gaussien, ce qui garantit que l'espace entre les zones est navigable.
+
 Le passage à l'Autoencodeur Variationnel (VAE) marque une **transition paradigmatique** : l'encodeur ne produit plus un point fixe dans l'espace latent, mais les paramètres d'une **distribution de probabilité**. Ce saut conceptuel résout directement la fragmentation du manifold en remplaçant les coordonnées déterministes par des régions de confiance continues [@kassel_2026; @leclaire_nd].
 
 ### L'Encodeur Probabiliste
+
+Pluttôt qu'une adresse précise ("vous êtes au point 3,7"), l'encodeur du VAE donne un code postal avec un rayon (« vous êtes quelque part dans ce quartier de rayon $\sigma$ centré en $\mu$ ») — ce qui force le décodeur à bien fonctionner partout dans ce quartier.
 
 Dans un VAE, l'encodeur ne produit plus un vecteur $\mathbf{z}$ unique mais les paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$ d'une distribution gaussienne multivariée diagonale [@wikipedia_en_2026] :
 
@@ -124,6 +128,8 @@ viewof vae_alpha = Inputs.range([0, 1], {
 
 ### L'ELBO : L'Objectif d'Optimisation
 
+L'ELBO résoud un compromis : le terme de reconstruction pousse le modèle à mémoriser précisément (faire des petites zones), le terme KL le force à garder ces zones proches de l'origine et à ne pas s'effondrer en points (faire des zones suffisamment étales).
+
 L'entraînement du VAE repose sur la maximisation de l'**Evidence Lower Bound** (ELBO), qui arbitre le conflit entre deux termes antagonistes [@leclaire_nd; @nik55_2025] :
 
 $$\mathcal{L}_{\text{ELBO}}(\theta, \phi) = \underbrace{\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\!\left[\log p_\theta(\mathbf{x}|\mathbf{z})\right]}_{\text{Terme de reconstruction}} - \underbrace{D_{\text{KL}}\!\left(q_\phi(\mathbf{z}|\mathbf{x}) \;\|\; p(\mathbf{z})\right)}_{\text{Terme de régularisation}}$$
@@ -136,6 +142,8 @@ Cette tension est productive : le terme KL interdit à l'encodeur de "tricher" e
 
 ### Le $\beta$-VAE : Contrôle du Disentanglement
 
+En augmentant $\beta$, on serre davantage le corset sur l'espace latent : chaque dimension est forcée à contrôler un seul facteur de variation indépendant (rotation, couleur, échelle), au prix d'une reconstruction un peu moins fidèle.
+
 Une extension importante est le **$\beta$-VAE**, qui introduit un hyperparamètre $\beta > 1$ pondérant le terme KL [@burgess_2017] :
 
 $$\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\!\left[\log p_\theta(\mathbf{x}|\mathbf{z})\right] - \beta \cdot D_{\text{KL}}\!\left(q_\phi(\mathbf{z}|\mathbf{x}) \;\|\; p(\mathbf{z})\right)$$
@@ -143,6 +151,8 @@ $$\mathcal{L}_{\beta\text{-VAE}} = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})}\!\
 Un $\beta$ élevé contraint davantage l'espace latent, favorisant le **disentanglement** : chaque dimension de $\mathbf{z}$ tend à contrôler un facteur de variation indépendant et interprétable (ex. : une dimension pour la rotation, une autre pour la couleur). Ce disentanglement est précieux pour la génération contrôlée mais se fait au détriment de la qualité de reconstruction [@burgess_2017].
 
 ### Génération et Interpolation
+
+Un VAE bien entraîné est un espace contigu : on peut tirer un point au hasard et obtenir une image valide, ou glisser progressivement entre deux images pour créer des transitions réalistes.
 
 Une fois entraîné, le VAE permet deux opérations fondamentales impossibles avec un AE classique :
 
