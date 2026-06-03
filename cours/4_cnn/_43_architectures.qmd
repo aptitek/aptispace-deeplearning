@@ -1,14 +1,20 @@
 ## Évolution des Architectures de Vision
 
+Chaque grande architecture CNN a résolu un problème spécifique : VGG a montré que de nombreuses petites loupes valent mieux qu'une grande, ResNet a ajouté des raccourcis pour que le gradient ne se perde plus dans la profondeur, et ViT a tout remis à plat en traitant l'image comme une phrase.
+
 L'histoire des CNN est une quête continue pour surmonter les obstacles de la profondeur : comment entraîner des réseaux de plus en plus profonds sans que le gradient ne disparaisse ? Cette quête a produit trois architectures fondatrices qui définissent encore l'état de l'art [@Liu2025; @Radecic2026; @Adaloglou2020].
 
 ### VGG : la puissance des petits filtres
+
+Pluttôt qu'une grande loupe, VGG utilise plusieurs petites loupes en série : deux couches de $3\times3$ voient la même zone qu'une couche $5\times5$ mais avec moins de paramètres et plus de non-linéarité.
 
 VGG (Simonyan & Zisserman, 2014) a démontré qu'un **empilement de filtres $3 \times 3$** surpasse l'utilisation de grands filtres. Deux couches consécutives de $3 \times 3$ ont le même champ récepteur effectif qu'une couche de $5 \times 5$, mais avec moins de paramètres ($2 \times 3^2 = 18$ vs $5^2 = 25$) et deux applications de non-linéarité au lieu d'une.
 
 Cependant, au-delà de 20 couches, VGG souffre du problème classique de **dégradation** : l'exactitude sur l'ensemble d'entraînement commence à se dégrader lorsque la profondeur augmente trop, même en l'absence de sur-apprentissage. Ce phénomène paradoxal (un réseau plus profond est théoriquement plus expressif, donc ne devrait pas faire pire) a motivé l'invention des connexions résiduelles.
 
 ### ResNet : l'autoroute du gradient
+
+ResNet ajoute des raccourcis qui court-circuitent chaque bloc de couches : si le bloc n'apprend rien d'utile, le signal passe directement sur l'autoroute sans être dégradé — ce qui permet d'empiler des centaines de couches sans que le gradient ne s'effondre.
 
 ResNet (He et al., 2016) résout la dégradation par les **connexions résiduelles** (*skip connections* ou *shortcut connections*) [@Kak2025; @Simon2017; @Panigrahi2018] :
 
@@ -48,6 +54,8 @@ graph TD
 **L'interaction ResNet + Batch Normalization :** La BN et les connexions résiduelles travaillent en synergie [@Panigrahi2018; @Kak2025]. Sans BN, la variance du gradient peut exploser dans les branches résiduelles même avec les skip connections. Avec BN, la variance est maintenue dans une plage stable à chaque couche, ce qui permet d'aller encore plus profond.
 
 ### Vision Transformer (ViT) : l'attention globale
+
+Plutôt que de glisser une loupe sur l'image, le ViT découpe l'image en carrés (patchs) et les traite comme une séquence de mots — permettant à chaque carré d'"attendre" et de peser l'importance de n'importe quel autre carré, même à l'autre bout de l'image.
 
 Le Vision Transformer [@LightlyViT2026; @Alka2025; @Mehra2025] rompt avec le paradigme de la localité convolutionnelle. L'image de taille $H \times W$ est découpée en $N$ **patchs** de taille $P \times P$ (avec $N = HW/P^2$), chacun déroulé en un vecteur et projeté linéairement en un *embedding* de dimension $D$.
 

@@ -1,5 +1,7 @@
 ## La Convolution : Filtrage Spatial Appris
 
+Pluttôt que de regarder chaque pixel d'une image tout seul, un CNN utilise une petite loupe qui glisse sur toute l'image et détecte des motifs locaux (bords, textures) — comme un cartographe qui parcourt le terrain case par case pour dresser une carte des reliefs.
+
 Le passage du traitement de données tabulaires aux grilles de pixels 2D a imposé un saut paradigmatique majeur dans l'histoire du deep learning. Un MLP appliqué à une image traite chaque pixel comme une dimension indépendante, ignorant totalement la structure spatiale intrinsèque : deux pixels voisins ne sont pas distingués de deux pixels aux antipodes. Cette approche est non seulement inefficace computationnellement, mais fondamentalement inadaptée à la nature des données visuelles [@CS231n2026; @WikipediaCNN2026; @BINUS2017].
 
 ::: {.card .card-window .mb-4}
@@ -31,6 +33,8 @@ dim_comparison = createDimensionalityComparison(res_idx)
 :::
 
 ### Le Principe de Responsabilité Unique Spatiale
+
+Chaque neurone ne regarde qu'une petite fenêtre de l'image (son champ récepteur) — et le même filtre est réutilisé partout, comme le même coup de tampon appliqué sur toute la surface d'une feuille.
 
 La solution réside dans l'application du **Principe de Responsabilité Unique** (SRP) à l'extraction de caractéristiques : chaque neurone n'est responsable que d'une région locale de l'image, son **champ récepteur** (*receptive field*). Cette contrainte architecturale repose sur deux piliers fondamentaux [@CS231n2026; @ParadigmShift2026] :
 
@@ -261,6 +265,8 @@ En traitement du signal classique, les filtres de Sobel ou Gaussien sont défini
 
 ### L'opération de convolution et ses dimensions
 
+La convolution transforme un volume 3D (largeur × hauteur × canaux) en un autre volume, dont la taille dépend de trois réglages : la taille de la loupe ($F$), son pas de déplacement ($S$) et le rembourrage des bords ($P$).
+
 L'opération de convolution transforme un volume d'entrée $W_1 \times H_1 \times D_1$ (largeur × hauteur × profondeur/canaux) en un volume de sortie $W_2 \times H_2 \times D_2$ via $K$ filtres de taille $F \times F$ [@CS231n2026] :
 
 $$
@@ -278,6 +284,8 @@ Chaque filtre produit une **carte de caractéristiques** (*feature map*) de tail
 
 ### Optimisation GPU : l'algorithme im2col et GEMM
 
+Pour que le GPU puisse traiter des milliers d'images en parallèle, on "déroule" les patches de l'image en une grande matrice, afin de remplacer la convolution par une simple multiplication de matrices — opération que les GPU font extrêmement vite.
+
 Pour maximiser le débit de calcul sur GPU, les frameworks de deep learning reformulent la convolution en **multiplication de matrices généralisée** (GEMM) via l'algorithme `im2col` [@CS231n2026] :
 
 1. Chaque bloc spatial $F \times F$ de l'entrée est déroulé en un vecteur colonne → matrice $\mathbf{X}_{\text{col}} \in \mathbb{R}^{(F^2 D_1) \times (W_2 H_2)}$ (où $\in$ désigne l'appartenance à l'espace des matrices de nombres réels de dimensions correspondantes, [voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)).
@@ -287,5 +295,7 @@ Pour maximiser le débit de calcul sur GPU, les frameworks de deep learning refo
 Cette reformulation sacrifie de la mémoire (duplication des pixels dans $\mathbf{X}_{\text{col}}$) pour exploiter les routines d'algèbre linéaire hautement optimisées (cuBLAS, etc.) qui atteignent des dizaines de TFLOPS sur GPU modernes.
 
 ### Hiérarchie des représentations
+
+Au fur et à mesure qu'on s'enfonce dans les couches, le réseau voit de moins en moins de détails mais de plus en plus de sens : des bords au début, puis des textures, puis des formes, puis des objets entiers — comme passer d'une carte topographique à une carte routierre à une carte des villes.
 
 L'empilement de couches convolutionnelles crée une hiérarchie progressive d'abstraction : les premières couches extraient des primitives élémentaires (bords, gradients de couleur), les couches intermédiaires combinent ces primitives en textures et formes, les couches profondes assemblent ces formes en concepts sémantiques (visages, roues, etc.). C'est cette hiérarchie automatique qui distingue fondamentalement le CNN du MLP et explique ses performances remarquables en vision par ordinateur.

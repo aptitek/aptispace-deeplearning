@@ -1,8 +1,12 @@
 ## Détection d'Objets et Alternatives Architecturales
 
+Reconnaître un objet, c'est bien. Dire où il est et lequel c'est en une seule passe sur l'image, c'est mieux. YOLO fait cela en pari sur une régression directe ; les Capsule Networks font mieux encore en retenant aussi la géométrie des relations entre les parties détectées.
+
 La détection d'objets — localiser et classer simultanément des objets dans une image — constitue l'une des tâches les plus exigeantes de la vision par ordinateur. Elle a suscité deux lignes architecturales majeures : les détecteurs à **régression directe** (YOLO) et les architectures à **équivariance vectorielle** (Capsule Networks) [@Konyrev2023; @Sabour2017; @CS231n2026].
 
 ### YOLO : la détection comme régression globale
+
+YOLO divise l'image en grille et demande à chaque case : "y a-t-il quelque chose ici, et si oui quoi ?" — tout cela en une seule lecture de l'image, sans étape intermédiaire de proposition de régions.
 
 YOLO (*You Only Look Once*, Redmon et al., 2016) révolutionne la détection en la reformulant comme un **problème de régression unique** sur toute l'image, éliminant les pipelines en deux étapes (proposition de régions + classification) des approches R-CNN [@Konyrev2023; @Pawangfg2025; @Kili2023].
 
@@ -113,6 +117,8 @@ yolo_renderGrid = {
 ```
 
 ### Capsule Networks : résoudre l'équivariance géométrique
+
+Là où un neurone classique ne retient qu'une intensité ("y a-t-il un bord ?"), une capsule retient également sa position, son orientation et son échelle — comme un GPS qui donne non seulement "tu es sur Paris" mais aussi "tu es à 45° nord-est, à 100m d'altitude".
 
 Les Capsule Networks (Sabour, Frosst & Hinton, 2017) constituent une réponse architecturale au Problème Picasso des CNN [@Sabour2017; @Pechyonkin2017; @Fritz2023]. Leur innovation fondamentale : remplacer les scalaires d'activation par des **vecteurs** dont la direction encode les paramètres de pose d'une entité (position, orientation, échelle, déformation).
 

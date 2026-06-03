@@ -1,5 +1,7 @@
 ## Pooling et Réduction de Dimensionnalité
 
+Après avoir détecté des motifs dans l'image, le pooling fait le ménage : il compresse chaque petite région en un seul chiffre (le maximum ou la moyenne), réduisant la taille des cartes de caractéristiques comme on résume un long paragraphe en une seule phrase clé.
+
 Le pooling est la deuxième opération fondamentale d'un CNN. Il opère une **sous-échantillonnage spatial** des cartes de caractéristiques, réduisant leur dimension tout en induisant une forme d'invariance locale. Son rôle est double : diminuer le coût computationnel des couches suivantes et rendre les représentations plus robustes aux petites translations et déformations [@Mukherjee2023; @OluIpinlaye2025; @WikipediaPooling2026].
 
 ### Types de pooling et leurs propriétés
@@ -225,6 +227,8 @@ pool_demo = {
 
 ### Global Average Pooling vs Fully Connected : un choix stratégique
 
+Passer par des couches denses (à la fin du CNN) ressemble à utiliser un interrogatoire détaillé pour obtenir une réponse. Le Global Average Pooling, lui, demande simplement la moyenne de chaque piste et rend le verdict directement — plus économique et souvent tout aussi efficace.
+
 La transition vers la décision finale s'opère selon deux approches [@CS231n2026; @WikipediaCNN2026] :
 
 * **Couches denses (FCN + MLP) :** Les cartes de caractéristiques sont déroulées (*flatten*) en un vecteur, puis traitées par une ou plusieurs couches denses. Très expressif mais nécessite une taille d'entrée fixe et génère un grand nombre de paramètres.
@@ -234,5 +238,7 @@ La transition vers la décision finale s'opère selon deux approches [@CS231n202
 La distinction stratégique : un réseau Fully Convolutional peut être entraîné à se comporter comme un GAP, tandis que le GAP ne peut pas représenter le routage localisé d'un FCN. Dans les architectures modernes (ResNet, EfficientNet), le GAP avant la couche de classification finale est devenu le standard.
 
 ### Le problème Picasso : perte de cohérence spatiale
+
+Le pooling rend le réseau aveugle aux positions relatives des éléments : il peut reconnaître un visage même si les yeux et la bouche sont à l'envers — comme un cherche-mot qui trouve tous les bons mots mais ignore leur ordre dans le texte.
 
 Le pooling introduit cependant une limitation fondamentale. En jetant les coordonnées précises des activations, il crée une **invariance** qui peut devenir une nuisance. Un CNN avec max pooling peut reconnaître un visage même si les yeux sont à la place de la bouche — les parties sont présentes mais dans le mauvais ordre spatial. C'est ce que Hinton appelle le **"Problème Picasso"** : incapacité à vérifier la cohérence géométrique globale des composants. Cette limitation motive directement les Capsule Networks présentés en section suivante.
