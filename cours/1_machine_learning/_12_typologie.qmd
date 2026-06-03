@@ -9,7 +9,7 @@ Les modèles d'apprentissage se structurent autour de quatre grands paradigmes, 
 ::: {.grid}
 
 :::: {.g-col-12 .g-col-md-6}
-::::: {.card .card-concept .h-100}
+::::: {.card .h-100}
 :::::: {.card-header}
 🎯 Apprentissage Supervisé
 ::::::
@@ -32,7 +32,7 @@ L'algorithme s'entraîne sur des couples entrée-sortie étiquetés (contenant l
 ::::
 
 :::: {.g-col-12 .g-col-md-6}
-::::: {.card .card-concept .h-100}
+::::: {.card .h-100}
 :::::: {.card-header}
 🧩 Apprentissage Non Supervisé
 ::::::
@@ -55,7 +55,7 @@ L'algorithme reçoit des données brutes sans étiquettes et cherche à découvr
 ::::
 
 :::: {.g-col-12 .g-col-md-6}
-::::: {.card .card-concept .h-100}
+::::: {.card .h-100}
 :::::: {.card-header}
 🌗 Apprentissage Semi-Supervisé
 ::::::
@@ -78,7 +78,7 @@ Cette approche hybride associe une petite quantité de données étiquetées à 
 ::::
 
 :::: {.g-col-12 .g-col-md-6}
-::::: {.card .card-concept .h-100}
+::::: {.card .h-100}
 :::::: {.card-header}
 🎮 Apprentissage par Renforcement
 ::::::

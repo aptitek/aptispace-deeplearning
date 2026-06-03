@@ -15,6 +15,12 @@
 // Rule detail card — border and title color driven by --rule-color set from JS
 #reg-details-container {
     border-left-color: var(--rule-color, var(--accent-primary)) !important;
+
+    .var-taille { color: var(--sol-cyan) !important; font-weight: bold; }
+    .var-chambres { color: var(--sol-green) !important; font-weight: bold; }
+    .var-garage { color: var(--sol-yellow) !important; font-weight: bold; }
+    .var-age { color: var(--sol-red) !important; font-weight: bold; }
+    .var-bruit { color: var(--sol-magenta) !important; font-weight: bold; }
 }
 
 .detail-title-color {

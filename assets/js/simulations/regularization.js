@@ -104,9 +104,31 @@ export function renderChart(svgEl, type, lambda, currentCoeffs) {
     text: `${c.name}: ${c.w > 0 ? '+' : ''}${c.w.toFixed(2)}`
   }));
 
+  const annotations = variables.map(v => {
+    const xPos = 2;
+    const coeffs = calculateCoefficients(type, xPos);
+    const yVal = coeffs.find(c => c.id === v.id).w;
+    return {
+      x: xPos,
+      y: yVal,
+      text: `<b>${v.name}</b>`,
+      showarrow: false,
+      xanchor: "left",
+      yanchor: "bottom",
+      yshift: 4,
+      font: {
+        color: resolveCssValue(v.color),
+        size: 11
+      }
+    };
+  });
+
   createSimulatorPlot(svgEl, lineData, activeDots, lambda, {
     xRange: [0, 100],
-    yRange: [-5, 9]
+    yRange: [-5, 9],
+    layoutOverrides: {
+      annotations: annotations
+    }
   });
 }
 

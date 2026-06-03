@@ -125,11 +125,22 @@ export function createGradientSimulation(options = {}) {
     interval: 40,
     loop: false,
     onStateChange: ({ index: i }) => {
-      Plotly.restyle(container, {
-        x: [pathX.slice(0, i + 1), [pathX[i]]],
-        y: [pathY.slice(0, i + 1), [pathY[i]]],
-        z: [pathZ.slice(0, i + 1), [pathZ[i]]]
-      }, [1, 2]);
+      const data = container.data;
+      if (data && data.length >= 3) {
+        data[1] = {
+          ...data[1],
+          x: pathX.slice(0, i + 1),
+          y: pathY.slice(0, i + 1),
+          z: pathZ.slice(0, i + 1)
+        };
+        data[2] = {
+          ...data[2],
+          x: [pathX[i]],
+          y: [pathY[i]],
+          z: [pathZ[i]]
+        };
+        Plotly.react(container, data, container.layout);
+      }
 
       if (costEl)   costEl.textContent   = pathZ[i].toFixed(4);
       if (theta1El) theta1El.textContent = pathX[i].toFixed(3);
@@ -149,11 +160,22 @@ export function createGradientSimulation(options = {}) {
     pathX = p.pathX; pathY = p.pathY; pathZ = p.pathZ; pathV = p.pathV;
     sm.states = p.pathX.map((_, i) => ({ index: i }));
 
-    Plotly.restyle(container, {
-      x: [[], [pathX[0]]],
-      y: [[], [pathY[0]]],
-      z: [[], [pathZ[0]]]
-    }, [1, 2]);
+    const data = container.data;
+    if (data && data.length >= 3) {
+      data[1] = {
+        ...data[1],
+        x: [],
+        y: [],
+        z: []
+      };
+      data[2] = {
+        ...data[2],
+        x: [pathX[0]],
+        y: [pathY[0]],
+        z: [pathZ[0]]
+      };
+      Plotly.react(container, data, container.layout);
+    }
 
     if (costEl)   costEl.textContent   = pathZ[0].toFixed(4);
     if (theta1El) theta1El.textContent = pathX[0].toFixed(3);
