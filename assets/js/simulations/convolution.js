@@ -396,10 +396,10 @@ export function createDimensionalityComparison(resIdx) {
     progress.className = "progress";
     const barMlp = document.createElement("div");
     barMlp.className = "progress-bar arch-monitor-progress-mlp";
-    barMlp.style.width = `${pctMlp}%`;
+    barMlp.style.setProperty("width", `${pctMlp}%`);
     const barCnn = document.createElement("div");
     barCnn.className = "progress-bar arch-monitor-progress-cnn";
-    barCnn.style.width = `${pctCnn}%`;
+    barCnn.style.setProperty("width", `${pctCnn}%`);
     progress.appendChild(barMlp);
     progress.appendChild(barCnn);
 

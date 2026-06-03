@@ -612,21 +612,21 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
       }
 
       // Draw two spiral ring binder loops
-      ctx.strokeStyle = resolveColor("var(--sol-base01)", "#586e75");
+      ctx.strokeStyle = resolveColor("var(--sol-base01)", SOL_FALLBACKS.base01);
       ctx.lineWidth = 2;
       const ringOffset = w * 0.25;
 
       // Left ring
       ctx.beginPath();
       ctx.ellipse(node.x - ringOffset, hY, 2.5, 6, 0, 0, 2 * Math.PI);
-      ctx.fillStyle = resolveColor("var(--sol-base2)", "#eee8d5");
+      ctx.fillStyle = resolveColor("var(--sol-base2)", SOL_FALLBACKS.base2);
       ctx.fill();
       ctx.stroke();
 
       // Right ring
       ctx.beginPath();
       ctx.ellipse(node.x + ringOffset, hY, 2.5, 6, 0, 0, 2 * Math.PI);
-      ctx.fillStyle = resolveColor("var(--sol-base2)", "#eee8d5");
+      ctx.fillStyle = resolveColor("var(--sol-base2)", SOL_FALLBACKS.base2);
       ctx.fill();
       ctx.stroke();
       ctx.restore();
@@ -750,7 +750,7 @@ function initGraphSync(targetEl, graphData, is3D, customOptions) {
 
         ctx.beginPath();
         drawRoundedRect(ctx, -pillW / 2, -pillH / 2, pillW, pillH, 3);
-        ctx.fillStyle = resolveColor("var(--sol-base3)", "#fdf6e3");
+        ctx.fillStyle = resolveColor("var(--sol-base3)", SOL_FALLBACKS.base3);
         ctx.fill();
 
         ctx.beginPath();
@@ -918,37 +918,37 @@ function initWordCloudSync(container, words, finalOptions) {
     // 1. Specific colors for color names (French & English)
     const colorMap = {
       // French
-      'rouge': 'var(--sol-red, #dc322f)',
-      'bleu': 'var(--sol-blue, #268bd2)',
-      'vert': 'var(--sol-green, #859900)',
-      'jaune': 'var(--sol-yellow, #b58900)',
-      'orange': 'var(--sol-orange, #cb4b16)',
-      'violet': 'var(--sol-violet, #6c71c4)',
-      'rose': 'var(--sol-magenta, #d33682)',
-      'cyan': 'var(--sol-cyan, #2aa198)',
-      'magenta': 'var(--sol-magenta, #d33682)',
+      'rouge': 'var(--sol-red)',
+      'bleu': 'var(--sol-blue)',
+      'vert': 'var(--sol-green)',
+      'jaune': 'var(--sol-yellow)',
+      'orange': 'var(--sol-orange)',
+      'violet': 'var(--sol-violet)',
+      'rose': 'var(--sol-magenta)',
+      'cyan': 'var(--sol-cyan)',
+      'magenta': 'var(--sol-magenta)',
       // English
-      'red': 'var(--sol-red, #dc322f)',
-      'blue': 'var(--sol-blue, #268bd2)',
-      'green': 'var(--sol-green, #859900)',
-      'yellow': 'var(--sol-yellow, #b58900)',
-      'purple': 'var(--sol-violet, #6c71c4)',
-      'pink': 'var(--sol-magenta, #d33682)'
+      'red': 'var(--sol-red)',
+      'blue': 'var(--sol-blue)',
+      'green': 'var(--sol-green)',
+      'yellow': 'var(--sol-yellow)',
+      'purple': 'var(--sol-violet)',
+      'pink': 'var(--sol-magenta)'
     };
 
     if (colorMap[text]) {
-      item.style.color = colorMap[text];
-      item.style.fontWeight = 'bold';
+      item.style.setProperty("color", colorMap[text]);
+      item.style.setProperty("font-weight", "bold");
     } else {
       // 2. Cohesive theme palette for non-color-name words
       const palette = [
-        'var(--sol-cyan, #2aa198)',
-        'var(--sol-violet, #6c71c4)',
-        'var(--sol-magenta, #d33682)',
-        'var(--sol-orange, #cb4b16)',
-        'var(--sol-yellow, #b58900)',
-        'var(--sol-base01, #586e75)',
-        'var(--sol-base00, #657b83)'
+        'var(--sol-cyan)',
+        'var(--sol-violet)',
+        'var(--sol-magenta)',
+        'var(--sol-orange)',
+        'var(--sol-yellow)',
+        'var(--sol-base01)',
+        'var(--sol-base00)'
       ];
       // Deterministic color assignment based on word content
       let hash = 0;
@@ -956,7 +956,7 @@ function initWordCloudSync(container, words, finalOptions) {
         hash = text.charCodeAt(i) + ((hash << 5) - hash);
       }
       const colorIndex = Math.abs(hash) % palette.length;
-      item.style.color = palette[colorIndex];
+      item.style.setProperty("color", palette[colorIndex]);
     }
   });
 
@@ -999,9 +999,9 @@ class CablingManager {
     this.container.innerHTML = "";
 
     // Structure de base
-    this.container.style.position = "relative";
-    this.container.style.display  = "flex";
-    this.container.style.alignItems = "center";
+    this.container.style.setProperty("position", "relative");
+    this.container.style.setProperty("display", "flex");
+    this.container.style.setProperty("align-items", "center");
 
     // ── Colonnes HTML ───────────────────────────────
     const colLeft  = this._makeColumn("left");
@@ -1044,13 +1044,13 @@ class CablingManager {
 
     // ── Endpoints jsPlumb ───────────────────────────
     const SOCKET_STYLE = {
-      fill: "#02161b",
-      stroke: "#586e75",
+      fill: "var(--sol-base03)",
+      stroke: "var(--sol-base01)",
       strokeWidth: 4,
     };
     const SOCKET_HOVER = {
-      fill: "#02161b",
-      stroke: "#2aa198",
+      fill: "var(--sol-base03)",
+      stroke: "var(--sol-cyan)",
       strokeWidth: 4,
     };
 
@@ -1196,7 +1196,8 @@ class CablingManager {
 
   _makeMidColumn() {
     const mid = document.createElement("div");
-    mid.style.cssText = "flex: 1 1 auto; min-width: 80px;";
+    mid.style.setProperty("flex", "1 1 auto");
+    mid.style.setProperty("min-width", "80px");
     return mid;
   }
 
@@ -1272,10 +1273,10 @@ class CablingManager {
     for (let i = 0; i < COUNT; i++) {
       const spark = document.createElement("span");
       spark.className = "cabling-spark";
-      spark.style.left  = `${x}px`;
-      spark.style.top   = `${y}px`;
+      spark.style.setProperty("left", `${x}px`);
+      spark.style.setProperty("top", `${y}px`);
       spark.style.setProperty("--angle", `${i * (360 / COUNT)}deg`);
-      spark.style.animationDelay = `${(i * 0.1) % 0.6}s`;
+      spark.style.setProperty("animation-delay", `${(i * 0.1) % 0.6}s`);
       this.container.appendChild(spark);
       this._sparks.push(spark);
     }
@@ -1332,10 +1333,10 @@ class CablingManager {
     this._sparks = [];
 
     this.container.querySelectorAll(".cabling-pill").forEach(el => {
-      if (el.style.cursor) {
-        el.style.cursor      = "pointer";
-        el.style.borderColor = "#586e75";
-        el.style.color       = "#93a1a1";
+      if (el.style.getPropertyValue("cursor")) {
+        el.style.setProperty("cursor", "pointer");
+        el.style.setProperty("border-color", "var(--sol-base01)");
+        el.style.setProperty("color", "var(--sol-base1)");
       }
       el.classList.remove('is-active', 'is-validated');
     });
@@ -1357,10 +1358,10 @@ class CablingManager {
     this._sparks = [];
 
     this.container.querySelectorAll(".cabling-pill").forEach(el => {
-      if (el.style.cursor) {
-        el.style.cursor      = "pointer";
-        el.style.borderColor = "#586e75";
-        el.style.color       = "#93a1a1";
+      if (el.style.getPropertyValue("cursor")) {
+        el.style.setProperty("cursor", "pointer");
+        el.style.setProperty("border-color", "var(--sol-base01)");
+        el.style.setProperty("color", "var(--sol-base1)");
       }
       el.classList.remove('is-active', 'is-validated');
     });
@@ -1666,7 +1667,7 @@ function initRamStorageGraphSync(container, storageMode, queryCol, tableData) {
   };
 
   const cfg = {
-    nodeText: getStr('--canvas-node-text', '#fdf6e3'),
+    nodeText: getStr('--canvas-node-text', SOL_FALLBACKS.base3),
     nodeFont: getNum('--canvas-node-font-size', 12),
     addrFont: getNum('--canvas-addr-font-size', 9),
     nodePadX: getNum('--canvas-node-pad-x', 14),
@@ -1712,7 +1713,7 @@ function initRamStorageGraphSync(container, storageMode, queryCol, tableData) {
     const resolvedFill = resolveCssValue(fillColor) || fillColor;
     
     if (node.isActive) {
-      ctx.shadowColor = node.type === "cpu" ? (resolveCssValue("var(--sol-violet)") || "#6c71c4") : colorActive;
+      ctx.shadowColor = node.type === "cpu" ? (resolveCssValue("var(--sol-violet)") || SOL_FALLBACKS.violet) : colorActive;
       ctx.shadowBlur = 12 / globalScale;
     } else {
       ctx.shadowColor = "transparent";

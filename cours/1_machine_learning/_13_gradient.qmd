@@ -113,8 +113,7 @@ graph1 = {
   // Projection dans le DOM
   const container = document.getElementById("d3-graph-1-container");
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(svg.node());
+    container.replaceChildren(svg.node());
   }
 
   return svg.node();
@@ -297,8 +296,7 @@ graph2 = {
 
   const container = document.getElementById("d3-graph-2-container");
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(svg.node());
+    container.replaceChildren(svg.node());
   }
 
   return svg.node();
@@ -409,8 +407,7 @@ graph3 = {
   const badge = document.getElementById("loss-badge");
   if (badge) {
     badge.textContent = meanSquaredError.toFixed(1);
-    badge.style.backgroundColor = meanSquaredError > 100 ? "var(--sol-red)" : "var(--sol-green)";
-    badge.style.color = "var(--sol-base3)";
+    badge.dataset.state = meanSquaredError > 100 ? "danger" : "success";
   }
 
   // --- 2. RENDU GÉOMÉTRIQUE (Zone Supérieure) ---
@@ -531,8 +528,7 @@ graph3 = {
   // Projection Finale dans l'UI
   const container = document.getElementById("d3-graph-3-container");
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(svg.node());
+    container.replaceChildren(svg.node());
   }
 
   return svg.node();

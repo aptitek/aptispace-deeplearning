@@ -438,7 +438,7 @@ export function createSimulatorPlot(divId, lineData, activeDots, currentX, optio
     shapes: [{
       type: "line",
       x0: currentX, y0: yRange[0], x1: currentX, y1: yRange[1],
-      line: { color: resolveCssValue("var(--sol-magenta, #d33682)"), width: 1.5, dash: "dash" },
+      line: { color: resolveCssValue("var(--sol-magenta)"), width: 1.5, dash: "dash" },
     }],
     font: { color: resolveCssValue("var(--sol-base03)") },
     ...options.layoutOverrides,

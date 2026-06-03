@@ -53,10 +53,10 @@ $$
 
 ```{mermaid}
 graph LR
-    classDef input  fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
-    classDef gate   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
-    classDef cell   fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
-    classDef output fill:#002b36,stroke:#2aa198,stroke-width:2px,color:#2aa198;
+    classDef input  fill:var(--sol-base03),stroke:var(--accent-info),stroke-width:2px,color:var(--accent-info);
+    classDef gate   fill:var(--sol-base03),stroke:var(--accent-warning),stroke-width:2px,color:var(--accent-warning);
+    classDef cell   fill:var(--sol-base03),stroke:var(--accent-success),stroke-width:2px,color:var(--accent-success);
+    classDef output fill:var(--sol-base03),stroke:var(--sol-cyan),stroke-width:2px,color:var(--sol-cyan);
 
     Xt["xₜ"]:::input
     Hprev["hₜ₋₁"]:::input
@@ -104,30 +104,8 @@ viewof lstm_dx = Inputs.range([4, 256], { value:  64, step: 4,  label: "Dimensio
 
 ```{ojs}
 //| echo: false
-lstm_stats = {
-  const dh = lstm_dh, dx = lstm_dx;
-  const rnn   = dh * (dh + dx) + dh;
-  const lstm  = 4 * dh * (dh + dx + 1);
-  const ratio = (lstm / rnn).toFixed(1);
-  return html`<div class="px-3 pb-3">
-    <table class="table table-sm table-borderless mb-0">
-      <thead><tr>
-        <th>Architecture</th><th>Paramètres</th><th>Ratio</th>
-      </tr></thead>
-      <tbody>
-        <tr><td>RNN simple</td>
-            <td><strong>${rnn.toLocaleString()}</strong></td>
-            <td>1×</td></tr>
-        <tr><td>LSTM</td>
-            <td><strong>${lstm.toLocaleString()}</strong></td>
-            <td>${ratio}×</td></tr>
-      </tbody>
-    </table>
-    <p class="text-muted small mb-0 mt-2">
-      dₕ = ${dh}, dₓ = ${dx} — Formule LSTM : 4 × dₕ × (dₕ + dₓ + 1)
-    </p>
-  </div>`;
-}
+import { renderLstmParameterComparison } from "../../assets/js/simulations/recurrent.js"
+renderLstmParameterComparison({ hiddenDim: lstm_dh, inputDim: lstm_dx })
 ```
 
 :::

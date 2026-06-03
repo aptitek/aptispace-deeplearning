@@ -79,7 +79,7 @@ export function createLever(selector, invalidation) {
   async function _applyState(on) {
     wrapper.value = on;
     housing.classList.toggle('is-on', on);
-    handle.style.top = ''; // release inline style → CSS spring transition takes over
+    handle.style.removeProperty('top'); // release inline style → CSS spring transition takes over
     if (on) await _buildArc(housing);
     wrapper.dispatchEvent(new CustomEvent('input'));
   }
@@ -90,22 +90,22 @@ export function createLever(selector, invalidation) {
     startY   = getY(e);
     startTop = wrapper.value ? TOP_ON : TOP_OFF;
     housing.classList.add('is-dragging');
-    document.body.style.userSelect = 'none';
+    document.body.style.setProperty('user-select', 'none');
   }
 
   function _onDragMove(e) {
     if (!dragging) return;
     e.preventDefault();
     const raw = startTop + (getY(e) - startY);
-    handle.style.top = Math.min(TOP_OFF, Math.max(TOP_ON, raw)) + 'px';
+    handle.style.setProperty('top', `${Math.min(TOP_OFF, Math.max(TOP_ON, raw))}px`);
   }
 
   function _onDragEnd() {
     if (!dragging) return;
     dragging = false;
     housing.classList.remove('is-dragging');
-    document.body.style.userSelect = '';
-    const current = parseFloat(handle.style.top);
+    document.body.style.removeProperty('user-select');
+    const current = parseFloat(handle.style.getPropertyValue('top'));
     const landed  = isNaN(current) ? (wrapper.value ? TOP_ON : TOP_OFF) : current;
     _applyState(landed < MID);
   }

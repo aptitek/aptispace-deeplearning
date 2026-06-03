@@ -191,7 +191,7 @@ updateState = {
   if (typeof renderSupermarketNetwork?.refresh === "function") renderSupermarketNetwork.refresh();
   if (typeof renderBackprop?.refresh        === "function") renderBackprop.refresh();
   if (typeof renderGradientDescent?.refresh === "function") renderGradientDescent.refresh();
-  return html``;
+  return aptitek.noop();
 }
 
 // Graph 2: Backpropagation (created once, updated via refresh)

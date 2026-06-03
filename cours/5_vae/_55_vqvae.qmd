@@ -119,35 +119,8 @@ vq_codebook = {
 
 ```{ojs}
 //| echo: false
-{
-  const cb = vq_codebook;
-  const qx = vq_x, qy = vq_y;
-  let minD = Infinity, nearest = cb[0];
-  cb.forEach(pt => { const d = Math.hypot(pt.x - qx, pt.y - qy); if (d < minD) { minD = d; nearest = pt; } });
-  const distState = minD < 1.5 ? "success" : minD < 3 ? "warning" : "danger";
-
-  const makeMetric = (label, value, valueClass) => {
-    const card = document.createElement("div");
-    card.className = "sim-metric-card";
-    const lbl = document.createElement("div");
-    lbl.className = "text-muted";
-    lbl.textContent = label;
-    const val = document.createElement("div");
-    val.className = `fw-bold font-monospace ${valueClass}`;
-    val.textContent = value;
-    card.append(lbl, val);
-    return card;
-  };
-
-  const row = document.createElement("div");
-  row.className = "sim-metric-row";
-  row.append(
-    makeMetric("Vecteur continu",     `[${qx.toFixed(2)}, ${qy.toFixed(2)}]`, "text-info"),
-    makeMetric("Code VQ (k*)",        nearest.id,                              "text-success"),
-    makeMetric("Distance Euclidienne", minD.toFixed(3),                        `sim-metric-dist dist-${distState}`)
-  );
-  return row;
-}
+import { renderVqVaeMetrics } from "../../assets/js/simulations/vae.js"
+renderVqVaeMetrics({ codebook: vq_codebook, x: vq_x, y: vq_y })
 ```
 
 :::

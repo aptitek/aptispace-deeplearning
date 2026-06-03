@@ -53,41 +53,8 @@ viewof bpe_text = Inputs.textarea({
 
 ```{ojs}
 //| echo: false
-bpe_tokens = {
-  const text = bpe_text || "";
-  if (text.trim() === "") return { tokens: [], chars: 0, count: 0 };
-  const base = text.match(/ ?[a-zA-ZÀ-ÿ-ɏ0-9]+| ?[^\s\w]+/gu) || [];
-  const BPE_SPLITS = {
-    "anticonstitutionnellement": ["anti", "constitution", "nelle", "ment"],
-    "apprentissage": ["apprent", "issage"],
-    "profond": ["pro", "fond"],
-    "comprend": ["comp", "rend"],
-    "transformer": ["transform", "er"],
-    "attention": ["attent", "ion"]
-  };
-  const out = [];
-  base.forEach(t => {
-    const hasSpace = t.startsWith(" ");
-    const clean = hasSpace ? t.slice(1) : t;
-    const lower = clean.toLowerCase();
-    if (BPE_SPLITS[lower]) {
-      BPE_SPLITS[lower].forEach((frag, i) => out.push({ text: frag, fragment: true, space: i === 0 && hasSpace }));
-    } else if (clean.length > 10) {
-      const mid = Math.floor(clean.length / 2);
-      out.push({ text: clean.slice(0, mid), fragment: true, space: hasSpace });
-      out.push({ text: clean.slice(mid), fragment: false, space: false });
-    } else {
-      out.push({ text: clean, fragment: false, space: hasSpace });
-    }
-  });
-  return { tokens: out, chars: text.length, count: out.length };
-}
-```
-
-```{ojs}
-//| echo: false
-import { createBpeDemoPanel } from "../../assets/js/components/token-stream.js"
-createBpeDemoPanel(bpe_tokens)
+import { createTokenizerDemoPanel } from "../../assets/js/simulations/tokenization.js"
+createTokenizerDemoPanel(bpe_text)
 ```
 
 :::

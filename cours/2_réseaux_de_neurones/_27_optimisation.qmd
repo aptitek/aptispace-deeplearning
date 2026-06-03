@@ -97,10 +97,10 @@ Ces innovations ont permis d'industrialiser les réseaux profonds pour des tâch
 ```{mermaid}
 graph LR
     %% Thème Solarized
-    classDef bg fill:#002b36,stroke:#586e75,stroke-width:2px,color:#839496;
-    classDef gate fill:#268bd2,stroke:#002b36,stroke-width:2px,color:#fdf6e3;
-    classDef cell fill:#859900,stroke:#002b36,stroke-width:2px,color:#fdf6e3;
-    classDef forget fill:#b58900,stroke:#002b36,stroke-width:2px,color:#fdf6e3;
+    classDef bg fill:var(--sol-base03),stroke:var(--sol-base01),stroke-width:2px,color:var(--sol-base0);
+    classDef gate fill:var(--accent-info),stroke:var(--sol-base03),stroke-width:2px,color:var(--sol-base3);
+    classDef cell fill:var(--accent-success),stroke:var(--sol-base03),stroke-width:2px,color:var(--sol-base3);
+    classDef forget fill:var(--accent-warning),stroke:var(--sol-base03),stroke-width:2px,color:var(--sol-base3);
 
     X[Entrée X_t]:::bg --> Gate[Portes d'activation]:::gate
     H_prev[État Caché H_t-1]:::bg --> Gate

@@ -216,7 +216,7 @@ function renderList(varsEl, items) {
 
     const bar = document.createElement("div");
     bar.className = "progress-bar";
-    bar.style.width = `${item.pct}%`;
+    bar.style.setProperty("width", `${item.pct}%`);
     bar.style.setProperty("background-color", resolveCssValue(item.color), "important");
     
     progressContainer.appendChild(bar);

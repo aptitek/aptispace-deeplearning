@@ -34,14 +34,7 @@ export function tokenizeText(text) {
       cleanText = m.substring(1);
     }
 
-    // Identify fragment pattern mimicking BPE segments
-    const lower = cleanText.toLowerCase();
-    if (lower === "anticonstitutionnellement") {
-      tokens.push({ text: "anti", isFragment: true, hasSpace: hasSpace });
-      tokens.push({ text: "constitution", isFragment: true, hasSpace: false });
-      tokens.push({ text: "nelle", isFragment: true, hasSpace: false });
-      tokens.push({ text: "ment", isFragment: false, hasSpace: false });
-    } else if (cleanText.length > 9 && !/\s/.test(cleanText)) {
+    if (cleanText.length > 9 && !/\s/.test(cleanText)) {
       // Split long words in half to simulate fragments
       const mid = Math.floor(cleanText.length / 2);
       tokens.push({ text: cleanText.substring(0, mid), isFragment: true, hasSpace: hasSpace });

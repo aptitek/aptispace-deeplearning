@@ -50,43 +50,8 @@ Les preuves empiriques de [@Albelali2025] sont sans appel :
 
 ```{ojs}
 //| echo: false
-leakage_table = html`<div class="px-3 pb-3 pt-2">
-  <table class="table table-sm table-striped mb-2">
-    <thead>
-      <tr>
-        <th>Stratégie de validation</th>
-        <th>RMSE Gain (optimisme artificiel)</th>
-        <th>Robustesse</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>10-fold Cross-Validation</td>
-        <td class="text-danger"><strong>Jusqu'à +20,5%</strong></td>
-        <td>❌ Très vulnérable</td>
-      </tr>
-      <tr>
-        <td>Division chronologique 2-way</td>
-        <td class="text-success"><strong>&lt; 5%</strong></td>
-        <td>✅ Robuste</td>
-      </tr>
-      <tr>
-        <td>Division chronologique 3-way</td>
-        <td class="text-success"><strong>&lt; 5%</strong></td>
-        <td>✅ Robuste</td>
-      </tr>
-      <tr>
-        <td>Walk-forward validation</td>
-        <td class="text-success"><strong>~0%</strong></td>
-        <td>✅ Optimal (mais coûteux)</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="text-muted small mb-0">
-    Source : Albelali &amp; Ahmed (2025). Des fenêtres réduites et des décalages plus longs
-    exacerbent le risque de fuite.
-  </p>
-</div>`;
+import { renderLeakageValidationTable } from "../../assets/js/simulations/recurrent.js"
+renderLeakageValidationTable()
 ```
 
 :::
@@ -95,9 +60,9 @@ leakage_table = html`<div class="px-3 pb-3 pt-2">
 
 ```{mermaid}
 graph TD
-    classDef good fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
-    classDef bad  fill:#002b36,stroke:#dc322f,stroke-width:2px,color:#dc322f;
-    classDef step fill:#002b36,stroke:#586e75,stroke-width:1px,color:#839496;
+    classDef good fill:var(--sol-base03),stroke:var(--accent-success),stroke-width:2px,color:var(--accent-success);
+    classDef bad  fill:var(--sol-base03),stroke:var(--accent-danger),stroke-width:2px,color:var(--accent-danger);
+    classDef step fill:var(--sol-base03),stroke:var(--sol-base01),stroke-width:1px,color:var(--sol-base0);
 
     A["Données temporelles brutes"]:::step
     B1["❌ Pre-split : fenêtres d'abord"]:::bad

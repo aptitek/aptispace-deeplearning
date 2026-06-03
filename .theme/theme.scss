@@ -398,6 +398,10 @@ div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
     border: none !important;
 }
 
+.apt-progress {
+    height: 6px !important;
+}
+
 .progress-bar {
     height: 100% !important;
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -419,6 +423,12 @@ div.sidebar-item-container .sidebar-item-text.sidebar-link.active {
 
     &.bg-danger {
         background-color: var(--accent-danger, #dc322f) !important;
+    }
+}
+
+@for $i from 0 through 100 {
+    .progress-bar.progress-value-#{$i} {
+        width: #{$i * 1%} !important;
     }
 }
 

@@ -219,7 +219,7 @@ local function render_item(item, frame_name, container_id)
         local name_html = string.format('<span class="filetree-name fw-semibold">%s</span>', f_name)
 
         content = content ..
-            '<li class="folder mb-1"><details open><summary class="d-flex align-items-center gap-2 py-1 text-body rounded px-2" style="cursor: pointer; list-style: none;"><i class="bi bi-chevron-right folder-arrow small text-muted"></i><i class="bi bi-folder-fill text-warning"></i> '
+            '<li class="folder mb-1"><details open><summary class="filetree-folder-summary d-flex align-items-center gap-2 py-1 text-body rounded px-2"><i class="bi bi-chevron-right folder-arrow small text-muted"></i><i class="bi bi-folder-fill text-warning"></i> '
             .. name_html .. desc_html .. '</summary><ul class="list-unstyled ps-3 ms-2 border-start">'
 
         if sublist then

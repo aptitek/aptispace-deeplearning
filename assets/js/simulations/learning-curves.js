@@ -6,6 +6,68 @@ import { resolveCssValue } from "../core/core.js";
 import { createMultiLine, plotReact, plotLines } from "../core/plots.js";
 
 // ── Shared helpers ─────────────────────────────────────────────────────
+export function renderGradientStatus(finalGradient = 1) {
+  const status = finalGradient < 0.1
+    ? { label: "Disparition du gradient (Vanishing)", className: "text-danger" }
+    : finalGradient > 10
+      ? { label: "Explosion du gradient (Exploding)", className: "text-warning" }
+      : { label: "Gradient stable", className: "text-success" };
+
+  const element = document.createElement("div");
+  element.className = `fs-5 fw-bold mb-3 text-center ${status.className}`;
+  element.textContent = `État du réseau : ${status.label}`;
+  return element;
+}
+
+export function gradientFlowData(derivative = 0.8) {
+  return Array.from({ length: 10 }, (_, index) => {
+    const layer = index + 1;
+    return { couche: layer, gradient: Math.pow(derivative, layer) };
+  });
+}
+
+export function renderGradientFlowStatus(derivative = 0.8) {
+  const data = gradientFlowData(derivative);
+  return renderGradientStatus(data[data.length - 1].gradient);
+}
+
+export function renderGradientFlowPlot(Plot, derivative = 0.8) {
+  const data = gradientFlowData(derivative);
+  return Plot.plot({
+    width: 800,
+    height: 400,
+    marginRight: 50,
+    marginLeft: 60,
+    y: {
+      grid: true,
+      label: "Amplitude cumulée du Gradient"
+    },
+    x: {
+      label: "Profondeur du réseau (Couches)",
+      tickFormat: d => `Couche ${d}`
+    },
+    marks: [
+      Plot.ruleY([1], {
+        stroke: "var(--sol-base01)",
+        strokeWidth: 2,
+        strokeDasharray: "4"
+      }),
+      Plot.line(data, {
+        x: "couche",
+        y: "gradient",
+        stroke: "var(--sol-blue)",
+        strokeWidth: 3
+      }),
+      Plot.dot(data, {
+        x: "couche",
+        y: "gradient",
+        fill: "var(--sol-cyan)",
+        r: 6
+      })
+    ]
+  });
+}
+
 function linspace(a, b, n) {
   return Array.from({ length: n }, (_, i) => a + (b - a) * (i / (n - 1)));
 }

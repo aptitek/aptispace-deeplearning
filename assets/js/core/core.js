@@ -61,15 +61,15 @@ export const getPlotlyTheme = () => ({
   layout: {
     font: {
       family: getThemeColor("--font-code", "Consolas, monospace"),
-      color: getThemeColor("--sol-base00", "#657b83")
+      color: getThemeColor("--sol-base00", "var(--sol-base00)")
     },
-    paper_bgcolor: getThemeColor("--sol-base3", "#fdf6e3"),
-    plot_bgcolor: getThemeColor("--sol-base2", "#eee8d5"),
+    paper_bgcolor: getThemeColor("--sol-base3", "var(--sol-base3)"),
+    plot_bgcolor: getThemeColor("--sol-base2", "var(--sol-base2)"),
     colorway: [
-      getThemeColor("--sol-blue", "#268bd2"),
-      getThemeColor("--sol-orange", "#cb4b16"),
-      getThemeColor("--sol-green", "#859900"),
-      getThemeColor("--sol-yellow", "#b58900")
+      getThemeColor("--sol-blue", "var(--sol-blue)"),
+      getThemeColor("--sol-orange", "var(--sol-orange)"),
+      getThemeColor("--sol-green", "var(--sol-green)"),
+      getThemeColor("--sol-yellow", "var(--sol-yellow)")
     ]
   }
 });

@@ -70,6 +70,11 @@
     list-style: none !important;
 }
 
+.filetree-folder-summary {
+    cursor: pointer;
+    list-style: none;
+}
+
 .ui-ide-list li a.filetree-link,
 .ui-ide-list li span {
     display: inline-flex;

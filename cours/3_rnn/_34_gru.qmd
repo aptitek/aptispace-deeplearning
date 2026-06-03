@@ -36,10 +36,10 @@ Cette équation finale révèle l'élégance de la GRU : $\mathbf{z}_t$ interpol
 
 ```{mermaid}
 graph LR
-    classDef input  fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
-    classDef gate   fill:#002b36,stroke:#d33682,stroke-width:2px,color:#d33682;
-    classDef cand   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
-    classDef output fill:#002b36,stroke:#2aa198,stroke-width:2px,color:#2aa198;
+    classDef input  fill:var(--sol-base03),stroke:var(--accent-info),stroke-width:2px,color:var(--accent-info);
+    classDef gate   fill:var(--sol-base03),stroke:var(--sol-magenta),stroke-width:2px,color:var(--sol-magenta);
+    classDef cand   fill:var(--sol-base03),stroke:var(--accent-warning),stroke-width:2px,color:var(--accent-warning);
+    classDef output fill:var(--sol-base03),stroke:var(--sol-cyan),stroke-width:2px,color:var(--sol-cyan);
 
     Xt["xₜ"]:::input
     Hprev["hₜ₋₁"]:::input
@@ -86,25 +86,8 @@ viewof gru_dx2 = Inputs.range([4, 256], { value:  64, step: 4, label: "Dimension
 
 ```{ojs}
 //| echo: false
-gru_compare = {
-  const dh = gru_dh2, dx = gru_dx2;
-  const lstm = 4 * dh * (dh + dx + 1);
-  const gru  = 3 * dh * (dh + dx + 1);
-  const saving = (((lstm - gru) / lstm) * 100).toFixed(1);
-  return html`<div class="px-3 pb-3">
-    <table class="table table-sm mb-2">
-      <thead><tr><th>Architecture</th><th>Paramètres</th><th>Économie</th></tr></thead>
-      <tbody>
-        <tr><td>LSTM</td><td><strong>${lstm.toLocaleString()}</strong></td><td>—</td></tr>
-        <tr><td>GRU</td><td><strong>${gru.toLocaleString()}</strong></td>
-            <td class="text-success">-${saving}%</td></tr>
-      </tbody>
-    </table>
-    <p class="text-muted small mb-0">
-      La GRU est <strong>${saving}%</strong> plus légère que la LSTM pour dₕ=${dh}, dₓ=${dx}.
-    </p>
-  </div>`;
-}
+import { renderGruParameterComparison } from "../../assets/js/simulations/recurrent.js"
+renderGruParameterComparison({ hiddenDim: gru_dh2, inputDim: gru_dx2 })
 ```
 
 :::

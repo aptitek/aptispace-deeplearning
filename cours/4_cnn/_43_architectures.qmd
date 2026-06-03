@@ -34,9 +34,9 @@ Le terme $+\mathbf{I}$ crée une **autoroute directe** pour le gradient : même 
 
 ```{mermaid}
 graph TD
-    classDef layer fill:#002b36,stroke:#268bd2,stroke-width:2px,color:#268bd2;
-    classDef skip  fill:#002b36,stroke:#859900,stroke-width:2px,color:#859900;
-    classDef sum   fill:#002b36,stroke:#b58900,stroke-width:2px,color:#b58900;
+    classDef layer fill:var(--sol-base03),stroke:var(--accent-info),stroke-width:2px,color:var(--accent-info);
+    classDef skip  fill:var(--sol-base03),stroke:var(--accent-success),stroke-width:2px,color:var(--accent-success);
+    classDef sum   fill:var(--sol-base03),stroke:var(--accent-warning),stroke-width:2px,color:var(--accent-warning);
 
     X["Entrée x"]:::layer
     C1["Conv 3×3 + BN + ReLU"]:::layer
@@ -73,48 +73,8 @@ Deux composants sont critiques pour la compréhension globale [@LightlyViT2026] 
 
 ```{ojs}
 //| echo: false
-arch_compare = html`<div class="px-3 pb-3 pt-2">
-  <table class="table table-sm table-striped">
-    <thead><tr>
-      <th>Architecture</th><th>Innovation</th><th>Biais inductif</th>
-      <th>Données requises</th><th>Points forts</th>
-    </tr></thead>
-    <tbody>
-      <tr>
-        <td><strong>VGG</strong></td>
-        <td>Empilage 3×3</td>
-        <td>Fort (local)</td>
-        <td>Modéré</td>
-        <td>Simplicité, transfert learning</td>
-      </tr>
-      <tr>
-        <td><strong>ResNet</strong></td>
-        <td>Skip connections</td>
-        <td>Fort (local)</td>
-        <td>Modéré</td>
-        <td>Profondeur extrême, robustesse</td>
-      </tr>
-      <tr>
-        <td><strong>EfficientNet</strong></td>
-        <td>Compound scaling</td>
-        <td>Fort (local)</td>
-        <td>Modéré</td>
-        <td>Efficacité paramétrique</td>
-      </tr>
-      <tr>
-        <td><strong>ViT</strong></td>
-        <td>Attention globale</td>
-        <td>Faible</td>
-        <td>Très élevé (JFT-300M)</td>
-        <td>Scalabilité, compréhension globale</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="text-muted small mb-0">
-    Le ViT surpasse les CNN sur les grands datasets mais est
-    <em>data-hungry</em> sur les datasets restreints.
-  </p>
-</div>`;
+import { renderVisionArchitectureComparison } from "../../assets/js/simulations/vision-architectures.js"
+renderVisionArchitectureComparison()
 ```
 
 :::

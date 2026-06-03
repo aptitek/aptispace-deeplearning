@@ -151,7 +151,7 @@ function renderVars(varsEl, currentCoeffs) {
 
     const bar = document.createElement("div");
     bar.className = "progress-bar";
-    bar.style.width = `${pct}%`;
+    bar.style.setProperty("width", `${pct}%`);
     
     const barColor = c.w < 0 ? "var(--sol-red)" : "var(--sol-cyan)";
     bar.style.setProperty("background-color", resolveCssValue(barColor), "important");

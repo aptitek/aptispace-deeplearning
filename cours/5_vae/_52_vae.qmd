@@ -42,86 +42,8 @@ viewof vae_alpha = Inputs.range([0, 1], {
 
 ```{ojs}
 //| echo: false
-{
-  window.d3 = window.d3 || d3;
-  const isVae = vae_mode.startsWith("VAE");
-  const alpha = vae_alpha;
-  const W = 560, H = 280;
-  const pA = { x: W * 0.15, y: H / 2 };
-  const pB = { x: W * 0.85, y: H / 2 };
-  const cursorX = pA.x + alpha * (pB.x - pA.x);
-
-  const svg = d3.create("svg")
-    .attr("viewBox", `0 0 ${W} ${H}`)
-    .attr("preserveAspectRatio", "xMidYMid meet")
-    .style("width", "100%").style("height", "auto").style("display", "block")
-    .style("background", "var(--sol-base03)").style("border-radius", "12px");
-
-  // Aura radius: large for VAE, small for AE
-  const auraR = isVae ? 120 : 35;
-  const blueHex = "#268bd2", redHex = "#dc322f", yellowHex = "#b58900";
-
-  // Gradient defs for gaussian balls
-  const defs = svg.append("defs");
-  ["nodeA", "nodeB"].forEach((id, idx) => {
-    const grad = defs.append("radialGradient").attr("id", id);
-    const col = idx === 0 ? blueHex : redHex;
-    grad.append("stop").attr("offset", "0%").attr("stop-color", col).attr("stop-opacity", isVae ? 0.35 : 0.15);
-    grad.append("stop").attr("offset", "100%").attr("stop-color", col).attr("stop-opacity", 0);
-  });
-
-  // Latent axis
-  svg.append("line")
-    .attr("x1", pA.x).attr("y1", H / 2).attr("x2", pB.x).attr("y2", H / 2)
-    .attr("stroke", "#586e75").attr("stroke-width", 2).attr("stroke-dasharray", "6,4");
-
-  // Aura circles (gaussian balls)
-  [{ p: pA, id: "nodeA", col: blueHex }, { p: pB, id: "nodeB", col: redHex }].forEach(({ p, id }) => {
-    svg.append("circle")
-      .attr("cx", p.x).attr("cy", p.y).attr("r", auraR)
-      .attr("fill", `url(#${id})`);
-  });
-
-  // Main nodes
-  svg.append("circle").attr("cx", pA.x).attr("cy", pA.y).attr("r", 30)
-    .attr("fill", blueHex).attr("stroke", "var(--sol-base3)").attr("stroke-width", 2);
-  svg.append("text").attr("x", pA.x).attr("y", pA.y).attr("text-anchor", "middle").attr("dy", ".35em")
-    .attr("fill", "var(--sol-base3)").attr("font-size", "14px").attr("font-weight", "700").text("Chat");
-
-  svg.append("circle").attr("cx", pB.x).attr("cy", pB.y).attr("r", 30)
-    .attr("fill", redHex).attr("stroke", "var(--sol-base3)").attr("stroke-width", 2);
-  svg.append("text").attr("x", pB.x).attr("y", pB.y).attr("text-anchor", "middle").attr("dy", ".35em")
-    .attr("fill", "var(--sol-base3)").attr("font-size", "14px").attr("font-weight", "700").text("Chien");
-
-  // Cursor
-  svg.append("circle").attr("cx", cursorX).attr("cy", H / 2).attr("r", 10)
-    .attr("fill", yellowHex).attr("stroke", "var(--sol-base3)").attr("stroke-width", 2)
-    .style("filter", `drop-shadow(0 0 8px ${yellowHex})`);
-  svg.append("text").attr("x", cursorX).attr("y", H / 2 + 26).attr("text-anchor", "middle")
-    .attr("fill", yellowHex).attr("font-size", "10px").attr("font-weight", "700")
-    .text(`α = ${alpha.toFixed(2)}`);
-
-  // Semantic zone label
-  let zoneLabel = "", zoneCol = "#657b83";
-  if (!isVae) {
-    const inGap = alpha > 0.2 && alpha < 0.8;
-    zoneLabel = inGap ? "⚠ Trou sémantique (AE)" : "✓ Zone valide";
-    zoneCol = inGap ? "#dc322f" : "#859900";
-  } else {
-    if (alpha < 0.2) { zoneLabel = "🐱 Chat"; zoneCol = blueHex; }
-    else if (alpha > 0.8) { zoneLabel = "🐶 Chien"; zoneCol = redHex; }
-    else { zoneLabel = "🦊 Interpolation continue"; zoneCol = yellowHex; }
-  }
-  svg.append("text").attr("x", W / 2).attr("y", 24).attr("text-anchor", "middle")
-    .attr("fill", zoneCol).attr("font-size", "13px").attr("font-weight", "700").text(zoneLabel);
-
-  // Mode label
-  svg.append("text").attr("x", W - 10).attr("y", H - 8).attr("text-anchor", "end")
-    .attr("fill", isVae ? "#859900" : "#dc322f").attr("font-size", "10px").attr("font-weight", "700")
-    .text(isVae ? "● VAE — espace continu" : "● AE — espace fragmenté");
-
-  return svg.node();
-}
+import { renderLatentInterpolation } from "../../assets/js/simulations/vae.js"
+renderLatentInterpolation({ mode: vae_mode, alpha: vae_alpha })
 ```
 
 :::

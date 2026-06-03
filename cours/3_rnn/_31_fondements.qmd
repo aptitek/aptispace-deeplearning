@@ -217,7 +217,7 @@ rnnUpdateState = {
   if (typeof renderRNNForward?.refresh === "function") renderRNNForward.refresh();
   if (typeof renderRNNBackprop?.refresh === "function") renderRNNBackprop.refresh();
   if (typeof renderRNNGradient?.refresh === "function") renderRNNGradient.refresh();
-  return html``;
+  return aptitek.noop();
 }
 
 // Graphique 1 : Propagation Avant

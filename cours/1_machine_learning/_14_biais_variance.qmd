@@ -128,18 +128,17 @@ graph4 = {
   if (badge) {
     if (complexity < 30) {
       badge.textContent = "SOUS-APPRENTISSAGE (Biais Élevé)";
-      badge.style.backgroundColor = "var(--sol-orange)";
+      badge.dataset.state = "warning";
       lineColor = "var(--sol-orange)";
     } else if (complexity > 70) {
       badge.textContent = "SUR-APPRENTISSAGE (Variance Élevée)";
-      badge.style.backgroundColor = "var(--sol-red)";
+      badge.dataset.state = "danger";
       lineColor = "var(--sol-red)";
     } else {
       badge.textContent = "GÉNÉRALISATION OPTIMALE";
-      badge.style.backgroundColor = "var(--sol-green)";
+      badge.dataset.state = "success";
       lineColor = "var(--sol-green)";
     }
-    badge.style.color = "var(--sol-base3)";
   }
 
   // --- 3. RENDU GRAPHIQUE ---
@@ -179,8 +178,7 @@ graph4 = {
   // Projection DOM
   const container = document.getElementById("d3-graph-4-container");
   if (container) {
-    container.innerHTML = "";
-    container.appendChild(svg.node());
+    container.replaceChildren(svg.node());
   }
 
   return svg.node();

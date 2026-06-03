@@ -37,75 +37,12 @@ viewof deriv = Inputs.range([0.1, 2.5], {
 
 ```{ojs}
 //| echo: false
-// 2. Calcul du gradient cumulé par couche (1 à 10)
-data = Array.from({length: 10}, (_, i) => {
-  const layerIndex = i + 1;
-  return {
-    couche: layerIndex,
-    gradient: Math.pow(deriv, layerIndex)
-  };
-})
-
-// 3. Logique d'évaluation de l'état final
-finalGrad = data[9].gradient;
-status = finalGrad < 0.1 ? "Disparition du gradient (Vanishing)" :
-         finalGrad > 10 ? "Explosion du gradient (Exploding)" :
-         "Gradient stable";
-
-// Attribution des classes Bootstrap en fonction du statut
-statusClass = finalGrad < 0.1 ? "text-danger" : // Red (Danger)
-              finalGrad > 10 ? "text-warning" : // Orange (Warning)
-              "text-success"; // Green (Stable)
-
+import { renderGradientFlowStatus } from "../../assets/js/simulations/learning-curves.js"
+renderGradientFlowStatus(deriv)
 ```
 
 ```{ojs}
 //| echo: false
-// 4. Affichage du statut dynamique
-html`<div class="fs-5 fw-bold mb-3 text-center ${statusClass}">
-  État du réseau : ${status}
-</div>`
-
-```
-
-```{ojs}
-//| echo: false
-// 5. Tracé du graphique avec Observable Plot
-Plot.plot({
-  width: 800,
-  height: 400,
-  marginRight: 50,
-  marginLeft: 60,
-  y: {
-    grid: true,
-    label: "Amplitude cumulée du Gradient"
-  },
-  x: {
-    label: "Profondeur du réseau (Couches)",
-    tickFormat: d => `Couche ${d}`
-  },
-  marks: [
-    // Ligne de référence à 1 (Solarized Base01)
-    Plot.ruleY([1], {
-      stroke: "var(--sol-base01)",
-      strokeWidth: 2,
-      strokeDasharray: "4"
-    }),
-    // Ligne reliant les points (Solarized Blue)
-    Plot.line(data, {
-      x: "couche",
-      y: "gradient",
-      stroke: "var(--sol-blue)",
-      strokeWidth: 3
-    }),
-    // Points sur chaque couche (Solarized Cyan)
-    Plot.dot(data, {
-      x: "couche",
-      y: "gradient",
-      fill: "var(--sol-cyan)",
-      r: 6
-    })
-  ]
-})
-
+import { renderGradientFlowPlot } from "../../assets/js/simulations/learning-curves.js"
+renderGradientFlowPlot(Plot, deriv)
 ```
