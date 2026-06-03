@@ -1,0 +1,204 @@
+## Rotary Position Embedding (RoPE) : Géométrie Rotationnelle
+
+RoPE (*Rotary Position Embedding*, Su et al. 2021) représente l'état de l'art des encodages positionnels pour les LLMs modernes (LLaMA, Llama 2, Mistral, Gemma). Son élégance réside dans l'injection de l'information de **position relative** directement dans le produit scalaire d'attention, via une rotation dans l'espace des nombres complexes [@June2023; @Krasser2022].
+
+### L'Objectif Fonctionnel
+
+Soit $f(\mathbf{q}, m)$ la transformation de la requête $\mathbf{q}$ à la position $m$, et $f(\mathbf{k}, n)$ la transformation de la clé $\mathbf{k}$ à la position $n$. RoPE cherche à construire $f$ telle que le produit scalaire $\langle f(\mathbf{q}, m), f(\mathbf{k}, n) \rangle$ soit une fonction de $\mathbf{q}$, $\mathbf{k}$, et de la **distance relative** $m - n$ uniquement [@June2023; @Krasser2022] :
+
+$$\langle f(\mathbf{q}, m), f(\mathbf{k}, n) \rangle = g(\mathbf{q}, \mathbf{k}, m - n)$$
+
+Cette propriété garantit que l'attention capturée entre deux tokens dépend de leur écart relatif, pas de leurs positions absolues — ce qui améliore la généralisation à différentes longueurs de séquence.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔄 Simulation : RoPE — Rotation des Tokens dans l'Espace Complexe
+::::
+
+:::: {.card-control-row .sim-controls-row style="flex-wrap: wrap; gap: 0.5rem;"}
+```{ojs}
+//| echo: false
+viewof rope_sentence = Inputs.text({
+  label: "Phrase :",
+  value: "Le chat mange la souris dans la cuisine.",
+  placeholder: "Tapez une phrase..."
+})
+
+viewof rope_theta = Inputs.range([5, 45], {
+  label: "Sensibilité θ (°/token)",
+  value: 15, step: 1
+})
+```
+::::
+
+```{ojs}
+//| echo: false
+rope_tokens = rope_sentence.trim().split(/\s+/).map((w, i) => ({ id: i, word: w }))
+```
+
+```{ojs}
+//| echo: false
+{
+  window.d3 = window.d3 || d3;
+  const tokens = rope_tokens;
+  const theta = rope_theta;
+  const VW = 380, VH = 380;
+  const cx = VW / 2, cy = VH / 2, R = 145;
+
+  const svg = d3.create("svg")
+    .attr("viewBox", `0 0 ${VW} ${VH}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%").style("max-width", "420px")
+    .style("height", "auto").style("display", "block").style("margin", "0 auto")
+    .style("background", "var(--sol-base03)").style("border-radius", "12px");
+
+  // Grid circles
+  [0.5, 1].forEach(f => {
+    svg.append("circle")
+      .attr("cx", cx).attr("cy", cy).attr("r", R * f)
+      .attr("fill", "none").attr("stroke", "var(--sol-base02)").attr("stroke-width", 1);
+  });
+
+  // Degree ticks
+  for (let deg = 0; deg < 360; deg += 30) {
+    const rad = deg * Math.PI / 180;
+    svg.append("line")
+      .attr("x1", cx + (R - 8) * Math.sin(rad)).attr("y1", cy - (R - 8) * Math.cos(rad))
+      .attr("x2", cx + R * Math.sin(rad)).attr("y2", cy - R * Math.cos(rad))
+      .attr("stroke", "var(--sol-base01)").attr("stroke-width", 1);
+  }
+
+  // Get two "selected" tokens — always 0 and 1 for the static base view
+  // We'll make the first two tokens highlighted
+  const selA = 0, selB = Math.min(1, tokens.length - 1);
+
+  // Plot all tokens
+  tokens.forEach((t, i) => {
+    const angle = i * theta * (Math.PI / 180);
+    const x = cx + R * Math.sin(angle);
+    const y = cy - R * Math.cos(angle);
+    const isA = i === selA, isB = i === selB;
+
+    // Dot
+    svg.append("circle")
+      .attr("cx", x).attr("cy", y).attr("r", isA || isB ? 7 : 4)
+      .attr("fill", isA ? "var(--sol-blue)" : isB ? "var(--sol-red)" : "var(--sol-base01)")
+      .attr("stroke", isA || isB ? "var(--sol-base3)" : "none").attr("stroke-width", 1.5);
+
+    // Label for selected tokens
+    if (isA || isB) {
+      const col = isA ? "var(--sol-blue)" : "var(--sol-red)";
+      const lx = cx + (R + 20) * Math.sin(angle);
+      const ly = cy - (R + 20) * Math.cos(angle);
+      const g = svg.append("g").attr("transform", `translate(${lx},${ly})`);
+      const tlen = t.word.length * 6 + 12;
+      g.append("rect").attr("x", -tlen / 2).attr("y", -10).attr("width", tlen).attr("height", 20)
+        .attr("rx", 4).attr("fill", col);
+      g.append("text").attr("text-anchor", "middle").attr("dy", ".35em")
+        .attr("fill", "var(--sol-base3)").attr("font-size", "11px").attr("font-weight", "700")
+        .style("font-family", "var(--font-code)").text(t.word);
+    }
+  });
+
+  // Arrows from center for A and B
+  [selA, selB].forEach(idx => {
+    const angle = idx * theta * (Math.PI / 180);
+    const x = cx + R * Math.sin(angle);
+    const y = cy - R * Math.cos(angle);
+    const col = idx === selA ? "var(--sol-blue)" : "var(--sol-red)";
+    svg.append("line")
+      .attr("x1", cx).attr("y1", cy).attr("x2", x).attr("y2", y)
+      .attr("stroke", col).attr("stroke-width", 3).attr("stroke-linecap", "round");
+  });
+
+  // Arc showing relative angle
+  const radA = selA * theta * (Math.PI / 180);
+  const radB = selB * theta * (Math.PI / 180);
+  const arcGen = d3.arc().innerRadius(R - 18).outerRadius(R + 4)
+    .startAngle(Math.min(radA, radB)).endAngle(Math.max(radA, radB));
+  svg.append("path").attr("transform", `translate(${cx},${cy})`).attr("d", arcGen())
+    .attr("fill", "var(--sol-yellow)").attr("opacity", 0.3);
+
+  // Center dot
+  svg.append("circle").attr("cx", cx).attr("cy", cy).attr("r", 5).attr("fill", "var(--sol-base1)");
+
+  const dist = Math.abs(selA - selB);
+  const totalAngle = dist * theta;
+
+  // Info overlay
+  const infoX = 10, infoY = 10;
+  const info = svg.append("g");
+  info.append("rect").attr("x", infoX).attr("y", infoY).attr("width", 175).attr("height", 60)
+    .attr("rx", 6).attr("fill", "var(--sol-base02)").attr("opacity", 0.9);
+  info.append("text").attr("x", infoX + 8).attr("y", infoY + 20)
+    .attr("fill", "var(--sol-base1)").attr("font-size", "10px").style("font-family", "var(--font-code)")
+    .text(`θ = ${theta}° / token`);
+  info.append("text").attr("x", infoX + 8).attr("y", infoY + 36)
+    .attr("fill", "var(--sol-yellow)").attr("font-size", "11px").attr("font-weight", "700")
+    .style("font-family", "var(--font-code)")
+    .text(`Déphasage Δ = ${totalAngle}°`);
+  info.append("text").attr("x", infoX + 8).attr("y", infoY + 52)
+    .attr("fill", "var(--sol-base01)").attr("font-size", "9.5px").style("font-family", "var(--font-code)")
+    .text(`${tokens[selA]?.word} ↔ ${tokens[selB]?.word} (|Δm|=${dist})`);
+
+  return svg.node();
+}
+```
+
+:::
+
+### Dérivation en Dimension 2
+
+En dimension $d = 2$, représentons $\mathbf{q} = (q_0, q_1)$ comme un nombre complexe $q = q_0 + iq_1$. La transformation RoPE est simplement une **multiplication par une phase complexe** [@June2023] :
+
+$$f(q, m) = q \cdot e^{im\theta}$$
+
+Le produit scalaire (partie réelle du produit de $f(\mathbf{q}, m)$ et du conjugué de $f(\mathbf{k}, n)$) devient :
+
+$$\text{Re}[f(q, m) \cdot \overline{f(k, n)}] = \text{Re}[q \cdot \bar{k} \cdot e^{i(m-n)\theta}]$$
+
+Le terme $e^{i(m-n)\theta}$ démontre que l'information de position est **purement relative** — seul l'écart $m - n$ apparaît dans le produit scalaire, jamais les positions absolues $m$ ou $n$ séparément.
+
+### Généralisation aux Hautes Dimensions
+
+Pour un vecteur de dimension $d$, RoPE décompose l'espace en $d/2$ **paires de dimensions** indépendantes. Chaque paire $(2i-1, 2i)$ est traitée comme un plan 2D où s'applique une rotation d'angle $m\theta_i$, avec des fréquences décroissantes [@June2023; @Kazemnejad2023] :
+
+$$\theta_i = 10000^{-2i/d}$$
+
+Sous forme matricielle, la transformation de la requête $\mathbf{q}$ à la position $m$ est :
+
+$$\mathbf{R}(m) \mathbf{q} = \begin{pmatrix} \cos(m\theta_1) & -\sin(m\theta_1) & & \\ \sin(m\theta_1) & \cos(m\theta_1) & & \\ & & \ddots & \\ & & & \cos(m\theta_{d/2}) & -\sin(m\theta_{d/2}) \\ & & & \sin(m\theta_{d/2}) & \cos(m\theta_{d/2}) \end{pmatrix} \mathbf{q}$$
+
+La matrice $\mathbf{R}(m)$ est orthogonale et creuse — elle préserve la norme des vecteurs (les rotations ne changent pas la magnitude) et peut être calculée efficacement.
+
+### Implémentation dans LLaMA : Optimisation par Complexes
+
+L'implémentation de RoPE dans LLaMA est un exemple de co-design mathématique/logiciel [@Touvron2023; @Prabhakaran2025]. Plutôt que des multiplications de matrices 2D pour chaque paire, on exploite la correspondance avec les nombres complexes :
+
+1. **`precompute_freqs_cis`** : Précalcule pour chaque position $m$ et fréquence $\theta_i$ la valeur $e^{im\theta_i}$ sous forme polaire complexe (cosinus + i×sinus). Ce précalcul est fait une fois et réutilisé pour toutes les couches.
+
+2. **`apply_rotary_emb`** : Réinterprète les paires de dimensions réelles $(q_{2i-1}, q_{2i})$ comme des nombres complexes $q_{2i-1} + i \cdot q_{2i}$, puis applique la rotation par **multiplication complexe élément par élément** :
+
+$$(\text{Re}[q \cdot e^{im\theta}], \, \text{Im}[q \cdot e^{im\theta}])$$
+
+Cette multiplication complexe est 2× plus efficace que la multiplication matricielle 2D correspondante, et exploite les instructions SIMD modernes qui traitent naturellement des paires de flottants.
+
+### Extrapolation de Contexte et LongRoPE
+
+Un avantage majeur de RoPE sur les embeddings appris est sa capacité d'**extrapolation** : la définition de la rotation est valide pour tout $m$, même les positions non vues à l'entraînement [@Ding2024; @AIPaperSlopND]. En pratique, cependant, des fréquences d'interpolation ou de ré-échelonnage sont nécessaires pour dépasser significativement $T_{\max}$.
+
+**LongRoPE** (Ding et al. 2024) étend les modèles Llama au-delà de 2 millions de tokens en ajustant non-uniformément les fréquences de rotation selon la dimension : les dimensions basses (haute fréquence) sont étirées différemment des dimensions hautes (basse fréquence), permettant une extrapolation fine-granulaire sans dégradation des performances sur courtes séquences [@Ding2024].
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🔄 Résumé Comparatif des Encodages Positionnels
+
+| Méthode | Type | Extrapolation | Paramètres | Modèles |
+|:--------|:-----|:-------------|:-----------|:--------|
+| Sinusoïdal | Absolu, fixe | Partielle | 0 | Transformer original |
+| Appris | Absolu, appris | Non | $T_{\max} \times d$ | BERT, GPT-2 |
+| ALiBi | Relatif, fixe | Oui (linéaire) | 0 | MPT, BLOOM |
+| RoPE | Relatif, fixe | Oui (si rééchelonné) | 0 | LLaMA, Mistral, Gemma |
+
+RoPE offre le meilleur compromis : pas de paramètres supplémentaires, information relative pure dans le produit scalaire, et extrapolation possible via ré-échelonnage des fréquences.
+:::

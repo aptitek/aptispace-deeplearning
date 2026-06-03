@@ -1,0 +1,66 @@
+## PEFT, LoRA et Alignement : L'Expertise à Grande Échelle
+
+Le fine-tuning complet d'un LLM de 7 milliards de paramètres requiert plusieurs dizaines de GPU A100 pendant plusieurs jours — prohibitif pour la grande majorité des praticiens. Le **PEFT** (*Parameter-Efficient Fine-Tuning*) permet d'atteindre des performances comparables en ne mettant à jour qu'une fraction infime des paramètres [@HuggingFacePEFT2026; @Balne2024].
+
+### LoRA : Adaptation par Matrices de Bas Rang
+
+**LoRA** (*Low-Rank Adaptation*, Hu et al. 2021) est la méthode PEFT la plus répandue. L'intuition fondamentale : la mise à jour des poids lors du fine-tuning a un **rang intrinsèquement bas** — elle n'explore qu'un sous-espace restreint de l'espace des paramètres [@Wikipedia2026].
+
+Plutôt que de modifier directement une matrice de poids $\mathbf{W} \in \mathbb{R}^{d \times d}$, LoRA ajoute une décomposition de bas rang apprise :
+
+$$\mathbf{W}' = \mathbf{W} + \Delta\mathbf{W} = \mathbf{W} + \mathbf{B}\mathbf{A}$$
+
+où $\mathbf{A} \in \mathbb{R}^{r \times d}$, $\mathbf{B} \in \mathbb{R}^{d \times r}$, et $r \ll \min(d, d)$ est le **rang LoRA**. Seules $\mathbf{A}$ et $\mathbf{B}$ sont entraînées ; $\mathbf{W}$ est gelée. Pour $r = 8$ et $d = 4096$, LoRA réduit les paramètres entraînables d'un facteur $\approx 256$.
+
+**Initialisation :** $\mathbf{A}$ est initialisée aléatoirement (distribution gaussienne), $\mathbf{B}$ est initialisée à zéro — garantissant que $\Delta\mathbf{W} = 0$ au début de l'entraînement, préservant le comportement du modèle pré-entraîné.
+
+**À l'inférence :** On absorbe LoRA dans le poids original : $\mathbf{W}' = \mathbf{W} + \mathbf{B}\mathbf{A}$. Il n'y a **aucun surcoût de latence** par rapport au modèle de base — LoRA est une technique d'entraînement, pas d'architecture.
+
+**Hyperparamètres clés [@Unsloth2026] :**
+
+| Hyperparamètre | Rôle | Valeurs typiques |
+|:--------------|:-----|:----------------|
+| $r$ (rang) | Capacité de la décomposition | 8, 16, 64 |
+| $\alpha$ (scaling) | Mise à l'échelle : $\frac{\alpha}{r}\mathbf{BA}$ | $r$, $2r$ |
+| `target_modules` | Quelles matrices adapter (Q, K, V, FFN) | Toutes les projections |
+| `dropout` | Régularisation des matrices A, B | 0.05–0.1 |
+
+### QLoRA : Quantification et Entraînement sur GPU Grand Public
+
+**QLoRA** (Dettmers et al. 2023) combine LoRA avec la **quantification en 4 bits** du modèle de base, permettant le fine-tuning d'un modèle 65B sur **un seul GPU de 48 Go** [@Dettmers2023] :
+
+1. **NF4 (NormalFloat 4-bit)** : Format de quantification optimal pour les poids normalement distribués — chaque poids est stocké sur 4 bits avec une grille de quantification adaptée à $\mathcal{N}(0,1)$.
+2. **Double Quantification** : Quantification des constantes de quantification elles-mêmes, réduisant davantage l'empreinte mémoire.
+3. **Paged Optimizers** : Gestion de la mémoire GPU/CPU pour éviter les OOM (*Out Of Memory*) lors des pics de gradient.
+
+L'inférence QLoRA reste en 4 bits ; seuls les adaptateurs LoRA sont en précision complète (bf16). Les performances sont comparables au fine-tuning complet en bf16 sur les benchmarks standards [@Dettmers2023].
+
+### L'Alignement : Du Prédicteur Statistique à l'Agent Professionnel
+
+Le SFT produit un modèle qui *suit les instructions* mais pas nécessairement de façon **utile et sûre** (*helpful and harmless*). L'alignement est la dernière étape du pipeline post-entraînement, garantissant que l'expert métier produit des réponses conformes aux valeurs et aux besoins de l'utilisateur [@ApXMachineLearning2024a].
+
+**RLHF (Reinforcement Learning from Human Feedback) :**
+
+Le processus standard en trois phases : (1) SFT, (2) entraînement d'un **modèle de récompense** par comparaisons humaines de réponses, (3) optimisation par RL (PPO) du LLM pour maximiser la récompense. RLHF est la méthode utilisée par InstructGPT, ChatGPT et Claude.
+
+**DPO (Direct Preference Optimization) :**
+
+Une simplification théoriquement fondée qui élimine le modèle de récompense explicite. DPO paramétrise directement la politique optimale en fonction des préférences humaines, transformant le problème RL en une simple classification binaire sur des paires de préférences [@Jiang2025].
+
+**Continual Learning et Oubli Catastrophique :**
+
+Dans les déploiements production, les modèles sont continuellement mis à jour avec de nouvelles données ou de nouvelles instructions. Sans précautions, chaque fine-tuning ultérieur risque d'écraser les connaissances précédentes [@Chen2026; @Schweighofer2025]. Les techniques de mitigation incluent :
+
+* **Replay de données** : Mélanger des données du pré-entraînement original dans le fine-tuning.
+* **EWC (Elastic Weight Consolidation)** : Pénalise les modifications des poids les plus importants pour les tâches précédentes.
+* **LoRA pour l'isolation** : Les adaptateurs LoRA séparent physiquement les connaissances générales (poids gelés) des spécialisations (matrices A, B).
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🔑 Synthèse du Chapitre 8 : Le Cycle de Vie d'un LLM
+
+* **Pré-entraînement** : Construction du capital de connaissances par next-token prediction. Erreur in-sample en $O(1/NT)$ ; out-of-sample liée à $\tau_{\text{mix}}$.
+* **Scaling Laws** : Pour $Q > 10^9$ inférences, l'approche inférence-optimale (LLaMA 3 : 15T tokens sur 8B) domine la Chinchilla-optimale.
+* **SFT** : Stacked training supérieur au Phased pour les petits modèles. Diagnostiquer le succès par les dynamiques précoces (gradient faible + perte élevée au départ).
+* **LoRA** : Rang $r \ll d$, décomposition $\mathbf{W} + \mathbf{BA}$, zéro surcoût à l'inférence. QLoRA étend LoRA aux GPU grand public via quantification NF4.
+* **Alignement** : RLHF ou DPO transforment le prédicteur statistique en agent professionnel fiable, utile et sûr.
+:::

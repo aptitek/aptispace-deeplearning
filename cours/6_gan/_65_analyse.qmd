@@ -1,0 +1,50 @@
+## Analyse Théorique : Pourquoi la Diffusion Surpasse les Méthodes Classiques
+
+La supériorité empirique des modèles de diffusion sur les GANs pour la génération d'images haute qualité a longtemps manqué de fondements théoriques rigoureux. Les travaux de Kwon, Kim et Ohn (2026) fournissent la première preuve d'**optimalité minimax** pour les modèles de diffusion sur des classes de densités réalistes [@Kwon2026].
+
+### Densités Factorisables et Structure de Graphe
+
+La clé du résultat de Kwon et al. est l'hypothèse de **factorisabilité** : la densité cible $p_0$ est supposée factorisable selon la structure d'un graphe de Markov. Formellement, si les variables $(\mathbf{x}_1, \ldots, \mathbf{x}_n)$ sont organisées en un graphe $\mathcal{G}$, la densité se factorise en produit de facteurs locaux dépendant uniquement des nœuds voisins dans $\mathcal{G}$ :
+
+$$p_0(\mathbf{x}) \propto \prod_{C \in \mathcal{C}(\mathcal{G})} \phi_C(\mathbf{x}_C)$$
+
+où $\mathcal{C}(\mathcal{G})$ est l'ensemble des cliques maximales. Pour des images naturelles, cette hypothèse est bien vérifiée : les pixels voisins sont fortement corrélés, tandis que les pixels distants sont quasi-indépendants conditionnellement aux pixels intermédiaires. La **dimension effective** $d$ du problème est alors gouvernée par la taille des cliques maximales, non par la dimension ambiante $D$ (nombre de pixels) [@Kwon2026].
+
+### La Malédiction de la Dimensionnalité : GANs vs Diffusion
+
+Pour les estimateurs classiques (KDE, mélanges paramétriques), le taux de convergence optimal pour estimer $p_0 \in \mathcal{H}^\beta$ (espace de Sobolev de régularité $\beta$) est [@Kwon2026] :
+
+$$\text{Rate}_{\text{classique}} = O\!\left(n^{-\frac{\beta}{2\beta + D}}\right)$$
+
+où $n$ est le nombre d'échantillons et $D$ est la dimension ambiante. Pour des images haute résolution ($D \gg 100$), ce taux est catastrophiquement lent — la malédiction de la dimensionnalité est totale.
+
+Pour les modèles de diffusion avec architecture Sparse Weight-Sharing (U-Net, CNN), Kwon et al. démontrent un taux adapté à la **dimension effective** $d$ des cliques [@Kwon2026] :
+
+$$\text{Rate}_{\text{diffusion}} = O\!\left(n^{-\frac{\beta}{2\beta + d}}\right)$$
+
+Ce résultat est remarquable : les modèles de diffusion s'affranchissent de la malédiction de la dimensionnalité en s'adaptant automatiquement à la structure de dépendance locale des données.
+
+### Le Rôle du Sparse Weight-Sharing
+
+Le lien entre l'architecture et la théorie est direct : le **partage de poids épars** (Sparse Weight-Sharing) des convolutions et U-Nets agit comme un **régulateur de l'entropie métrique** du modèle [@Kwon2026]. En limitant la complexité effective du modèle via le partage de paramètres, ces architectures respectent une contrainte implicite sur le nombre de "degrés de liberté fonctionnels", permettant d'atteindre le taux minimax optimal.
+
+En d'autres termes, l'U-Net n'est pas seulement un choix architectural pratique — c'est un choix théoriquement fondé qui garantit l'optimalité statistique de l'estimateur de score.
+
+### Comparaison Pratique : GANs vs Diffusion
+
+| Critère | GANs | DDPM/Diffusion |
+|:--------|:-----|:---------------|
+| **Couverture de $p_0$** | Partielle (mode collapse) | Totale (couverture garantie) |
+| **Stabilité d'entraînement** | Fragile (équilibre Nash) | Robuste (objectif convexe par étape) |
+| **Vitesse de génération** | Rapide (1 passe) | Lente (T passes, améliorable via DDIM) |
+| **Qualité haute résolution** | Excellente (StyleGAN) | SOTA actuel |
+| **Fondement théorique** | Partiel | Optimalité minimax prouvée [@Kwon2026] |
+| **Contrôle de la génération** | Via conditioning | Via guidance (classifier, CFG) |
+
+### La Guidance sans Classificateur (CFG)
+
+Un apport majeur pour la génération conditionnelle par diffusion est le **Classifier-Free Guidance** (Ho et Salimans 2022). Plutôt qu'un classificateur externe, le modèle apprend simultanément la prédiction conditionnelle $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \mathbf{c})$ et inconditionnelle $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset)$. La guidance est alors appliquée comme une extrapolation directionnelle :
+
+$$\tilde{\boldsymbol{\epsilon}}_\theta(\mathbf{x}_t, \mathbf{c}) = \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset) + w \cdot \left[\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \mathbf{c}) - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset)\right]$$
+
+Le coefficient $w$ contrôle le compromis entre fidélité à la condition $\mathbf{c}$ et diversité — un $w$ élevé produit des images très fidèles à la condition mais moins variées. Cette technique est au cœur de Stable Diffusion et DALL-E.

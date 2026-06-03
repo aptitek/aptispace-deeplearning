@@ -1,0 +1,43 @@
+## L'Autoencodeur Classique : Compression Contrainte et Espace Latent
+
+L'autoencodeur classique ne doit pas être appréhendé comme un simple mécanisme de copie, mais comme une **architecture de contrainte** forçant l'extraction de caractéristiques sémantiques. En privant le réseau de ressources dimensionnelles, on l'oblige à résoudre un problème d'optimisation sous contrainte de goulot d'étranglement (*bottleneck*). Toute l'astuce réside dans cette privation délibérée : c'est le manque de capacité qui génère la représentation utile [@giguere_nd; @canziani_2020].
+
+### Le Triptyque Architectural
+
+Le système s'articule autour de trois composantes fondamentales [@mlberkeley_nd; @talbi_2021] :
+
+* **L'Encodeur** ($\mathbf{z} = f_\theta(\mathbf{x})$) : Une fonction paramétrique projetant l'entrée $\mathbf{x}$ de haute dimension vers un espace latent $\mathbf{z}$ de dimensionnalité réduite. Architecturalement, il peut s'agir d'un MLP ou d'un CNN pour les images.
+
+* **Le Goulot d'étranglement** (*Bottleneck*) : La couche critique dont la dimension $d_z \ll d_x$ limite le flux d'information. Cette couche agit comme un filtre sémantique : seule l'information structurellement indispensable à la reconstruction peut y passer.
+
+* **Le Décodeur** ($\hat{\mathbf{x}} = g_\phi(\mathbf{z})$) : La fonction réciproque qui tente de reconstruire le signal original à partir de la représentation compressée. Il est souvent symétrique à l'encodeur.
+
+### L'Objectif de Reconstruction
+
+Mathématiquement, l'entraînement minimise la **perte de reconstruction** :
+
+$$\mathcal{L}(\theta, \phi) = \mathbb{E}_{\mathbf{x} \sim p_{\text{data}}}\!\left[\|\mathbf{x} - g_\phi(f_\theta(\mathbf{x}))\|^2\right]$$
+
+Cette contrainte force le modèle à ignorer les variations stochastiques (le bruit) pour ne conserver que les composantes principales du jeu de données. L'autoencodeur agit ainsi comme une extension **non-linéaire de l'Analyse en Composantes Principales** (ACP/PCA) : là où la PCA trouve le sous-espace linéaire optimal, l'autoencodeur apprend le *manifold* non-linéaire sur lequel réside réellement la distribution des données [@fournier_2021].
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🗜️ Analogie : La Transcription Télégraphique
+
+Imaginons devoir transmettre un discours complet via un télégramme à coût fixe par mot. L'auteur est contraint de distiller le discours en ses idées essentielles, en éliminant toute redondance. À réception, le destinataire tente de reconstruire le discours original à partir de cette version compressée. Plus la contrainte de coût est sévère (petit bottleneck), plus la distillation sémantique est forcée. La qualité de reconstruction révèle alors ce que le modèle a appris à considérer comme "essentiel" dans les données.
+:::
+
+### Applications Pratiques
+
+La contrainte du goulot d'étranglement génère plusieurs capacités utiles :
+
+* **Compression et Réduction de Dimension** : La représentation latente $\mathbf{z}$ constitue une représentation compacte, exploitable pour la visualisation (t-SNE sur $\mathbf{z}$) ou comme entrée d'un modèle aval [@fournier_2021].
+
+* **Débruitage** (*Denoising Autoencoders*) : En entraînant le modèle à reconstruire $\mathbf{x}$ à partir d'une version bruitée $\tilde{\mathbf{x}} = \mathbf{x} + \epsilon$, on force l'encodeur à ignorer le bruit aléatoire. L'espace latent ne pouvant encoder le bruit faute de capacité, le décodeur apprend à reconstruire la structure propre du signal [@bengio_2012].
+
+* **Détection d'Anomalies** : Pour une donnée hors-distribution, la perte de reconstruction $\|\mathbf{x} - \hat{\mathbf{x}}\|^2$ est structurellement élevée, le modèle n'ayant pas de "vocabulaire latent" pour la représenter. Ce signal constitue un détecteur d'anomalies sans supervision.
+
+### La Limite Fondamentale : Fragmentation du Manifold
+
+Malgré ces qualités, l'autoencodeur classique souffre d'un défaut architectural critique : **la fragmentation du manifold latent**. L'espace $\mathbf{z}$ est discontinu, parsemé de "trous sémantiques" entre les clusters correspondant aux différentes classes. Interpoler entre deux points latents valides peut produire des reconstructions incohérentes [@shrivastava_2024].
+
+Ce constat est fondamental : si l'on tire un point $\mathbf{z}$ aléatoire dans l'espace latent, rien ne garantit que $g_\phi(\mathbf{z})$ produira une donnée sémantiquement valide. L'espace latent n'est pas un *continuum* utilisable — il est une collection de régions valides entourées de régions vides. C'est précisément cette limitation qui motive le passage au Variational Autoencoder.

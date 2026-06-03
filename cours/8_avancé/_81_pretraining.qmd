@@ -1,0 +1,43 @@
+## Le Pré-entraînement : Construction de la Fondation
+
+Le développement d'un grand modèle de langage (LLM) ne se résume pas à une phase de calcul massive et indifférenciée. Le pré-entraînement est l'étape où le modèle acquiert son **capital de connaissances** initial, sa structure cognitive et sa compréhension statistique du monde. La qualité de cette fondation détermine la capacité de généralisation et l'efficacité de toutes les spécialisations ultérieures [@Yuksel2025; @GoPenAI2026].
+
+### La Modélisation Autoregressive : Chaînes de Markov d'Ordre $k$
+
+Sous l'angle mathématique, le pré-entraînement autorégressif par **prédiction du prochain token** (*next-token prediction*) modélise le langage comme une chaîne de Markov d'ordre $k$. Pour un corpus de $N$ séquences de tokens, l'objectif est de maximiser la vraisemblance [@Yuksel2025] :
+
+$$\mathcal{L}_{\text{pré-entraînement}} = \sum_{t} \log p_\theta(w_t | w_{t-1}, w_{t-2}, \ldots, w_{t-k})$$
+
+Pour que les garanties théoriques de généralisation s'appliquent, on suppose des fonctions de logit bornées et Lipschitziennes. La performance se mesure selon deux axes [@Yuksel2025] :
+
+* **Erreur in-sample** : Précision sur des contextes déjà observés. Elle décroît en $O\!\left(\frac{1}{NT}\right)$ par rapport au nombre total de tokens $NT$.
+
+* **Erreur out-of-sample** : Performance sur des contextes inédits, liée aux propriétés de **mélange** (*mixing properties*, $\tau_{\text{mix}}$) de la chaîne de Markov sous-jacente. Le temps de mélange $\tau_{\text{mix}}$ représente le nombre de pas nécessaires pour explorer de nouveaux états contextuels.
+
+::: {.callout-note appearance="simple" icon="false"}
+## 📚 Analogie : L'Élève et le Corpus
+
+Imaginez un élève qui apprend une langue en lisant des millions de textes. L'**erreur in-sample** est sa capacité à compléter des phrases qu'il a déjà vues — sa mémoire. L'**erreur out-of-sample** est sa capacité à compléter des phrases nouvelles dans un style jamais rencontré — sa compréhension réelle. Un modèle avec faible $\tau_{\text{mix}}$ "s'ennuie vite" et répète les mêmes structures ; un grand $\tau_{\text{mix}}$ indique une grande variété contextuelle dans le corpus d'entraînement.
+:::
+
+### Le Pipeline de Données : Qualité avant Quantité
+
+La performance du pré-entraînement dépend autant de la **qualité** du corpus que de sa taille. Les LLMs modernes appliquent un pipeline rigoureux [@GoPenAI2026; @Zhong2025] :
+
+**Déduplication :**
+
+La présence de documents dupliqués dans le corpus de pré-entraînement est l'une des sources de dégradation les plus sous-estimées. Un corpus dupliqué à 10% force le modèle à mémoriser ces séquences répétées plutôt qu'à généraliser. La déduplication exacte (hash de n-grammes) et floue (MinHash pour la déduplication approximative) sont appliquées systématiquement [@GoPenAI2026].
+
+**Filtrage de Qualité :**
+
+Les pipelines modernes (ex. : FineWeb d'Hugging Face) filtrent le web par classifieurs de qualité — souvent un modèle fine-tuné sur des données curatées par des humains comme référence positive. Le ratio données "qualité web" vs "qualité book" conditionne les capacités de raisonnement [@TII2023].
+
+**Tokenisation et Sharding :**
+
+Pour les corpus de plusieurs tera-tokens, le pipeline de tokenisation et de découpage (*sharding*) devient un problème d'ingénierie en lui-même. Des systèmes comme Youmu (Zhong et al. 2025) optimisent le pipeline de données columnar pour alimenter l'entraînement sans créer de stalls [@Zhong2025].
+
+### La Généralisation : Au-delà de la Mémorisation
+
+La capacité de généralisation d'un modèle ne dépend pas du nombre brut de paramètres, mais de la **complexité statistique** de sa classe d'hypothèse. Une architecture bien définie permet de briser la "malédiction de la dimensionnalité" des modèles $n$-grammes classiques, offrant des taux de généralisation qui ne croissent pas exponentiellement avec $k$ [@Yuksel2025].
+
+Les Transformers, via leur mécanisme d'attention global, apprennent une classe d'hypothèse implicitement régularisée : la structure de l'attention force le modèle à exprimer ses prédictions comme des combinaisons convexes de patterns vus à l'entraînement. Cette inductive bias est le mécanisme profond qui permet la généralisation à de nouveaux contextes jamais vus.

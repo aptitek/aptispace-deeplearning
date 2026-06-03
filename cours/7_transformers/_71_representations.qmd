@@ -1,0 +1,44 @@
+## Représentations Statistiques du Langage : BoW et TF-IDF
+
+L'enjeu fondamental du Traitement du Langage Naturel (NLP) réside dans la conversion du langage humain en une forme numérique exploitable. Avant l'avènement des plongements neuronaux, cette conversion s'appuyait sur la **fréquence d'occurrence** des mots — une quantification du sens par le comptage. Ces méthodes posent les bases conceptuelles essentielles pour comprendre pourquoi les représentations denses sont nécessaires [@murel_2025; @mayurji_2024].
+
+### L'Hypothèse Distributionnelle
+
+Toute représentation vectorielle de texte repose sur l'**hypothèse distributionnelle** de Harris (1954), reformulée par Lenci (2018) : les mots apparaissant dans des contextes similaires partagent des significations apparentées. Cette hypothèse transforme un problème sémantique (que signifie ce mot ?) en un problème statistique (dans quel contexte ce mot apparaît-il ?). Sa puissance est qu'elle permet d'inférer la sémantique sans annotation humaine — la co-occurrence fait office de supervision implicite.
+
+### Bag-of-Words : Représentation Atomique
+
+Le *Bag-of-Words* (BoW) est le modèle le plus simple : chaque document devient un vecteur de dimension $|\mathcal{V}|$ (taille du vocabulaire), où la coordonnée $i$ est le nombre d'occurrences du mot $w_i$ dans le document. La représentation est complètement **agnostique à l'ordre** : "le chien a mordu l'homme" et "l'homme a mordu le chien" ont le même vecteur BoW [@murel_2025].
+
+Les limites du BoW sont structurelles :
+
+* **Domination des stopwords** : Les mots fonctionnels ("le", "de", "est") dominent les fréquences et masquent les mots informatifs [@mayurji_2024].
+* **Perte de l'agencement** : L'ordre syntaxique, porteur de sens (sujet/objet, négation), est totalement ignoré.
+* **Insensibilité à la composition** : "not bad" (positif) contient "bad" (négatif) — le modèle ne peut distinguer les deux.
+* **Explosion dimensionnelle** : Pour un corpus courant, $|\mathcal{V}| \sim 10^5$ à $10^6$, produisant des vecteurs extrêmement creux (*sparse*).
+
+### TF-IDF : Pondération Informative
+
+Le *Term Frequency-Inverse Document Frequency* (TF-IDF) raffine le BoW en introduisant une pondération qui équilibre la représentativité locale et le pouvoir discriminant global [@lesieutre_2026; @chiny_2026] :
+
+$$\text{TF-IDF}(w, d, \mathcal{D}) = \underbrace{\frac{f(w, d)}{|d|}}_{\text{TF}} \times \underbrace{\log\frac{|\mathcal{D}|}{|\{d' \in \mathcal{D} : w \in d'\}|}}_{\text{IDF}}$$
+
+* **TF (Term Frequency)** : Fréquence normalisée du mot $w$ dans le document $d$. Mesure la représentativité locale.
+* **IDF (Inverse Document Frequency)** : Logarithme du ratio entre le nombre total de documents et ceux contenant $w$. Les mots présents dans tous les documents ($\text{IDF} \approx 0$) sont filtrés ; les mots rares reçoivent un poids élevé.
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🔍 Analogie : Fingerprint Documentaire
+
+Un expert légiste identifie une personne non pas par les traits communs à tous les humains (deux yeux, un nez), mais par les particularités distinctives (empreinte digitale, iris). Le TF-IDF applique la même logique : les mots ubiquitaires ("le", "et") sont invisibles car sans pouvoir distinctif, tandis que les mots rares et spécifiques ("photosynthèse", "rétropropagation") deviennent les "empreintes" d'un document.
+:::
+
+### Limites Communes et Transition vers les Espaces Denses
+
+Malgré son efficacité computationnelle, le TF-IDF partage avec le BoW des limitations fondamentales :
+
+* **Synonymie non gérée** : "voiture" et "automobile" ont des vecteurs entièrement orthogonaux, malgré leur sémantique identique.
+* **Polysémie ignorée** : "avocat" (juriste vs fruit) a un seul vecteur, quel que soit le contexte.
+* **Creux structurel** : Les matrices document-terme sont creuses à 99%+ — inefficaces pour les modèles d'apprentissage profond.
+* **Incapacité à la généralisation OOV** : Un mot absent du vocabulaire d'entraînement est totalement invisible.
+
+Ces limitations ont précipité la recherche vers les **espaces vectoriels denses**, où chaque mot est représenté dans un espace continu de dimension réduite capturant des relations sémantiques par géométrie [@meurisse_2025].

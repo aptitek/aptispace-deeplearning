@@ -1,0 +1,29 @@
+## L'Apprentissage Génératif : Modéliser la Distribution des Données
+
+Le passage de l'apprentissage discriminatif à l'apprentissage génératif représente un saut conceptuel majeur. Là où un classificateur apprend la frontière de décision $p(y|\mathbf{x})$ — une partition de l'espace — un modèle génératif ambitionne de modéliser la **distribution sous-jacente** $p_0(\mathbf{x})$ qui a généré les données. Capturer cette distribution, c'est capturer l'essence structurelle du réel : non pas distinguer les données, mais les comprendre suffisamment pour les reconstruire [@WikipediaGAN; @WengGenModel].
+
+### Estimation de Densité : Deux Philosophies
+
+Face au problème d'estimer $p_0$, deux approches philosophiquement distinctes émergent.
+
+**L'approche explicite** tente d'estimer directement la densité $p_0(\mathbf{x})$ via des estimateurs paramétriques (mélanges gaussiens) ou non-paramétriques (estimation par noyaux — KDE). La KDE souffre de la **malédiction de la dimensionnalité** : pour des données de haute dimension ($d \gg 10$), le nombre d'échantillons nécessaires croît exponentiellement avec $d$, rendant toute estimation directe impossible sur des images ou du texte.
+
+**L'approche implicite** contourne ce problème en n'estimant pas $p_0$ directement. Elle apprend soit une **transformation** qui mappe une distribution simple (bruit gaussien) vers $p_0$, soit la **fonction de score** $\nabla_\mathbf{x} \log p_0(\mathbf{x})$ qui permet un échantillonnage efficace via des dynamiques de Langevin. Cette transition vers l'implicite a trouvé sa première réalisation transformatrice dans les Réseaux Antagonistes Génératifs [@Goodfellow2014].
+
+### Du VAE au GAN : Un Changement de Paradigme
+
+Les autoencodeurs variationnels (chapitre précédent) introduisent un encodeur explicite qui contraint la structure de l'espace latent. Les GANs abandonnent l'encodeur : **la génération pure devient l'objectif**. Un bruit simple $\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ est transformé en une donnée réaliste $\hat{\mathbf{x}} = G(\mathbf{z})$ par le générateur, sans jamais passer par un encodeur. Cette approche, plus audacieuse, est aussi plus instable — et c'est l'instabilité contrôlée qui constitue le cœur du paradigme GAN.
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🎨 L'Intuition du Peintre et du Critique
+
+L'apprentissage génératif via un GAN s'apparente à un jeu entre un **peintre apprenti** (le générateur) et un **critique d'art expert** (le discriminateur). Le peintre tente de produire des faux tableaux assez convaincants pour tromper le critique. Le critique, de son côté, s'entraîne à distinguer les originaux des contrefaçons. En améliorant mutuellement leur expertise, les deux convergent vers un équilibre où les faux sont indiscernables des originaux. La "qualité artistique" n'est jamais définie explicitement : elle émerge de la compétition [@PatSnap2025].
+:::
+
+### Le Cadre Mathématique : Mesures de Divergence
+
+Le cœur théorique des GANs repose sur la minimisation d'une **divergence entre distributions**. Le générateur $G$ cherche à rendre $p_G(\mathbf{x})$ — la distribution des données générées — indiscernable de $p_0(\mathbf{x})$ — la distribution réelle. Formellement, l'objectif est :
+
+$$G^* = \arg\min_G \, D(p_0 \| p_G)$$
+
+Le choix de la divergence $D$ a des conséquences profondes sur la stabilité de l'entraînement, comme nous le verrons. Le GAN original utilise la divergence de Jensen-Shannon, les WGAN utilisent la distance de Wasserstein [@Arjovsky2017arXiv].

@@ -1,0 +1,50 @@
+## Fine-Tuning : Du Savoir Général au Savoir-Faire Métier
+
+Le pré-entraînement produit un modèle aux capacités générales remarquables mais dont le comportement est non aligné avec les attentes utilisateurs : il prédit le prochain token, pas nécessairement des réponses utiles et sûres. Le **fine-tuning** est le processus qui sculpte ce modèle brut en un assistant spécialisé, adapté à un domaine ou à un format d'interaction particulier [@HuggingFaceSFT2026; @Vo2026].
+
+### Transfer Learning vs Fine-Tuning Complet
+
+Le choix de la profondeur d'adaptation dépend de l'ampleur du **Domain Shift** — l'écart entre la distribution des données générales du web et celle du domaine cible [@Vo2026] :
+
+**Transfer Learning (Head-only)** : Les poids du "backbone" (corps du Transformer) sont gelés. Seule la "tête" (classification head ou adapter layers) est réentraînée. Adapté quand le corpus cible est petit (<100K exemples) et le jargon est couvert par le pré-entraînement.
+
+**Fine-Tuning Complet** : Toutes les couches sont mises à jour. Nécessaire quand la logique métier diverge radicalement (médical, juridique, code propriétaire). Le risque est l'**oubli catastrophique** (*catastrophic forgetting*) : le modèle oublie les connaissances générales en sur-optimisant sur le domaine cible [@Schweighofer2025].
+
+**Domain-Adaptive Post-Training** : Une phase intermédiaire de pré-entraînement sur des données du domaine (sans supervision), avant le fine-tuning supervisé. Particulièrement efficace pour les domaines à terminologie spécialisée (finance, biomédical) [@Ke2025].
+
+### SFT : La Structure des Données d'Instruction
+
+Le **Supervised Fine-Tuning** (SFT) entraîne le modèle sur des paires instruction-réponse. La structure de ces données d'instruction conditionne directement la qualité finale [@HuggingFaceSFT2026].
+
+**Stacked vs Phased Training :**
+
+Une controverse active porte sur l'ordonnancement optimal des données. L'approche *Phased* (Orca-style) entraîne d'abord sur des données "connaissances" puis sur des données "compétences" selon une progression de difficulté. L'approche *Stacked* mélange toutes les données dès le début [@Pareja2025].
+
+Les travaux de Pareja et al. (2025) sur les modèles 3B–7B démontrent que le **Stacked training** est systématiquement plus efficace en termes d'échantillonnage : la méthode *Phased* n'apporte aucun gain mesurable et risque de provoquer un oubli partiel des premières phases lors des transitions [@Pareja2025].
+
+### Recette de Succès : Early Dynamics et Hyperparamètres
+
+Pareja et al. (2025) révèlent une "recette secrète" basée sur les dynamiques précoces de l'entraînement [@Pareja2025] :
+
+**Hyperparamètres optimaux :**
+* **Batch size élevé** (ex. : 4K séquences) avec un **taux d'apprentissage bas** (ex. : 1e-5) : Cette combinaison stabilise les gradients et permet une convergence vers des minima plus plats.
+* **Gradient accumulation** : Permet de simuler un grand batch sur du matériel limité — accumuler $k$ mini-batchs avant chaque pas d'optimiseur.
+* **Warmup linéaire** suivi d'une **décroissance cosinus** du taux d'apprentissage.
+
+**Indicateurs de Succès Précoces :**
+
+Contre l'intuition, une **norme de gradient faible** couplée à des **valeurs de perte initiales élevées** durant les premiers centaines de pas sont des **prédicteurs de succès final** [@Pareja2025]. Cette dynamique indique que le modèle se trouve dans un bassin d'attraction large et régulier, plutôt qu'un optimum local étroit. À l'inverse, une norme de gradient élevée dès le début signale une instabilité probable.
+
+Ce diagnostic précoce permet d'**arrêter prématurément** les runs sous-optimaux sans attendre la convergence complète — économisant jusqu'à 70% du budget de calcul de fine-tuning.
+
+| Indicateur précoce | Bon signal | Mauvais signal |
+|:------------------|:-----------|:---------------|
+| Norme du gradient | Faible, stable | Élevée, oscillante |
+| Perte initiale | Haute (puis décroît) | Déjà basse (sous-fitté) |
+| Stabilité des poids | Faibles variations | Grandes mises à jour |
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🏃 Analogie : Diagnostiquer un Marathon en Km 1
+
+Un entraîneur de marathon peut prédire la performance finale d'un coureur dès le premier kilomètre — non pas par la vitesse, mais par la régularité de la foulée et la fréquence cardiaque. Un rythme trop élevé dès le départ (équivalent : gradient élevé) signale un coureur qui s'épuisera avant l'arrivée. Un départ régulier et contrôlé, même plus lent, prédit une meilleure performance finale. Les dynamiques précoces du SFT suivent la même logique.
+:::

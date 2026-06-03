@@ -1,0 +1,53 @@
+## Le Trick de Reparamétrisation et la Géométrie du Latent
+
+L'élégance du VAE repose sur un verrou algorithmique crucial : comment entraîner par rétropropagation un réseau qui **échantillonne** ? L'opération $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)$ est stochastique et non-différentiable — le gradient ne peut pas traverser un nœud d'échantillonnage.
+
+### Le Reparameterization Trick
+
+La solution, introduite par le VAE original, déplace la stochasticité vers une variable externe $\boldsymbol{\epsilon}$ indépendante des paramètres [@leclaire_nd] :
+
+$$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$$
+
+La transformation $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$ est **déterministe** par rapport aux paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$ — seul $\boldsymbol{\epsilon}$ est aléatoire, et il est tiré indépendamment. Le gradient peut désormais s'écouler librement à travers $\boldsymbol{\mu}$ et $\boldsymbol{\sigma}$ jusqu'à l'encodeur.
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🎲 Analogie : Dé Pipé vs Dé Standard
+
+Imaginez que vous deviez optimiser la mise d'un pari sur un dé pipé. Il est impossible de différencier directement par rapport au "biais" du dé si vous l'incluez dans le lancer (nœud stochastique). La reparamétrisation consiste à utiliser un dé standard équitable $\boldsymbol{\epsilon}$ (source de hasard externe, non-optimisable), puis à appliquer une transformation déterministe $\boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$ pour simuler le dé pipé. Le gradient peut maintenant traverser la transformation et atteindre les paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$.
+:::
+
+### Analyse Critique : Compacité vs Stochasticité
+
+Une perspective récente propose une réinterprétation profonde du rôle de la reparamétrisation [@shi_nd]. La question posée est : la stochasticité est-elle véritablement le mécanisme générateur de représentations utiles, ou n'est-elle qu'un vecteur pour imposer une **régularisation géométrique** ?
+
+Des expériences montrent qu'il est possible d'obtenir des espaces latents de qualité comparable au VAE via des méthodes de **Compactness Regularization déterministes** [@shi_nd] :
+
+* **Asymmetric Expansion** : Applique une pénalité $\text{ReLU}(-\log \boldsymbol{\sigma}^2)$ qui interdit l'effondrement des variances sans imposer de distribution gaussienne.
+* **Symmetric Stabilization** : Régularise symétriquement les variances autour de 1, maintenant la géométrie sans recourir à l'échantillonnage.
+
+Ce résultat suggère que la divergence KL est avant tout un **bouclier géométrique contre l'effondrement représentationnel**, pas un mécanisme probabiliste en soi. C'est la contrainte de compacité qui génère la sémantique, quelle que soit la forme qu'elle prend.
+
+### Métriques de Qualité du Latent
+
+Pour évaluer objectivement la qualité d'un espace latent, deux métriques sont particulièrement informatives [@shi_nd; @shrivastava_2024] :
+
+**CV-NND (Coefficient of Variation of Nearest-Neighbor Distances) :**
+
+Mesure l'uniformité de la densité locale. Pour chaque point $\mathbf{z}_i$, on calcule la distance à son voisin le plus proche $d_i$. Le CV-NND est le coefficient de variation de la distribution $\{d_i\}$ :
+
+$$\text{CV-NND} = \frac{\text{std}(\{d_i\})}{\text{mean}(\{d_i\})}$$
+
+Un CV-NND **bas** indique une distribution géométriquement uniforme et bien dispersée — caractéristique d'un espace latent de VAE bien entraîné. Un CV-NND **élevé** signale des clusters denses entourés de régions vides (pathologie de l'AE classique).
+
+**DLC (Dynamic Latent Coverage) :**
+
+Évalue dans quelle mesure l'encodeur couvre le support de la distribution *a priori* $p(\mathbf{z})$ au cours de l'entraînement. Un DLC élevé en fin d'entraînement indique que l'espace latent est correctement ancré à $\mathcal{N}(\mathbf{0}, \mathbf{I})$ et ne présente pas de régions vides [@shrivastava_2024].
+
+| Métrique | Bonne valeur | Pathologie | Diagnostic |
+|:---------|:------------|:-----------|:-----------|
+| CV-NND | Faible | Élevé | Fragmentation du manifold |
+| DLC | Élevé | Faible | Effondrement postérieur (*posterior collapse*) |
+
+### Le Posterior Collapse
+
+Le *posterior collapse* est la pathologie opposée à la fragmentation : l'encodeur "ignore" l'entrée et renvoie toujours la distribution *a priori* $q_\phi(\mathbf{z}|\mathbf{x}) \approx p(\mathbf{z})$. Le terme KL est alors nul, le terme de reconstruction aussi (le décodeur apprend à ignorer $\mathbf{z}$ et génère depuis un modèle marginal). Cette pathologie survient quand le décodeur est trop puissant et apprend à modéliser $p_\theta(\mathbf{x})$ sans utiliser le code latent — le canal d'information entre encodeur et décodeur se ferme. La solution passe par un contrôle du $\beta$ ou des techniques d'annelage (KL *annealing*).

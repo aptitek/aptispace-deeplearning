@@ -1,0 +1,60 @@
+## Encodage Positionnel : Restaurer l'Ordre dans le Parallélisme
+
+Le mécanisme d'attention est par construction **invariant par permutation** : si l'on réordonne les tokens d'une séquence, les scores d'attention changent mais la logique de calcul reste identique. Sans information positionnelle, "le chat mange la souris" et "la souris mange le chat" sont traitées de façon équivalente. L'encodage positionnel est le correctif architectural à cette cécité ordonnancielle [@Kazemnejad2019; @ExplainingAIND].
+
+### Critères d'un Encodage Idéal
+
+Selon Kazemnejad (2019), un encodage positionnel optimal doit satisfaire quatre propriétés [@Kazemnejad2019] :
+
+| Critère | Description | Violation → Problème |
+|:--------|:------------|:---------------------|
+| **Unicité** | Chaque position a une signature distincte | Collisions sémantiques entre positions |
+| **Distance cohérente** | La distance entre encodages dépend de l'écart relatif, pas de la position absolue | Le modèle ne peut apprendre les distances relatives |
+| **Généralisation** | Fonctionne pour des séquences plus longues que celles vues à l'entraînement | Échec sur contextes longs |
+| **Déterminisme** | Encodage fixe, sans paramètre aléatoire | Instabilité à l'inférence |
+
+### L'Encodage Sinusoïdal : La Solution Originale
+
+Vaswani et al. (*Attention Is All You Need*, 2017) proposent un encodage fixe basé sur des fonctions sinusoïdales à fréquences géométriques [@Kazemnejad2019; @Azazi2025] :
+
+$$\text{PE}(t, 2k) = \sin\!\left(\frac{t}{10000^{2k/d}}\right), \qquad \text{PE}(t, 2k+1) = \cos\!\left(\frac{t}{10000^{2k/d}}\right)$$
+
+pour $t$ la position et $k = 0, 1, \ldots, d/2 - 1$.
+
+**Intuition des fréquences géométriques :**
+
+Chaque paire de dimensions $(2k, 2k+1)$ oscille à une fréquence $\omega_k = 10000^{-2k/d}$ :
+- Les premières dimensions ($k \approx 0$) oscillent rapidement — elles encodent la parité et les distances très courtes (comme l'aiguille des secondes).
+- Les dernières dimensions ($k \approx d/2$) oscillent très lentement — elles encodent la structure globale de la séquence (comme l'aiguille des heures).
+
+L'encodage entier fonctionne comme une **horloge multi-échelle** : la position $t$ est le vecteur de l'état de toutes les aiguilles simultanément.
+
+**Propriété de Translation Linéaire :**
+
+L'élégance fondamentale de cet encodage est que $\text{PE}(t + \phi)$ est une **transformation linéaire** de $\text{PE}(t)$ : il existe une matrice de rotation $\mathbf{M}_\phi$ telle que [@Kazemnejad2019; @Fleetwood2024] :
+
+$$\begin{pmatrix} \text{PE}(t+\phi, 2k) \\ \text{PE}(t+\phi, 2k+1) \end{pmatrix} = \begin{pmatrix} \cos(\omega_k\phi) & \sin(\omega_k\phi) \\ -\sin(\omega_k\phi) & \cos(\omega_k\phi) \end{pmatrix} \begin{pmatrix} \text{PE}(t, 2k) \\ \text{PE}(t, 2k+1) \end{pmatrix}$$
+
+Cette propriété permet au mécanisme d'attention d'**apprendre à repérer des distances relatives fixes** simplement en apprenant une rotation appropriée dans ses matrices de clés/requêtes.
+
+**Somme vs Concaténation :**
+
+Le choix de *sommer* l'encodage aux embeddings (plutôt que de concaténer) est une décision d'efficacité : la dimension du modèle reste constante ($d_{\text{model}}$), sans surcoût. Le modèle apprend à isoler l'information positionnelle dans certaines dimensions de l'espace [@Kazemnejad2019].
+
+### Embeddings de Position Appris : BERT et GPT
+
+BERT et les premiers GPT remplacent l'encodage sinusoïdal fixe par des **embeddings de position appris** : une table $\mathbf{P} \in \mathbb{R}^{T_{\max} \times d}$ dont les lignes sont optimisées par rétropropagation comme n'importe quel autre paramètre [@Happy2026].
+
+**Avantage** : La flexibilité d'apprentissage permet au modèle d'adopter la structure positionnelle optimale pour la tâche.
+
+**Limite critique** : Ces embeddings souffrent d'une **incapacité à l'extrapolation**. Un modèle BERT entraîné sur 512 tokens n'a jamais vu la position 513 — le paramètre correspondant n'existe pas et l'inférence échoue. Le modèle est strictement limité à $T_{\max}$ tokens.
+
+### ALiBi : Biases d'Attention pour la Longueur Variable
+
+Pour résoudre l'incapacité à l'extrapolation, ALiBi (Press et al. 2021) adopte une approche radicalement différente : au lieu d'encoder la position dans les embeddings, elle ajoute directement un **biais linéaire** à chaque score d'attention en fonction de la distance [@Press2021; @Sarkar2025] :
+
+$$a_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d}} - m \cdot |i - j|$$
+
+où $m$ est une pente fixe dépendante de la tête d'attention. Les tokens distants reçoivent un biais négatif croissant, induisant une décroissance naturelle de l'attention avec la distance. Ce biais n'implique aucun paramètre appris, et la formule s'applique à toute longueur — ALiBi extrapole naturellement au-delà de $T_{\max}$ d'entraînement [@SambaNova2023].
+
+Cependant, ALiBi impose une hypothèse forte : les tokens distants sont *a priori* moins pertinents. Pour les tâches nécessitant une attention soutenue à longue portée (code, raisonnement mathématique), cette hypothèse n'est pas toujours vérifiée — ce qui motive RoPE.

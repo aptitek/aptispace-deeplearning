@@ -1,0 +1,41 @@
+## Synthèse : La Contrainte comme Source de Sémantique
+
+L'exploration des trois architectures d'espace latent révèle une **leçon unificatrice** : la sémantique émergente est une fonction directe de la contrainte exercée sur l'espace latent. Plus la contrainte est rigoureuse et structurée, plus le modèle est forcé à distiller l'essence informative des données [@fournier_2021; @shrivastava_2024].
+
+### Tableau Comparatif des Architectures
+
+| Critère | Autoencodeur (AE) | VAE | VQ-VAE |
+|:--------|:------------------|:----|:-------|
+| **Nature de l'espace latent** | Déterministe (point) | Probabiliste (distribution) | Discret (codebook) |
+| **Régularisation** | Bottleneck seul | Divergence KL | Commitment Loss |
+| **Méthode de génération** | Interpolation (fragile) | Échantillonnage gaussien | Autoregressif sur codes |
+| **Indicateur de qualité** | Erreur de reconstruction | CV-NND bas / DLC élevé | Utilisation uniforme du codebook |
+| **Pathologie principale** | Trous sémantiques | Posterior collapse | Codebook collapse |
+| **Applications typiques** | Débruitage, anomalies | Génération, disentanglement | Image/audio haute qualité |
+
+### La Hiérarchie des Contraintes
+
+Les trois architectures forment une hiérarchie de contraintes croissantes :
+
+1. **AE** : Contrainte *douce* par réduction de dimension. L'espace latent est structuré uniquement par la pression de reconstruction — pas de garantie sur sa géométrie.
+
+2. **VAE** : Contrainte *probabiliste* via la divergence KL. L'espace latent est forcé à ressembler à $\mathcal{N}(\mathbf{0}, \mathbf{I})$, garantissant continuité et couverture.
+
+3. **VQ-VAE** : Contrainte *discrète* via le commitment loss. L'espace est réduit à un ensemble fini de prototypes, imposant la compacité la plus extrême.
+
+Paradoxalement, c'est l'architecture la plus contrainte (VQ-VAE) qui produit souvent les meilleures représentations pour les données haute dimension, car elle force le modèle à apprendre des abstractions véritablement discrètes et compositionnelles.
+
+### Connexion avec les Modèles de Fondation
+
+Les autoencodeurs variationnels constituent une **fondation théorique essentielle** pour les architectures modernes. Les modèles de diffusion latente (Latent Diffusion Models, dont Stable Diffusion) s'appuient explicitement sur un VAE pour comprimer les images en un espace latent, dans lequel le processus de diffusion opère. Cette séparation des préoccupations — compression sémantique (VAE) et modélisation générative (diffusion) — permet de combiner les avantages des deux paradigmes.
+
+Plus généralement, la notion d'**espace latent contraint** est le fil conducteur reliant les autoencodeurs, les modèles de diffusion, et les grands modèles de language (LLM) qui, eux aussi, opèrent sur des représentations compressées internes. La maîtrise de l'espace latent n'est pas une technique parmi d'autres : c'est le paradigme central du deep learning moderne.
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🔑 Points Clés à Retenir
+
+* **AE** : La contrainte du bottleneck force l'extraction de primitives sémantiques, mais ne garantit pas la continuité du manifold — l'interpolation reste fragile.
+* **VAE** : La divergence KL est un régulateur géométrique qui transforme le code latent en un *continuum* naviguable. Le reparameterization trick est un outil algorithmique, pas une nécessité probabiliste fondamentale.
+* **VQ-VAE** : La discrétisation impose la compacité la plus forte. Le risque de codebook collapse est géré par EMA et les techniques d'utilisation forcée des codes.
+* **Leçon unificatrice** : La contrainte — qu'elle soit probabiliste ou discrète — transforme le signal brut en structure géométrique compacte. C'est cette compacité qui permet la généralisation et la génération.
+:::

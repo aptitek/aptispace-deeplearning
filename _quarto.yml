@@ -51,6 +51,18 @@ book:
     - part: "👁️ Réseaux de Neurones Convolutionnels (CNN)"
       chapters:
         - cours/4_cnn/index.qmd
+    - part: "🎲 Autoencodeurs et Modèles Variationnels (VAE)"
+      chapters:
+        - cours/5_vae/index.qmd
+    - part: "⚔️ Modèles Génératifs Antagonistes et Diffusion (GAN)"
+      chapters:
+        - cours/6_gan/index.qmd
+    - part: "🔤 Transformers et Représentations du Langage"
+      chapters:
+        - cours/7_transformers/index.qmd
+    - part: "🚀 LLMs Avancés : Pré-entraînement, Scaling et Alignement"
+      chapters:
+        - cours/8_avancé/index.qmd
     # DYNAMIC_CHAPTERS_END
     - part: "📝 Projet"
       chapters:

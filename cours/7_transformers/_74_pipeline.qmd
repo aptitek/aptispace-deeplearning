@@ -1,0 +1,158 @@
+## Le Pipeline des Transformers : De la Donnée Brute aux Vecteurs
+
+Avant d'entrer dans le mécanisme d'attention, le texte brut subit un pipeline de préparation critique qui conditionne toute la chaîne de traitement. Ce pipeline n'est pas un détail technique anodin : c'est souvent le **véritable goulot d'étranglement des performances**, tant en termes de qualité des représentations que d'efficacité computationnelle [@vanRijn2026; @HuggingFaceND2].
+
+### Étape 1 : Tokenisation — Du Texte aux Unités Discrètes
+
+La tokenisation convertit une séquence de caractères bruts en une séquence de **tokens** discrets ayant chacun un identifiant entier dans le vocabulaire $\mathcal{V}$. Trois stratégies principales coexistent, chacune résolvant différemment le compromis OOV/taille de vocabulaire.
+
+**BPE (Byte-Pair Encoding) :**
+
+BPE construit le vocabulaire itérativement en fusionnant la paire de symboles la plus fréquente. Partant du caractère, il crée progressivement des sous-mots fréquents. GPT-2 et RoBERTa utilisent BPE. Un mot inconnu est toujours décomposable en sous-mots vus à l'entraînement — le problème OOV est éliminé au niveau caractère [@HuggingFaceND1; @Kudo2018].
+
+**WordPiece :**
+
+Variante de BPE utilisée par BERT, WordPiece fusionne les paires maximisant la probabilité des données — pas simplement la fréquence. Les sous-mots non-initiaux sont préfixés de "##" pour distinguer les continuations des débuts de mot [@HadisND].
+
+**SentencePiece :**
+
+Opère directement sur les caractères Unicode sans pré-tokenisation par espaces, permettant un traitement uniforme du japonais, du chinois, et des langues sans espaces. Utilisé par T5 et LLaMA. La segmentation est apprise par BPE ou unigram LM [@Kudo2018].
+
+| Algorithme | Modèle | Avantage |
+|:-----------|:-------|:---------|
+| BPE | GPT-2, RoBERTa | Simple, fréquences brutes |
+| WordPiece | BERT | Optimisation probabiliste |
+| SentencePiece | T5, LLaMA | Multilingue, sans pré-tokenisation |
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔤 Simulation : Le Tokenizer BPE en Action
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof bpe_text = Inputs.textarea({
+  label: "Texte à tokeniser :",
+  value: "L'apprentissage profond comprend-il anticonstitutionnellement ?",
+  rows: 2
+})
+```
+::::
+
+```{ojs}
+//| echo: false
+bpe_tokens = {
+  const text = bpe_text || "";
+  if (text.trim() === "") return { tokens: [], chars: 0, count: 0 };
+  const base = text.match(/ ?[a-zA-ZÀ-ÿ-ɏ0-9]+| ?[^\s\w]+/gu) || [];
+  const BPE_SPLITS = {
+    "anticonstitutionnellement": ["anti", "constitution", "nelle", "ment"],
+    "apprentissage": ["apprent", "issage"],
+    "profond": ["pro", "fond"],
+    "comprend": ["comp", "rend"],
+    "transformer": ["transform", "er"],
+    "attention": ["attent", "ion"]
+  };
+  const out = [];
+  base.forEach(t => {
+    const hasSpace = t.startsWith(" ");
+    const clean = hasSpace ? t.slice(1) : t;
+    const lower = clean.toLowerCase();
+    if (BPE_SPLITS[lower]) {
+      BPE_SPLITS[lower].forEach((frag, i) => out.push({ text: frag, fragment: true, space: i === 0 && hasSpace }));
+    } else if (clean.length > 10) {
+      const mid = Math.floor(clean.length / 2);
+      out.push({ text: clean.slice(0, mid), fragment: true, space: hasSpace });
+      out.push({ text: clean.slice(mid), fragment: false, space: false });
+    } else {
+      out.push({ text: clean, fragment: false, space: hasSpace });
+    }
+  });
+  return { tokens: out, chars: text.length, count: out.length };
+}
+```
+
+```{ojs}
+//| echo: false
+{
+  const { tokens, chars, count } = bpe_tokens;
+  if (tokens.length === 0) return html`<div style="padding:1rem; color: var(--sol-base01); font-style:italic;">Saisissez du texte...</div>`;
+
+  const palette = ["var(--sol-blue)", "var(--sol-red)", "var(--sol-green)", "var(--sol-yellow)", "var(--sol-magenta)", "var(--sol-cyan)"];
+  const ids = tokens.map(() => Math.floor(Math.random() * 50000));
+
+  const tokenEls = tokens.map((tok, i) => {
+    const col = palette[i % palette.length];
+    const id = ids[i];
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="
+        padding:6px 10px; border-radius:6px;
+        background:${col}22; color:${col}; border:1px solid ${col}44;
+        font-size:.8rem; font-weight:${tok.fragment ? 500 : 700};
+        border-style:${tok.fragment ? 'dashed' : 'solid'};
+        font-family: var(--font-code);
+        white-space:nowrap;
+      ">${tok.space ? '<span style="opacity:.5;font-size:.65rem;">Ġ</span>' : ''}${tok.text}</div>
+      <div style="font-size:.65rem; color:${col}; opacity:.6;">${id}</div>
+    </div>`;
+  }).join('');
+
+  const usedPct = Math.min(100, (count / 8192) * 100).toFixed(2);
+  const comprPct = chars > 0 ? ((1 - count / chars) * 100).toFixed(0) : 0;
+
+  return html`
+  <div style="padding:1rem; display:flex;flex-direction:column;gap:1rem;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:.75rem;background:var(--sol-base2);border-radius:8px;">
+      ${html([tokenEls])}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;font-size:.78rem;text-align:center;">
+      <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem;">
+        <div style="color:var(--sol-base01);">Tokens</div>
+        <div style="font-weight:700;color:var(--sol-magenta);font-size:1.1rem;">${count}</div>
+      </div>
+      <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem;">
+        <div style="color:var(--sol-base01);">Caractères</div>
+        <div style="font-weight:700;color:var(--sol-blue);font-size:1.1rem;">${chars}</div>
+      </div>
+      <div style="background:var(--sol-base2);border-radius:8px;padding:.5rem;">
+        <div style="color:var(--sol-base01);">Fenêtre utilisée</div>
+        <div style="font-weight:700;color:var(--sol-green);font-size:1.1rem;">${usedPct}%</div>
+      </div>
+    </div>
+    <div style="font-size:.75rem;color:var(--sol-base01);border-left:3px solid var(--sol-cyan);padding:.5rem .75rem;background:var(--sol-base2);border-radius:0 6px 6px 0;">
+      <strong style="color:var(--sol-cyan);">Ġ</strong> = espace fusionné au token suivant (convention BPE).
+      Les tokens <span style="border-bottom:1px dashed var(--sol-base01);">en pointillés</span> sont des fragments de mots décomposés.
+    </div>
+  </div>`;
+}
+```
+
+:::
+
+### Étape 2 : Embedding Layer — Des Indices aux Vecteurs
+
+Chaque token $t_i \in \{1, \ldots, |\mathcal{V}|\}$ est mappé vers un vecteur dense $\mathbf{e}_i \in \mathbb{R}^{d_{\text{model}}}$ via une **table d'embeddings** (matrice $\mathbf{E} \in \mathbb{R}^{|\mathcal{V}| \times d_{\text{model}}}$). Cette opération est un lookup : $\mathbf{e}_i = \mathbf{E}[t_i, :]$ [@ApXND; @Nedjimi2025].
+
+En pratique, pour traiter un *batch* de séquences de longueurs variables, on utilise des structures comme `EmbeddingBag` qui agrège plusieurs vecteurs en un seul. Des **vecteurs d'indices** (`idxs`) et des **pointeurs de segments** (`ptrs`) indiquent les frontières entre séquences dans le batch, permettant un traitement efficace des séquences de longueurs hétérogènes.
+
+### Étape 3 : Les Défis Matériels des Lookups
+
+Les opérations de lookup d'embeddings constituent un **goulot d'étranglement matériel** majeur sur les architectures GPU standard [@Siracusa2025] :
+
+* **Accès mémoire irréguliers** : Les GPUs optimisent pour les accès mémoire *coalesced* (contigus). Les lookups d'embeddings sont par nature aléatoires — pour un batch de 32 séquences, on tire 32×512 indices aléatoires dans une table pouvant faire plusieurs gigas.
+
+* **Faible intensité opérationnelle** : Un vecteur d'embedding de dimension 768 ne représente que 768 multiplications — insuffisant pour masquer la latence mémoire du H100. Le ratio calcul/mémoire est catastrophiquement bas (bound mémoire, pas compute).
+
+* **Découplage traversée/exécution** : Les architectures CPU/GPU traditionnelles couplent l'accès mémoire et le calcul dans le même pipeline, créant des bulles de stall quand les accès sont irréguliers.
+
+Le compilateur **Ember** résout ce problème via une architecture **DAE** (*Decoupled Access-Execute*) avec un TMU (*Tensor Marshaling Unit*) dédié aux lookups — voir la section sur l'optimisation architecturale.
+
+### Étape 4 : Addition de l'Encodage Positionnel
+
+Le Transformer traite tous les tokens **en parallèle** — contrairement aux RNNs, il ne perçoit naturellement aucune notion d'ordre. L'encodage positionnel est additionné aux embeddings de tokens pour injecter cette information d'ordre :
+
+$$\mathbf{x}_i = \mathbf{e}_i + \mathbf{p}_i$$
+
+où $\mathbf{p}_i$ est la représentation de la position $i$. Le choix de $\mathbf{p}_i$ — sinusoïdal fixe, appris, ou rotatif (RoPE) — a des conséquences profondes sur la capacité du modèle à généraliser à des séquences plus longues que celles vues à l'entraînement. Cette question est l'objet des deux sections suivantes.

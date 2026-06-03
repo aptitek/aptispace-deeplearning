@@ -1,0 +1,145 @@
+## GANs : La Mécanique du Duel Algorithmique
+
+Introduits par Goodfellow et al. en 2014, les Réseaux Antagonistes Génératifs reformulent la génération comme un **problème de théorie des jeux à somme nulle** [@Goodfellow2014NIPS]. Deux réseaux sont entraînés simultanément dans une compétition asymétrique dont l'issue idéale est un Équilibre de Nash.
+
+### Les Deux Acteurs
+
+**Le Générateur $G_\theta$ — Le Faussaire :**
+
+$G_\theta : \mathbf{z} \mapsto \hat{\mathbf{x}}$ est une fonction paramétrique qui transforme un vecteur de bruit $\mathbf{z} \sim p_z(\mathbf{z})$ (typiquement gaussien) en une donnée synthétique $\hat{\mathbf{x}}$. Son seul objectif : produire des données $\hat{\mathbf{x}} \sim p_G$ qui ressemblent à $p_0$ au point de tromper le discriminateur. Le générateur n'observe jamais les données réelles directement — il ne reçoit que le signal de retour du discriminateur.
+
+**Le Discriminateur $D_\phi$ — L'Expert :**
+
+$D_\phi : \mathbf{x} \mapsto [0, 1]$ est un classificateur binaire qui estime la probabilité qu'une donnée soit réelle. Son rôle est double : distinguer les réelles des fausses, et simultanément servir d'estimateur de la divergence entre $p_0$ et $p_G$.
+
+### L'Objectif Minimax
+
+L'entraînement conjoint est décrit par le jeu à deux joueurs [@Goodfellow2014NIPS; @Moghaddam2023] :
+
+$$\min_G \max_D \; V(G, D) = \mathbb{E}_{\mathbf{x} \sim p_0}\!\left[\log D(\mathbf{x})\right] + \mathbb{E}_{\mathbf{z} \sim p_z}\!\left[\log(1 - D(G(\mathbf{z})))\right]$$
+
+À l'optimum global, si $G$ est assez expressif, le discriminateur optimal satisfait $D^*(\mathbf{x}) = \frac{p_0(\mathbf{x})}{p_0(\mathbf{x}) + p_G(\mathbf{x})}$. En substituant $D^*$ dans $V$, la valeur du jeu devient la **divergence de Jensen-Shannon** :
+
+$$V(G, D^*) = -\log 4 + 2 \cdot D_{\text{JS}}(p_0 \| p_G)$$
+
+L'Équilibre de Nash est atteint quand $p_G = p_0$, auquel cas $D^*(\mathbf{x}) = \frac{1}{2}$ partout et $V = -\log 4$.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+⚔️ Simulation : L'Équilibre du Duel GAN
+::::
+
+:::: {.card-control-row .sim-controls-row}
+```{ojs}
+//| echo: false
+viewof gan_epoch = Inputs.range([0, 100], {
+  label: "Époques d'entraînement",
+  value: 0, step: 1
+})
+```
+::::
+
+```{ojs}
+//| echo: false
+{
+  const blur = Math.max(0, 10 - gan_epoch / 10);
+  const opacity = 0.2 + gan_epoch / 125;
+  const scale = 0.8 + gan_epoch / 500;
+  const nashReached = gan_epoch > 80;
+  const phase = gan_epoch < 30 ? "danger" : gan_epoch < 80 ? "warning" : "success";
+  const phaseColors = {
+    danger:  "var(--sol-red)",
+    warning: "var(--sol-orange)",
+    success: "var(--sol-green)"
+  };
+  const col = phaseColors[phase];
+
+  const msg = gan_epoch < 30
+    ? "Le Faussaire produit du bruit aléatoire — le Policier gagne sans effort. Gradient nul pour G."
+    : gan_epoch < 80
+      ? "Le Faussaire affine ses faux. La compétition s'intensifie — chacun contraint l'autre à progresser."
+      : "Équilibre de Nash approché : D*(x) ≈ ½ partout. Le Policier ne peut plus distinguer réel du faux.";
+
+  // Generator/Discriminator loss curves (simplified)
+  const lossG = Array.from({length: 101}, (_, i) => {
+    if (i <= gan_epoch) return { epoch: i, val: Math.max(0.05, 2.5 * Math.exp(-i / 40) + 0.05 + (Math.random() * 0.05)) };
+    return null;
+  }).filter(Boolean);
+  const lossD = Array.from({length: 101}, (_, i) => {
+    if (i <= gan_epoch) return { epoch: i, val: Math.max(0.05, 1.2 * Math.exp(-i / 35) + 0.05 + (Math.random() * 0.05)) };
+    return null;
+  }).filter(Boolean);
+
+  return html`
+  <div style="padding: 1rem; display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Duel visuel -->
+    <div style="display: flex; gap: 2rem; align-items: center; justify-content: center;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: .75rem; flex: 1;">
+        <div style="font-weight: 700; color: var(--sol-blue); letter-spacing: .05em; text-transform: uppercase; font-size: .75rem;">Faussaire (G)</div>
+        <div style="font-size: 4rem; filter: blur(${blur}px); opacity: ${opacity}; transform: scale(${scale}); transition: all .4s ease; height: 5rem; display: flex; align-items: center;">🖼️</div>
+        <div style="font-size: .7rem; color: var(--sol-base01); text-align: center;">Bruit → Structure</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center; gap: .5rem;">
+        <span style="font-size: 1.8rem; opacity: 0.5;">⚔️</span>
+        <div style="height: 4px; width: 60px; background: linear-gradient(to right, var(--sol-blue), var(--sol-red)); border-radius: 2px; opacity: .4;"></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center; gap: .75rem; flex: 1;">
+        <div style="font-weight: 700; color: var(--sol-red); letter-spacing: .05em; text-transform: uppercase; font-size: .75rem;">Policier (D)</div>
+        <div style="padding: .6rem 1.2rem; border-radius: 8px; background: ${col}; color: white; font-weight: 800; transition: all .3s; font-size: .85rem; letter-spacing: .05em; height: 5rem; display: flex; align-items: center;">
+          ${nashReached ? "Vrai ?" : "FAUX !"}
+        </div>
+        <div style="font-size: .7rem; color: var(--sol-base01); text-align: center;">Réel vs Synthétique</div>
+      </div>
+    </div>
+
+    <!-- Statut -->
+    <div style="border-left: 3px solid ${col}; padding: .6rem 1rem; background: ${col}22; border-radius: 0 6px 6px 0; font-size: .82rem; color: var(--sol-base0); line-height: 1.5;">
+      <strong style="color: ${col};">Époque ${gan_epoch} / 100 :</strong> ${msg}
+    </div>
+
+    <!-- Métriques -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; font-size: .78rem; text-align: center;">
+      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
+        <div style="color: var(--sol-base01);">D*(x̂) estimé</div>
+        <div style="font-weight: 700; color: var(--sol-yellow); font-size: 1.1rem;">${(0.5 + (1 - gan_epoch / 100) * 0.45).toFixed(2)}</div>
+      </div>
+      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
+        <div style="color: var(--sol-base01);">Loss G</div>
+        <div style="font-weight: 700; color: var(--sol-blue); font-size: 1.1rem;">${(Math.max(0.05, 2.5 * Math.exp(-gan_epoch / 40))).toFixed(2)}</div>
+      </div>
+      <div style="background: var(--sol-base2); border-radius: 8px; padding: .5rem;">
+        <div style="color: var(--sol-base01);">Loss D</div>
+        <div style="font-weight: 700; color: var(--sol-red); font-size: 1.1rem;">${(Math.max(0.05, 1.2 * Math.exp(-gan_epoch / 35))).toFixed(2)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+```
+
+:::
+
+### Les Pathologies de l'Entraînement
+
+En pratique, cet équilibre théorique est difficile à atteindre en raison de deux instabilités structurelles [@Brownlee2019; @GoogleDev] :
+
+**Vanishing Gradients :**
+
+Quand le discriminateur est trop performant, $D(\hat{\mathbf{x}}) \approx 0$ pour toutes les données générées. Le gradient $\nabla_\theta \log(1 - D(G(\mathbf{z})))$ s'annule, et le générateur ne reçoit plus de signal utile pour s'améliorer. En pratique, on utilise l'objectif alternatif $\max_G \mathbb{E}[\log D(G(\mathbf{z}))]$ (non-saturating loss) pour pallier ce problème [@JacksonGradients].
+
+**Mode Collapse :**
+
+Le générateur converge vers un ensemble limité de sorties "sûres" qui trompent le discriminateur, ignorant la diversité de $p_0$. Au lieu d'apprendre toute la distribution, il "mémorise" quelques modes. Le discriminateur, confronté à ces faux répétitifs, converge vers une contre-stratégie locale, et le jeu oscille plutôt que de converger globalement [@PatSnap2025].
+
+| Pathologie | Symptôme | Cause |
+|:-----------|:---------|:------|
+| Vanishing gradients | Gradient nul pour $G$ | Discriminateur trop fort |
+| Mode collapse | Faible diversité des sorties | Générateur en boucle locale |
+| Oscillation | Poids qui ne convergent pas | Dynamique de Nash non-convexe |
+| Explosion du discriminateur | $D(\hat{\mathbf{x}}) \to 0$ brutalement | Désynchronisation des vitesses d'entraînement |
+
+### L'Équilibre de Nash en Pratique
+
+La convergence vers l'Équilibre de Nash dans un espace de paramètres non-convexe est problématique. Les dynamiques de gradient standard (descente de gradient alternée) ne garantissent pas la convergence dans un jeu à somme nulle non-convexe. L'entraînement des GANs requiert un équilibre délicat entre les vitesses d'apprentissage, le nombre de mises à jour relatives du discriminateur et du générateur, et des techniques de régularisation spécifiques [@Moghaddam2023].

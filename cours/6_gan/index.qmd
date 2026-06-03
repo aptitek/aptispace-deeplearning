@@ -1,0 +1,15 @@
+---
+title: "⚔️ Modèles Génératifs Antagonistes et Diffusion (GAN)"
+part: "⚔️ Modèles Génératifs Antagonistes et Diffusion (GAN)"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
+{{< include _61_introduction.qmd >}}
+{{< include _62_gans.qmd >}}
+{{< include _63_architectures.qmd >}}
+{{< include _64_ddpm.qmd >}}
+{{< include _65_analyse.qmd >}}
+{{< include _66_conclusion.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

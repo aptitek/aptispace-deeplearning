@@ -1,0 +1,60 @@
+## Dérivation de la Divergence de Kullback-Leibler
+
+Pour comprendre comment le VAE préserve la continuité de son espace latent, une dérivation rigoureuse de la **Divergence de Kullback-Leibler** (D~KL~) entre deux distributions gaussiennes est indispensable. Cette forme fermée est la clé qui rend le VAE entraînable efficacement [@munoz_nd].
+
+### Définition et Problème
+
+On cherche à quantifier l'écart entre la distribution postérieure apprise $q_\phi(\mathbf{z}|\mathbf{x}) \sim \mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ et la distribution *a priori* $p(\mathbf{z}) \sim \mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$, avec typiquement $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$. La définition générale est :
+
+$$D_{\text{KL}}(P \| Q) = \int p(\mathbf{x}) \log \frac{p(\mathbf{x})}{q(\mathbf{x})} \, d\mathbf{x}$$
+
+En substituant les densités gaussiennes et en développant le logarithme, l'intégrale se décompose en trois termes analytiques $H_1$, $H_2$ et $H_3$ [@munoz_nd].
+
+### Décomposition en Trois Termes
+
+**Terme $H_1$ — Log-Déterminant :**
+
+Ce terme mesure le rapport de volume entre les deux ellipsoïdes de confiance :
+
+$$H_1 = \frac{1}{2} \log \frac{|\boldsymbol{\Sigma}_2|}{|\boldsymbol{\Sigma}_1|}$$
+
+**Terme $H_2$ — Forme Quadratique :**
+
+En utilisant l'identité $\mathbb{E}_P[\mathbf{x}^T \mathbf{A} \mathbf{x}] = \text{tr}(\mathbf{A}\boldsymbol{\Sigma}) + \boldsymbol{\mu}^T \mathbf{A} \boldsymbol{\mu}$, on obtient :
+
+$$H_2 = \frac{1}{2} \left[ \text{tr}\!\left(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1\right) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T \boldsymbol{\Sigma}_2^{-1} (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1) \right]$$
+
+Ce terme pénalise à la fois l'éloignement des moyennes et la divergence des échelles.
+
+**Terme $H_3$ — Dimensionnalité :**
+
+Provenant de l'espérance du terme de normalisation de $P$ en dimension $k$ :
+
+$$H_3 = \frac{k}{2}$$
+
+### Forme Fermée Finale
+
+La sommation $D_{\text{KL}} = H_1 + H_2 - H_3$ donne la **formule standard** [@munoz_nd] :
+
+$$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T \boldsymbol{\Sigma}_2^{-1} (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1) - k + \log\frac{|\boldsymbol{\Sigma}_2|}{|\boldsymbol{\Sigma}_1|} \right)}$$
+
+### Cas Pratique du VAE : Gaussiennes Diagonales
+
+Dans l'implémentation standard du VAE, les covariances sont **diagonales** : $\boldsymbol{\Sigma}_1 = \text{diag}(\sigma_1^2, \ldots, \sigma_k^2)$ et $\boldsymbol{\Sigma}_2 = \mathbf{I}$ (l'*a priori* standard). La formule se simplifie considérablement :
+
+$$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \mathcal{N}(\mathbf{0}, \mathbf{I})\right) = \frac{1}{2} \sum_{j=1}^{k} \left(\sigma_j^2 + \mu_j^2 - 1 - \log \sigma_j^2\right)$$
+
+Cette forme est remarquablement simple à calculer et à différencier. Son gradient est disponible analytiquement, sans nécessiter d'échantillonnage.
+
+### Interprétation Géométrique
+
+Chaque terme joue un rôle géométrique précis dans la régularisation de l'espace latent :
+
+| Terme | Mécanisme | Effet sur l'espace latent |
+|:------|:----------|:--------------------------|
+| $\mu_j^2$ | Pénalise l'éloignement de l'origine | Centre les "balles gaussiennes" à $\mathbf{0}$ |
+| $\sigma_j^2$ | Force une variance minimale | Interdit l'effondrement en points ($\sigma \to 0$) |
+| $-\log \sigma_j^2$ | Force une variance maximale | Interdit l'explosion en distributions infinies |
+| $-1$ | Terme de normalisation | Référence : $\sigma = 1$ (aucune pénalité) |
+
+La trace et le log-déterminant agissent conjointement comme un **garde-fou contre l'effondrement représentationnel** : si $\sigma_j \to 0$, le terme $-\log \sigma_j^2 \to +\infty$ force le gradient à résister à cet effondrement. C'est le mécanisme fondamental par lequel la divergence KL maintient la continuité de l'espace latent.

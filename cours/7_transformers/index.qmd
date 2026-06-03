@@ -1,0 +1,16 @@
+---
+title: "🔤 Transformers et Représentations du Langage"
+part: "🔤 Transformers et Représentations du Langage"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
+{{< include _71_representations.qmd >}}
+{{< include _72_embeddings.qmd >}}
+{{< include _73_elmo.qmd >}}
+{{< include _74_pipeline.qmd >}}
+{{< include _75_positional.qmd >}}
+{{< include _76_rope.qmd >}}
+{{< include _77_attention.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->

@@ -1,0 +1,50 @@
+## ELMo et les Plongements Contextuels
+
+La limitation fondamentale de Word2Vec, GloVe et FastText est leur caractère **statique** : chaque mot reçoit un vecteur unique, indépendamment de son contexte phrastique. "avocat" dans "je consulte mon avocat" et "avocat" dans "j'ajoute de l'avocat à ma salade" ont exactement le même plongement. ELMo (Embeddings from Language Models, Peters et al. 2018) introduit la **dynamicité contextuelle** [@peters_2018].
+
+### Architecture biLM : Bidirectionnalité Profonde
+
+ELMo repose sur un **biLM** (*bidirectional Language Model*) profond qui entraîne deux LSTMs indépendants — l'un traitant la séquence de gauche à droite, l'autre de droite à gauche — pour maximiser conjointement la log-vraisemblance des deux directions [@peters_2018] :
+
+$$\mathcal{L}_{\text{biLM}} = \sum_{k=1}^{N} \left[\log p(w_k | w_1, \ldots, w_{k-1}; \theta_{\text{fwd}}) + \log p(w_k | w_{k+1}, \ldots, w_N; \theta_{\text{bwd}})\right]$$
+
+À chaque token, le modèle produit $L + 1$ représentations (une par couche LSTM plus les embeddings de tokens initiaux). Le plongement ELMo final est une **combinaison pondérée apprise** de toutes ces représentations :
+
+$$\text{ELMo}_k^{\text{task}} = \gamma^{\text{task}} \sum_{j=0}^{L} s_j^{\text{task}} \mathbf{h}_{k,j}^{\text{biLM}}$$
+
+### Spécialisation des Couches par Niveau d'Abstraction
+
+Un résultat clé de Peters et al. est la spécialisation hiérarchique des couches du biLM [@peters_2018] :
+
+* **Couches inférieures (proche des tokens)** : Encodent principalement la **syntaxe** — morphologie, étiquetage grammatical (POS tagging). Ces représentations sont utiles pour la Reconnaissance d'Entités Nommées (NER).
+* **Couches supérieures** : Encodent principalement la **sémantique contextuelle** — désambiguïsation du sens des mots (Word Sense Disambiguation, WSD). Ces couches sont plus utiles pour l'analyse de sentiment et la compréhension de texte.
+
+Ce gradient d'abstraction justifie l'approche de combinaison pondérée : selon la tâche cible, le modèle apprend à pondérer différemment les couches syntaxiques vs sémantiques.
+
+### Paramètre Gamma et Biais de Régularisation
+
+Deux hyperparamètres critiques gouvernent l'adaptation d'ELMo à une tâche cible [@peters_2018] :
+
+* **$\gamma^{\text{task}}$** : Un scalaire global qui re-normalise l'amplitude des représentations biLM par rapport aux couches spécifiques à la tâche. Essentiel pour harmoniser les distributions entre le biLM pré-entraîné et les couches de fine-tuning.
+* **$\lambda$ (régularisation L2)** : Force les poids de mélange $s_j^{\text{task}}$ à rester proches de l'uniforme ($s_j = \frac{1}{L+1}$). Un $\lambda$ trop faible conduit à sur-spécialiser sur une couche ; trop élevé empêche l'adaptation.
+
+### L'Étude QUINE : Pré-entraînement vs Fine-tuning
+
+Une analyse sur le corpus philosophique QUINE (Zhou et Bloem, 2021) apporte une nuance pédagogique cruciale. Contre-intuitivement, ELMo pré-entraîné sur données générales ($E_{\text{pre}}$) obtient des performances inférieures à Word2Vec fine-tuné sur ce domaine spécifique pour plusieurs tâches [@zhou_2021] :
+
+$$E_{\text{pré-entraîné}} < E_{\text{Word2Vec fine-tuné}} \quad \text{(petit corpus spécialisé)}$$
+
+Le modèle pré-entraîné "parle" la langue générale, pas la langue philosophique. Cependant, la **combinaison hybride** restaure la supériorité :
+
+$$E_{\text{mix}} = \alpha \cdot E_{\text{ELMo}} + (1 - \alpha) \cdot E_{\text{Word2Vec}}$$
+
+avec un "point d'équilibre" (*sweet point*) pour $\alpha \in [0.3, 0.4]$ : l'apport sémantique contextuel d'ELMo et la précision lexicale de Word2Vec sur petit domaine se complètent de façon optimale [@zhou_2021].
+
+**Leçon** : Un modèle pré-entraîné sur des données générales n'est pas une solution universelle pour les petits corpus spécialisés sans étape d'adaptation. C'est le principe fondateur du fine-tuning, développé au chapitre 8.
+
+### Limites et Transition vers les Transformers
+
+Malgré sa dynamicité contextuelle, ELMo souffre de deux limitations structurelles que les Transformers surmontent :
+
+1. **Traitement séquentiel** : Les LSTMs imposent un traitement mot à mot, limitant la parallélisation et les dépendances à très longue distance.
+2. **Bidirectionnalité indépendante** : Les deux directions (gauche-droite, droite-gauche) sont entraînées séparément et combinées linéairement — ce n'est pas une vraie compréhension bidirectionnelle simultanée. BERT résoudra ce problème via le masquage (MLM).

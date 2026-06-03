@@ -1,0 +1,228 @@
+## Anatomie du Bloc Attention : Q, K, V et Optimisation Matérielle
+
+Le **bloc d'attention** est l'unité de calcul fondamentale du Transformer. Contrairement aux convolutions qui capturent les corrélations locales, l'attention permet à chaque token d'interagir directement avec tous les autres tokens de la séquence — quel que soit leur éloignement. C'est ce mécanisme de **connectivité globale** qui distingue fondamentalement les Transformers des RNNs et CNNs [@June2023; @KamarainenND].
+
+### La Triade Q, K, V : Rôles Vectoriels
+
+Pour chaque token $i$ dans la séquence, l'attention compute trois vecteurs dérivés par projection linéaire de l'embedding $\mathbf{x}_i \in \mathbb{R}^{d_{\text{model}}}$ [@June2023] :
+
+$$\mathbf{q}_i = \mathbf{W}_Q \mathbf{x}_i, \quad \mathbf{k}_i = \mathbf{W}_K \mathbf{x}_i, \quad \mathbf{v}_i = \mathbf{W}_V \mathbf{x}_i$$
+
+* **Query $\mathbf{q}_i$** : La "requête" du token $i$ — ce qu'il cherche dans le contexte. Analogie : un moteur de recherche exprimant une intention.
+* **Key $\mathbf{k}_j$** : La "signature" du token $j$ — ce qu'il offre comme information. Analogie : un titre d'article indexé.
+* **Value $\mathbf{v}_j$** : Le contenu informationnel du token $j$, agrégé proportionnellement à la pertinence. Analogie : le corps de l'article récupéré.
+
+### Le Scaled Dot-Product Attention
+
+Le score d'attention entre token $i$ (position de requête) et token $j$ (position de clé) est le produit scalaire normalisé [@KamarainenND] :
+
+$$a_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}$$
+
+La normalisation par $\sqrt{d_k}$ (dimension des clés) est cruciale : sans elle, les produits scalaires croissent en $O(d_k)$ en magnitude, poussant le Softmax dans ses zones de saturation à gradient quasi-nul. Après softmax, on obtient les poids d'attention $\alpha_{ij} = \text{softmax}(a_{ij})$, et la sortie est l'agrégation pondérée des valeurs :
+
+$$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}$$
+
+en notation matricielle pour un batch.
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🔍 Simulation : Le Mécanisme d'Attention — Cliquez sur un Token (Query)
+::::
+
+```{ojs}
+//| echo: false
+attn_sentence = [
+  { id: 0, word: "Le"     },
+  { id: 1, word: "féroce" },
+  { id: 2, word: "chien"  },
+  { id: 3, word: "a"      },
+  { id: 4, word: "mordu"  },
+  { id: 5, word: "l'"     },
+  { id: 6, word: "homme"  }
+]
+
+attn_matrix = [
+  [0.80, 0.15, 0.05, 0.00, 0.00, 0.00, 0.00],
+  [0.10, 0.60, 0.30, 0.00, 0.00, 0.00, 0.00],
+  [0.05, 0.25, 0.50, 0.05, 0.15, 0.00, 0.00],
+  [0.00, 0.00, 0.10, 0.40, 0.50, 0.00, 0.00],
+  [0.00, 0.00, 0.35, 0.05, 0.20, 0.05, 0.35],
+  [0.00, 0.00, 0.00, 0.00, 0.00, 0.70, 0.30],
+  [0.00, 0.00, 0.05, 0.00, 0.25, 0.10, 0.60]
+]
+
+mutable attn_activeQ = 4
+```
+
+```{ojs}
+//| echo: false
+renderSelfAttention = {
+  const tokens = attn_sentence;
+  const matrix = attn_matrix;
+  const activeQ = attn_activeQ;
+  const weights = matrix[activeQ];
+
+  // Color scale: blue (weak) → green → yellow → red (strong)
+  const colorScale = (w) => {
+    if (w < 0.1)  return "var(--sol-blue)";
+    if (w < 0.3)  return "var(--sol-green)";
+    if (w < 0.6)  return "var(--sol-yellow)";
+    return "var(--sol-orange)";
+  };
+  const colorHex = (w) => {
+    if (w < 0.1)  return "#268bd2";
+    if (w < 0.3)  return "#859900";
+    if (w < 0.6)  return "#b58900";
+    return "#cb4b16";
+  };
+
+  // Build graph nodes
+  const n = tokens.length;
+  const angle = (i) => ((i / n) * 2 * Math.PI) - Math.PI / 2;
+  const R = 110;
+  const cx = 200, cy = 185;
+  const pos = (i) => ({
+    x: cx + R * Math.cos(angle(i)),
+    y: cy + R * Math.sin(angle(i))
+  });
+
+  // Static SVG approach for cleaner rendering
+  const W = 400, H = 370;
+  const svg = d3.create("svg")
+    .attr("viewBox", `0 0 ${W} ${H}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+    .style("width", "100%").style("max-width", "460px")
+    .style("height", "auto").style("display", "block").style("margin", "0 auto")
+    .style("background", "var(--sol-base03)").style("border-radius", "12px");
+
+  // Attention halos
+  tokens.forEach((t, i) => {
+    const w = weights[i];
+    if (w > 0.04) {
+      const p = pos(i);
+      svg.append("circle")
+        .attr("cx", p.x).attr("cy", p.y).attr("r", 55 * w + 10)
+        .attr("fill", colorHex(w)).attr("opacity", w * 0.5);
+    }
+  });
+
+  // Attention links
+  const qPos = pos(activeQ);
+  tokens.forEach((t, i) => {
+    if (i === activeQ) return;
+    const w = weights[i];
+    if (w < 0.01) return;
+    const p = pos(i);
+    svg.append("line")
+      .attr("x1", qPos.x).attr("y1", qPos.y).attr("x2", p.x).attr("y2", p.y)
+      .attr("stroke", colorHex(w)).attr("stroke-width", w * 12 + 1).attr("opacity", 0.8);
+    // Weight label at midpoint
+    const mx = (qPos.x + p.x) / 2, my = (qPos.y + p.y) / 2;
+    svg.append("rect").attr("x", mx - 16).attr("y", my - 8).attr("width", 32).attr("height", 16)
+      .attr("rx", 4).attr("fill", "var(--sol-base02)").attr("opacity", 0.9);
+    svg.append("text").attr("x", mx).attr("y", my + 1).attr("text-anchor", "middle")
+      .attr("dy", ".35em").attr("fill", colorHex(w)).attr("font-size", "9px")
+      .attr("font-weight", "700").style("font-family", "var(--font-code)")
+      .text(`${(w * 100).toFixed(0)}%`);
+  });
+
+  // Token nodes (clickable)
+  tokens.forEach((t, i) => {
+    const p = pos(i);
+    const isQ = i === activeQ;
+    const w = weights[i];
+    const nodeR = isQ ? 30 : 22;
+    const col = isQ ? colorHex(w) : "#073642";
+    const border = isQ ? colorHex(w) : "#586e75";
+
+    const g = svg.append("g")
+      .attr("transform", `translate(${p.x},${p.y})`)
+      .style("cursor", "pointer");
+
+    g.append("circle").attr("r", nodeR)
+      .attr("fill", col).attr("stroke", border).attr("stroke-width", 2);
+    g.append("text").attr("text-anchor", "middle").attr("dy", ".35em")
+      .attr("fill", isQ ? "var(--sol-base3)" : "var(--sol-base1)")
+      .attr("font-size", isQ ? "13px" : "11px").attr("font-weight", isQ ? "800" : "500")
+      .style("font-family", "var(--font-base)").text(t.word);
+
+    // Self-attention label
+    if (isQ) {
+      g.append("rect").attr("x", -20).attr("y", nodeR + 4).attr("width", 40).attr("height", 14)
+        .attr("rx", 3).attr("fill", "var(--sol-red)");
+      g.append("text").attr("text-anchor", "middle").attr("y", nodeR + 15).attr("dy", ".1em")
+        .attr("fill", "var(--sol-base3)").attr("font-size", "8px").attr("font-weight", "700")
+        .text(`Self:${(w * 100).toFixed(0)}%`);
+    }
+
+    g.on("click", () => { mutable attn_activeQ = i; });
+    g.on("mouseover", function() { d3.select(this).select("circle").attr("opacity", 0.75); });
+    g.on("mouseout",  function() { d3.select(this).select("circle").attr("opacity", 1); });
+  });
+
+  // Legend
+  const legData = [["Faible", "#268bd2"], ["Moyenne", "#859900"], ["Forte", "#cb4b16"]];
+  legData.forEach(([label, col], i) => {
+    const lx = 20 + i * 120;
+    svg.append("circle").attr("cx", lx + 6).attr("cy", H - 14).attr("r", 5).attr("fill", col);
+    svg.append("text").attr("x", lx + 16).attr("y", H - 14).attr("dy", ".35em")
+      .attr("fill", "var(--sol-base1)").attr("font-size", "10px").text(label);
+  });
+
+  invalidation.then(() => {});
+  return svg.node();
+}
+```
+
+:::
+
+### Multi-Head Attention : Sous-Espaces Parallèles
+
+Plutôt qu'une seule attention globale, l'architecture Transformer utilise $H$ têtes d'attention parallèles, chacune opérant dans un sous-espace de dimension $d_k = d_{\text{model}} / H$ [@KamarainenND] :
+
+$$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) \mathbf{W}_O$$
+
+où $\text{head}_h = \text{Attention}(\mathbf{Q}\mathbf{W}_Q^h, \mathbf{K}\mathbf{W}_K^h, \mathbf{V}\mathbf{W}_V^h)$.
+
+Chaque tête apprend à se focaliser sur un type différent de dépendance : certaines têtes capturent la syntaxe (sujet-verbe), d'autres la coréférence (pronom-antécédent), d'autres encore les relations sémantiques thématiques. La concaténation des sorties puis la projection $\mathbf{W}_O$ recombinent ces représentations parallèles.
+
+### Stabilisation : Résiduels, Normalisation et MLP
+
+Autour du bloc d'attention, trois composants stabilisent le flux d'information dans les réseaux profonds [@KamarainenND] :
+
+**Connexions Résiduelles :**
+
+$$\mathbf{x}' = \mathbf{x} + \text{Attention}(\mathbf{x})$$
+
+Les connexions de saut (*skip connections*) préservent l'identité du signal original, empêchant la dégradation du gradient dans les réseaux profonds (problème de vanishing gradient vu au chapitre 2). En termes de représentation, elles garantissent que chaque couche *ajoute* de l'information plutôt que de la *transformer* entièrement.
+
+**Normalisation :**
+
+Deux variantes coexistent : LayerNorm (BERT, GPT-2) normalise sur les dimensions du modèle ; RMSNorm (LLaMA) normalise uniquement par la racine quadratique de la moyenne des carrés, sans centrage. RMSNorm est 15-20% plus rapide tout en préservant la stabilité.
+
+**MLP (Feed-Forward Network) :**
+
+Après l'attention (qui capture les *relations* entre tokens), un MLP effectue un **raffinement des caractéristiques** dans l'espace latent de chaque token indépendamment. La structure standard est une expansion-contraction :
+
+$$\text{FFN}(\mathbf{x}) = \text{GELU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2$$
+
+avec $d_{\text{ff}} = 4 d_{\text{model}}$ typiquement. Le MLP est responsable de 2/3 des paramètres du Transformer — c'est là que réside la "mémoire factuelle" du modèle.
+
+### Optimisation Matérielle : DAE et Ember
+
+La précision mathématique de l'attention ne suffit pas — l'efficacité d'exécution conditionne la scalabilité. Sur les architectures GPU standard, les opérations de lookup d'embeddings (décrites en section précédente) constituent un goulot d'étranglement que le compilateur **Ember** résout via l'architecture **DAE** (*Decoupled Access-Execute*) [@Siracusa2025] :
+
+**Le TMU (Tensor Marshaling Unit) :**
+
+Une unité physiquement séparée du cœur de calcul, dédiée exclusivement à la traversée des structures de données et au regroupement (*marshaling*) des embeddings. Pendant que le TMU prépare les vecteurs, le cœur de calcul exécute l'attention sur les données déjà streamées.
+
+**Optimisations du Compilateur Ember :**
+
+Ember utilise une représentation intermédiaire SLC IR (*Structured Lookup-Compute*) pour trois optimisations clés [@Siracusa2025] :
+
+1. **Vectorisation (Arm SVE)** : Utilisation automatique d'unités vectorielles larges avec gestion intelligente des masques.
+2. **Buffering d'Embedding** : Un jeton `ee` (*end-of-embedding*) signale la fin d'un vecteur, permettant au CPU de générer les positions positionnelles localement sans dépendre du TMU.
+3. **Alignement de Queue** : Padding des scalaires pour maintenir l'alignement des lignes de cache et éviter les chargements vectoriels désalignés.
+
+**Résultat :** Un gain moyen de **5,8×** sur les opérations d'embedding, avec une efficacité énergétique 4× supérieure aux GPUs traditionnels sur ces opérations spécifiques [@Siracusa2025]. Ce co-design matériel-logiciel transforme une opération limitée par la latence mémoire en un flux continu haute performance.

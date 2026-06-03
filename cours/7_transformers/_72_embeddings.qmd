@@ -1,0 +1,58 @@
+## Plongements Denses : Word2Vec, GloVe et FastText
+
+La rupture technologique des **plongements denses** (*dense embeddings*) permet de représenter chaque mot dans un espace continu de dimension réduite (typiquement 100 à 300), contre $|\mathcal{V}| \sim 10^5$ pour le BoW. La sémantique devient géométrie : deux mots sémantiquement proches sont voisins dans cet espace [@rong_2014; @pennington_2014].
+
+### Word2Vec : Apprentissage par Prédiction de Contexte
+
+Introduit par Mikolov et al. (2013), Word2Vec s'entraîne non pas à compter des co-occurrences mais à **prédire** : soit le mot cible depuis son contexte (CBOW — *Continuous Bag-of-Words*), soit les mots du contexte depuis le mot cible (Skip-gram) [@rong_2014].
+
+**Architecture CBOW vs Skip-gram :**
+
+* **CBOW** : La représentation moyenne des mots du contexte $\{w_{t-k}, \ldots, w_{t+k}\}$ prédit le mot central $w_t$. Rapide, adapté aux grandes données.
+* **Skip-gram** : Le mot central $w_t$ prédit chaque mot de contexte $w_{t+j}$ pour $j \in [-k, k] \setminus \{0\}$. Plus performant pour les mots rares.
+
+**La Distinction Cruciale : Matrice W et Matrice W' :**
+
+Word2Vec maintient **deux matrices de poids** : $\mathbf{W} \in \mathbb{R}^{|\mathcal{V}| \times d}$ (vecteurs d'entrée $v_w$) et $\mathbf{W'} \in \mathbb{R}^{d \times |\mathcal{V}|}$ (vecteurs de sortie $v'_w$). La mise à jour de $\mathbf{W'}$ via le Softmax standard est prohibitivement coûteuse ($O(|\mathcal{V}|)$ par gradient). Deux optimisations clés [@rong_2014] :
+
+* **Negative Sampling** : Au lieu de normaliser sur tout le vocabulaire, on tire $k$ "exemples négatifs" (mots aléatoires) et on optimise une approximation binaire.
+* **Hierarchical Softmax** : Encode le vocabulaire dans un arbre de Huffman, réduisant la complexité de $O(|\mathcal{V}|)$ à $O(\log |\mathcal{V}|)$.
+
+L'interaction entre $v_w$ et $v'_w$ durant l'entraînement crée un effet de "traction" ou "poussée" géométrique. C'est cet effet cumulatif qui génère les relations sémantiques arithmétiques célèbres :
+
+$$\mathbf{v}(\text{Roi}) - \mathbf{v}(\text{Homme}) + \mathbf{v}(\text{Femme}) \approx \mathbf{v}(\text{Reine})$$
+
+### GloVe : Co-occurrences Globales
+
+GloVe (Pennington et al. 2014) adopte une approche complémentaire en modélisant explicitement les **statistiques globales de co-occurrence** [@pennington_2014]. Plutôt que de prédire localement le contexte, GloVe minimise la différence entre le produit scalaire des vecteurs et le logarithme de la fréquence de co-occurrence sur l'ensemble du corpus :
+
+$$\mathcal{L}_{\text{GloVe}} = \sum_{i,j} f(X_{ij}) \left(v_i^T v_j + b_i + b_j - \log X_{ij}\right)^2$$
+
+où $X_{ij}$ est le nombre de co-occurrences des mots $i$ et $j$ dans une fenêtre de contexte, et $f$ est une fonction de pondération diminuant le poids des co-occurrences très fréquentes. GloVe capture les associations globales que Word2Vec, entraîné localement, peut manquer.
+
+### FastText : Granularité Morphologique et OOV
+
+Word2Vec et GloVe traitent chaque mot comme une unité atomique — un mot absent du vocabulaire d'entraînement (*Out-Of-Vocabulary*, OOV) ne peut pas être représenté. FastText (Bojanowski et al. 2017) résout ce problème en décomposant les mots en **n-grammes de caractères** [@bojanowski_2017] :
+
+Le vecteur du mot $w$ est la somme des vecteurs de ses n-grammes de caractères :
+$$\mathbf{v}(w) = \sum_{g \in \mathcal{G}(w)} \mathbf{z}_g$$
+
+Ainsi, le vecteur de "apprentissage" est construit depuis "<app", "app", "ppr", "pre", ..., "age>". Un mot inconnu ("réapprentissage") peut être représenté depuis ses fragments connus.
+
+**Le Cas du Hangeul Coréen et le Modèle misK :**
+
+Cette granularité morphologique est vitale pour les langues agglutinantes. En Hangeul coréen, les caractères sont des syllabes composées de consonnes et voyelles. Une faute de frappe ne déplace pas une lettre — elle brise la structure syllabique, rendant le mot méconnaissable pour un modèle basé sur les mots entiers. Le modèle **misK** (Kwon et al. 2020) répond à ce défi via un CNN avec **Channel Attention** [@kwon_2020] :
+
+Plutôt que de sommer linéairement les sous-mots comme FastText, misK utilise l'attention pour sélectionner et accentuer dynamiquement les fragments morphologiques les plus informatifs selon le contexte. Les tests sur des textes coréens bruités montrent que la version fine-tunée (misK-ft) surpasse les benchmarks Word2Vec et FastText en présence d'erreurs structurelles [@kwon_2020].
+
+::: {.callout-note appearance="simple" icon="false"}
+## 🌐 Comparatif des Plongements Statiques
+
+| Modèle | Apprentissage | Forces | Limites |
+|:-------|:-------------|:-------|:--------|
+| Word2Vec | Prédiction locale (contexte) | Rapide, relations analogiques | OOV, un vecteur/mot |
+| GloVe | Co-occurrence globale | Statistiques globales | OOV, un vecteur/mot |
+| FastText | N-grammes de caractères | OOV résolu, morphologie | Un vecteur/mot (statique) |
+
+La limite commune à ces trois modèles : le vecteur d'un mot est **statique** — "avocat" a toujours le même vecteur, qu'il désigne le juriste ou le fruit. Cette polysémie est la motivation fondamentale du passage aux plongements contextuels (ELMo, BERT).
+:::

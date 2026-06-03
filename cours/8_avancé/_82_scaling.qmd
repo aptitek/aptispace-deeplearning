@@ -1,0 +1,50 @@
+## Lois d'Échelle et Optimisation du Compute
+
+Les lois d'échelle (*scaling laws*) établissent des relations quantitatives entre les trois ressources fondamentales du pré-entraînement : **la taille du modèle** $N$ (nombre de paramètres), **le volume de données** $D$ (nombre de tokens), et le **budget de calcul** $C \approx 6ND$ (FLOPs). L'arbitrage entre ces trois ressources est l'une des décisions stratégiques les plus importantes dans le développement d'un LLM.
+
+### La Loi de Chinchilla : Optimal d'Entraînement
+
+Hoffmann et al. (DeepMind, 2022) établissent que pour un budget de calcul $C$ fixé, la perte de validation est minimisée quand la taille du modèle $N$ et le volume de données $D$ sont **augmentés proportionnellement** [@Hoffmann2022] :
+
+$$N^* \propto C^{0.5}, \qquad D^* \propto C^{0.5}, \qquad N^* \approx \frac{D^*}{20}$$
+
+La règle pratique est la suivante : **entraîner sur environ 20 tokens par paramètre**. Llama 2 (7B paramètres) entraîné sur 2 trillions de tokens ($\approx 285$ tokens/paramètre) dépasse déjà significativement cet optimum d'entraînement.
+
+::: {.callout-note appearance="simple" icon="false"}
+## ⚠️ Un Optimum Mal Défini
+
+L'approche Chinchilla minimise la *perte finale d'entraînement* pour un budget $C$ fixé. Mais la perte d'entraînement n'est pas l'objectif ultime — la performance à l'**inférence** l'est. Cette distinction cruciale redéfinit le problème d'optimisation.
+:::
+
+### L'Approche Inférence-Optimale : Scalabilité du Déploiement
+
+Sardana et Frankle (2024) reformulent le problème : pour une organisation qui déploiera le modèle sur $Q$ requêtes d'inférence, quel est le point d'opération optimal ? [@Sardana2024]
+
+Le coût total sur le cycle de vie est la somme du coût d'entraînement et du coût d'inférence :
+
+$$C_{\text{total}} = C_{\text{train}}(N, D) + Q \cdot C_{\text{inférence}}(N)$$
+
+$C_{\text{inférence}}(N)$ croît linéairement avec $N$ (plus de paramètres → plus de FLOPs par token généré). Pour $Q$ très grand, minimiser $C_{\text{total}}$ nécessite un modèle plus **petit** (moins coûteux à l'inférence), compensé par beaucoup plus de tokens d'entraînement.
+
+| Critère | Chinchilla-Optimal | Inférence-Optimal |
+|:--------|:------------------|:-----------------|
+| **Objectif** | Minimiser la perte d'entraînement | Minimiser le coût total (train + inférence) |
+| **Seuil d'usage** | Prototypage / Recherche | $> 10^9$ requêtes d'inférence |
+| **Tokens par paramètre** | ~20 | Jusqu'à 10 000+ |
+| **Exemple emblématique** | GPT-4 (estimation) | Llama 3 (15T tokens sur 8B) |
+
+**Calcul illustratif :** Pour 2 trillions de tokens d'inférence anticipés, choisir un modèle 7B entraîné intensivement plutôt qu'un 13B Chinchilla-optimal peut réduire le coût total de 17% — soit $1.7 \times 10^{22}$ FLOPs économisés [@Sardana2024].
+
+### Lois d'Échelle et Architecture
+
+Les lois d'échelle font apparaître une tension entre architecture et données. Concernant les modèles encoder-only (BERT-like) vs decoder-only (GPT-like), GisserotBoukhlef et al. (2026) montrent que les encodeurs pré-entraînés avec MLM (*Masked Language Modeling*) maintiennent des avantages spécifiques pour les tâches de classification en régime de peu de données, même à l'ère des LLMs génératifs. La question "faut-il encore pré-entraîner des encodeurs ?" reste ouverte et dépend du cas d'usage [@GisserotBoukhlef2026].
+
+### Jalons Pratiques : De LLaMA à LLaMA 3
+
+| Modèle | Paramètres | Tokens d'entraînement | Tokens/paramètre | Stratégie |
+|:-------|:----------|:---------------------|:----------------|:---------|
+| LLaMA 1 (2023) | 65B | 1.4T | ~21 | Chinchilla-proche |
+| LLaMA 2 (2023) | 7B–70B | 2T | 285 (7B) | Déjà sur-entraîné |
+| LLaMA 3 (2024) | 8B–70B | 15T | 1875 (8B) | Inférence-optimal |
+
+Cette évolution illustre le basculement de paradigme : LLaMA 3 8B, entraîné sur 15T tokens, surpasse LLaMA 2 70B sur de nombreux benchmarks, confirmant empiriquement la supériorité de l'approche inférence-optimale pour les modèles déployés à grande échelle [@Sardana2024].

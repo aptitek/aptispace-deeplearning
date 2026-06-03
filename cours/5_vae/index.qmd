@@ -1,0 +1,15 @@
+---
+title: "🎲 Autoencodeurs et Modèles Variationnels (VAE)"
+part: "🎲 Autoencodeurs et Modèles Variationnels (VAE)"
+bibliography: bibliography.bib
+---
+
+<!-- DYNAMIC_INCLUDES_START -->
+{{< include ../../assets/_ojs_bridge.qmd >}}
+{{< include _51_autoencoder.qmd >}}
+{{< include _52_vae.qmd >}}
+{{< include _53_kl_divergence.qmd >}}
+{{< include _54_reparametrisation.qmd >}}
+{{< include _55_vqvae.qmd >}}
+{{< include _56_synthese.qmd >}}
+<!-- DYNAMIC_INCLUDES_END -->
