@@ -60,7 +60,7 @@ viewof fp_x2 = Inputs.range([-2, 2], { value: -0.5, step: 0.1, label: "Entrée x
 
 ```{ojs}
 //| echo: false
-import { updateForwardPassViz } from "../../assets/js/custom/neuron.js"
+import { updateForwardPassViz } from "../../assets/js/simulations/neuron.js"
 
 _forwardPass = {
   updateForwardPassViz(document.getElementById("forward-pass-container"), { x1: fp_x1, x2: fp_x2 });

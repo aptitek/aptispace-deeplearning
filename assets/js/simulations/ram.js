@@ -2,13 +2,13 @@
 // ram.js — RAM simulator rendering engine
 // ==========================================
 // Usage (OJS):
-//   import { getRamData, renderRam } from "./assets/js/custom/ram.js"
+//   import { getRamData, renderRam } from "./assets/js/simulations/ram.js"
 //
 //   ramData = getRamData(rawInput, dataType)
 //   updateRamUI = renderRam(ramData)
 //
 
-import { renderListTemplate } from "../core.js";
+import { renderListTemplate } from "../core/core.js";
 
 /**
  * Converts a raw input value into hex/binary byte representations based on data type,

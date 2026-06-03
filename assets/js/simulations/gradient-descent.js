@@ -1,5 +1,5 @@
-import { resolveCssValue, StateMachine } from "../core.js";
-import { createPlot3D } from "../plots.js";
+import { resolveCssValue, StateMachine } from "../core/core.js";
+import { createPlot3D } from "../core/plots.js";
 
 /**
  * 🏔️ 3D Gradient Descent Simulation

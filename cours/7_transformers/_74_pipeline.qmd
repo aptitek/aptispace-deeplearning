@@ -86,7 +86,7 @@ bpe_tokens = {
 
 ```{ojs}
 //| echo: false
-import { createBpeDemoPanel } from "../../assets/js/custom/text.js"
+import { createBpeDemoPanel } from "../../assets/js/components/token-stream.js"
 createBpeDemoPanel(bpe_tokens)
 ```
 

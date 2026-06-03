@@ -1,8 +1,8 @@
 // =====================================================================
 // neuron.js — Neuron anatomy & forward pass visualizations
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { plotReact } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { plotReact } from "../core/plots.js";
 
 const relu    = (x) => Math.max(0, x);
 const sigmoid = (x) => 1 / (1 + Math.exp(-x));

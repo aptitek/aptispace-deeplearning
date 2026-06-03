@@ -78,7 +78,7 @@ Ces limitations ont précipité la recherche vers les **espaces vectoriels dense
 
 ```{ojs}
 //| echo: false
-import { CORPUS_LABELS } from "../../assets/js/custom/bow_tfidf.js"
+import { CORPUS_LABELS } from "../../assets/js/simulations/bow-tfidf.js"
 viewof bow_doc  = Inputs.select(CORPUS_LABELS, { label: "Document" })
 viewof bow_mode = Inputs.radio(["bow", "tfidf"], { value: "bow", label: "Méthode", format: x => x === "bow" ? "Bag-of-Words" : "TF-IDF" })
 ```
@@ -96,7 +96,7 @@ viewof bow_mode = Inputs.radio(["bow", "tfidf"], { value: "bow", label: "Méthod
 
 ```{ojs}
 //| echo: false
-import { updateBowTfIdfViz } from "../../assets/js/custom/bow_tfidf.js"
+import { updateBowTfIdfViz } from "../../assets/js/simulations/bow-tfidf.js"
 
 _bowTfIdf = {
   updateBowTfIdfViz(document.getElementById("bow-tfidf-container"), {

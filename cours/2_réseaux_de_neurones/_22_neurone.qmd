@@ -60,7 +60,7 @@ viewof n_fn = Inputs.select(["relu", "sigmoid"], { value: "relu", label: "Activa
 
 ```{ojs}
 //| echo: false
-import { updateNeuronDiagram } from "../../assets/js/custom/neuron.js"
+import { updateNeuronDiagram } from "../../assets/js/simulations/neuron.js"
 
 _neuron = {
   updateNeuronDiagram(document.getElementById("neuron-diagram-container"), {

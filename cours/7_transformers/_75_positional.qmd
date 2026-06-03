@@ -58,7 +58,7 @@ viewof pe_highlight = Inputs.range([0, 63], { value: 0,  step: 1,  label: "Posit
 
 ```{ojs}
 //| echo: false
-import { updatePEViz } from "../../assets/js/custom/positional_encoding.js"
+import { updatePEViz } from "../../assets/js/simulations/positional-encoding.js"
 
 _peViz = {
   updatePEViz(

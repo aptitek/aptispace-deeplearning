@@ -1,8 +1,8 @@
 // =====================================================================
 // diffusion.js — DDPM forward diffusion process visualization
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { createMultiLine } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { createMultiLine } from "../core/plots.js";
 
 /**
  * Build a deterministic-looking 1-D "image signal" for illustration.

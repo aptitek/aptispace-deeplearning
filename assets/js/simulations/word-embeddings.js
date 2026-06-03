@@ -1,8 +1,8 @@
 // =====================================================================
-// word_embeddings.js — 2-D word embedding space + ELMo layer weights
+// word-embeddings.js — 2-D word embedding space + ELMo layer weights
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { plotReact, plotBars } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { plotReact, plotBars } from "../core/plots.js";
 
 // ── Pre-computed 2-D projections (illustrative PCA projection) ─────────
 const WORDS = [

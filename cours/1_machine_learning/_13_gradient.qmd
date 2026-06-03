@@ -719,7 +719,7 @@ viewof optParam = {
 
 ```{ojs}
 //| echo: false
-import { createGradientSimulation } from "../../assets/js/custom/gradient-descent.js"
+import { createGradientSimulation } from "../../assets/js/simulations/gradient-descent.js"
 
 // Reinitialises the Plotly chart only when the optimizer type changes.
 // Does NOT depend on optParam — slider changes are handled by _gradPath below.

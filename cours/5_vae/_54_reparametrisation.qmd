@@ -21,7 +21,7 @@ L'élégance du VAE repose sur un verrou algorithmique crucial : comment entraî
 
 ```{ojs}
 //| echo: false
-import { createReparamViz } from "../../assets/js/custom/reparam.js"
+import { createReparamViz } from "../../assets/js/simulations/reparam.js"
 
 _reparam = {
   createReparamViz(document.getElementById("reparam-diagram-container"));

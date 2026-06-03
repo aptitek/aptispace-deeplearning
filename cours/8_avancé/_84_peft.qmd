@@ -34,7 +34,7 @@ viewof lora_r = Inputs.range([1, 32],  { value: 8,  step: 1, label: "Rang r" })
 
 ```{ojs}
 //| echo: false
-import { updateLoRAViz } from "../../assets/js/custom/lora.js"
+import { updateLoRAViz } from "../../assets/js/simulations/lora.js"
 
 _loraViz = {
   updateLoRAViz(document.getElementById("lora-diagram-container"), { d: lora_d, r: lora_r });

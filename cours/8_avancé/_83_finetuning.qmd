@@ -24,7 +24,7 @@ Le pré-entraînement produit un modèle aux capacités générales remarquables
 
 ```{ojs}
 //| echo: false
-import { updateFinetuningViz } from "../../assets/js/custom/learning_curves.js"
+import { updateFinetuningViz } from "../../assets/js/simulations/learning-curves.js"
 
 _finetuning = {
   updateFinetuningViz(document.getElementById("finetuning-chart-container"));

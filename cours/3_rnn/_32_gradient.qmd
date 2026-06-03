@@ -79,7 +79,7 @@ viewof rnn_T_grad   = Inputs.range([5, 50],    { value: 20,  step: 1,    label: 
 
 ```{ojs}
 //| echo: false
-import { updateGradientMagnitudeViz } from "../../assets/js/custom/learning_curves.js"
+import { updateGradientMagnitudeViz } from "../../assets/js/simulations/learning-curves.js"
 
 _gradMag = {
   updateGradientMagnitudeViz(document.getElementById("plot-grad-magnitude"), {

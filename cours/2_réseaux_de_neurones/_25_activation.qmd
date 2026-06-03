@@ -54,7 +54,7 @@ viewof x_classic = Inputs.range([-5, 5], { value: 0, step: 0.1, label: "Valeur d
 
 ```{ojs}
 //| echo: false
-import { updateClassicActivation } from "../../assets/js/custom/activation.js"
+import { updateClassicActivation } from "../../assets/js/simulations/activation.js"
 
 _updateClassic = {
   updateClassicActivation(x_classic, {
@@ -127,7 +127,7 @@ viewof x_modern = Inputs.range([-3, 3], { value: 0, step: 0.1, label: "Valeur de
 
 ```{ojs}
 //| echo: false
-import { updateModernActivation } from "../../assets/js/custom/activation.js"
+import { updateModernActivation } from "../../assets/js/simulations/activation.js"
 
 _updateModern = {
   updateModernActivation(x_modern, {

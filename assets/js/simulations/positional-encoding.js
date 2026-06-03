@@ -1,8 +1,8 @@
 // =====================================================================
-// positional_encoding.js — Sinusoidal positional encoding heatmap
+// positional-encoding.js — Sinusoidal positional encoding heatmap
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { plotHeatmap, plotLines } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { plotHeatmap, plotLines } from "../core/plots.js";
 
 function computePE(seqLen, dModel) {
   return Array.from({ length: seqLen }, (_, t) =>

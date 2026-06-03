@@ -14,7 +14,7 @@
 // until the promise resolves — the built-in, idiomatic solution for async
 // dependencies in Observable JS.
 //
-// ✅ Zero-maintenance: adding a new export to aptitek.js barrel is
+// ✅ Zero-maintenance: adding a new export to index.js barrel is
 //    instantly available — no edits to this file ever needed.
 // ✅ Race-condition-safe: downstream cells never see undefined.
 // ✅ Anti-double-definition: only ONE OJS name (`aptitek`) is defined.

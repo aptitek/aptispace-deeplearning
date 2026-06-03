@@ -1,9 +1,9 @@
 // =====================================================================
-// learning_curves.js — BN, GAN stability, Scaling Laws,
+// learning-curves.js — BN, GAN stability, Scaling Laws,
 //                      Pretraining loss, Fine-tuning dynamics
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { createMultiLine, plotReact, plotLines } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { createMultiLine, plotReact, plotLines } from "../core/plots.js";
 
 // ── Shared helpers ─────────────────────────────────────────────────────
 function linspace(a, b, n) {

@@ -79,7 +79,7 @@ viewof ae_input_dim  = Inputs.range([8, 64], { value: 32, step: 4, label: "Dimen
 
 ```{ojs}
 //| echo: false
-import { updateAutoencoderViz } from "../../assets/js/custom/autoencoder.js"
+import { updateAutoencoderViz } from "../../assets/js/simulations/autoencoder.js"
 
 _autoencoder = {
   updateAutoencoderViz(document.getElementById("autoencoder-diagram-container"), {

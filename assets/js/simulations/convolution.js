@@ -1,7 +1,7 @@
 // =====================================================================
 // convolution.js — Convolution layer simulation logic
 // =====================================================================
-import { StateMachine } from "../core.js";
+import { StateMachine } from "../core/core.js";
 
 // Initialize global state for persistence across OJS updates
 if (typeof window !== "undefined" && !window.convSimulatorState) {

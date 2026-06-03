@@ -26,7 +26,7 @@ Le développement d'un grand modèle de langage (LLM) ne se résume pas à une p
 
 ```{ojs}
 //| echo: false
-import { updatePretrainingViz } from "../../assets/js/custom/learning_curves.js"
+import { updatePretrainingViz } from "../../assets/js/simulations/learning-curves.js"
 
 _pretraining = {
   updatePretrainingViz(document.getElementById("pretraining-chart-container"));

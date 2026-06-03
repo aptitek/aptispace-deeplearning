@@ -1,7 +1,7 @@
 // =====================================================================
 // lora.js — LoRA low-rank decomposition visualization
 // =====================================================================
-import { resolveCssValue } from "../core.js";
+import { resolveCssValue } from "../core/core.js";
 
 /**
  * Render an SVG comparing full-rank matrix W vs LoRA decomposition W + BA.

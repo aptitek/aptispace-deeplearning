@@ -1,7 +1,7 @@
 // =====================================================================
 // autoencoder.js — Autoencoder architecture flow diagram
 // =====================================================================
-import { resolveCssValue } from "../core.js";
+import { resolveCssValue } from "../core/core.js";
 
 /**
  * Render an autoencoder architecture: [input] → [encoder] → [bottleneck] → [decoder] → [output].

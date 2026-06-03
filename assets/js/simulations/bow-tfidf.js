@@ -1,7 +1,7 @@
 // =====================================================================
-// bow_tfidf.js — BoW vs TF-IDF horizontal bar chart
+// bow-tfidf.js — BoW vs TF-IDF horizontal bar chart
 // =====================================================================
-import { plotBars } from "../plots.js";
+import { plotBars } from "../core/plots.js";
 
 // ── Sample corpus ──────────────────────────────────────────────────────
 const CORPUS = [

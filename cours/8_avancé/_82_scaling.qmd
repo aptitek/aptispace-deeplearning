@@ -24,7 +24,7 @@ Les lois d'échelle (*scaling laws*) établissent des relations quantitatives en
 
 ```{ojs}
 //| echo: false
-import { updateScalingViz } from "../../assets/js/custom/learning_curves.js"
+import { updateScalingViz } from "../../assets/js/simulations/learning-curves.js"
 
 _scaling = {
   updateScalingViz(document.getElementById("scaling-chart-container"));

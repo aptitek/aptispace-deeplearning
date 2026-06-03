@@ -2,13 +2,13 @@
 // mobo.js — Engine de simulation de carte mère unifié
 // ==========================================
 // Usage (OJS):
-//   import { initMoboSvg, renderMobo } from "./assets/js/custom/mobo.js"
+//   import { initMoboSvg, renderMobo } from "./assets/js/simulations/mobo.js"
 //
 //   init = initMoboSvg("#motherboard-view")
 //   updateMotherboardUI = renderMobo(hardwareState)
 //
 
-import { renderTemplate } from "../core.js";
+import { renderTemplate } from "../core/core.js";
 
 /**
  * Charge dynamiquement l'SVG de la carte mère et l'intègre en ligne dans le conteneur

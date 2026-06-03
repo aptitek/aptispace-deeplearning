@@ -1,8 +1,8 @@
 // =====================================================================
-// kl_divergence.js — KL divergence between two Gaussians
+// kl-divergence.js — KL divergence between two Gaussians
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { createMultiLine } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { createMultiLine } from "../core/plots.js";
 
 function gaussianPDF(x, mu, sigma) {
   const s2 = sigma * sigma;

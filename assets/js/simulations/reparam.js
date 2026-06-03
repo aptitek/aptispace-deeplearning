@@ -1,7 +1,7 @@
 // =====================================================================
 // reparam.js — Reparameterization trick: SVG flow diagram
 // =====================================================================
-import { resolveCssValue } from "../core.js";
+import { resolveCssValue } from "../core/core.js";
 
 /**
  * Render two-column SVG comparing standard sampling vs reparameterization.

@@ -1,8 +1,8 @@
 // =====================================================================
 // regularization.js — Regularization simulation using Plotly
 // =====================================================================
-import { resolveCssValue, parseTableData, renderTemplate } from "../core.js";
-import { createSimulatorPlot } from "../plots.js";
+import { resolveCssValue, parseTableData, renderTemplate } from "../core/core.js";
+import { createSimulatorPlot } from "../core/plots.js";
 
 let _variables = null;
 let _details = null;

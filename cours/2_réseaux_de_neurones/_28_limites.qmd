@@ -61,7 +61,7 @@ viewof lr_epochs = Inputs.range([10, 100],     { value: 50,  step: 1,     label:
 
 ```{ojs}
 //| echo: false
-import { updateLRSchedulerViz } from "../../assets/js/custom/learning_curves.js"
+import { updateLRSchedulerViz } from "../../assets/js/simulations/learning-curves.js"
 
 _lrScheduler = {
   updateLRSchedulerViz(document.getElementById("lr-schedulers-container"), { eta0: lr_init, T: lr_epochs });

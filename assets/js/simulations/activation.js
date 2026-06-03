@@ -1,8 +1,8 @@
 // =====================================================================
 // activation.js — Activation function calculations & Plotly rendering
 // =====================================================================
-import { resolveCssValue } from "../core.js";
-import { createSimulatorPlot } from "../plots.js";
+import { resolveCssValue } from "../core/core.js";
+import { createSimulatorPlot } from "../core/plots.js";
 
 // Math helper functions
 export const sigmoid = (x) => 1 / (1 + Math.exp(-x));

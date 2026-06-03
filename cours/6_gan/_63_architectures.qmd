@@ -17,7 +17,7 @@ L'évolution des GANs est une histoire de stabilisation progressive : chaque arc
 
 ```{ojs}
 //| echo: false
-import { GAN_ARCH_OPTIONS } from "../../assets/js/custom/learning_curves.js"
+import { GAN_ARCH_OPTIONS } from "../../assets/js/simulations/learning-curves.js"
 viewof gan_arch = Inputs.select(GAN_ARCH_OPTIONS, { value: "GAN vanilla", label: "Architecture" })
 ```
 
@@ -34,7 +34,7 @@ viewof gan_arch = Inputs.select(GAN_ARCH_OPTIONS, { value: "GAN vanilla", label:
 
 ```{ojs}
 //| echo: false
-import { updateGANArchViz } from "../../assets/js/custom/learning_curves.js"
+import { updateGANArchViz } from "../../assets/js/simulations/learning-curves.js"
 
 _ganArch = {
   updateGANArchViz(document.getElementById("gan-arch-chart-container"), gan_arch);

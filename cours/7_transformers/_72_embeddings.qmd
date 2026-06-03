@@ -86,7 +86,7 @@ La limite commune à ces trois modèles : le vecteur d'un mot est **statique** �
 
 ```{ojs}
 //| echo: false
-import { ANALOGY_OPTIONS } from "../../assets/js/custom/word_embeddings.js"
+import { ANALOGY_OPTIONS } from "../../assets/js/simulations/word-embeddings.js"
 viewof emb_analogy = Inputs.select(ANALOGY_OPTIONS, { value: ANALOGY_OPTIONS[0], label: "Analogie" })
 ```
 
@@ -103,7 +103,7 @@ viewof emb_analogy = Inputs.select(ANALOGY_OPTIONS, { value: ANALOGY_OPTIONS[0],
 
 ```{ojs}
 //| echo: false
-import { updateEmbeddingViz } from "../../assets/js/custom/word_embeddings.js"
+import { updateEmbeddingViz } from "../../assets/js/simulations/word-embeddings.js"
 
 _embViz = {
   updateEmbeddingViz(

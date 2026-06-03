@@ -2,7 +2,7 @@
 // text.js — Labeled Text & Token Stream Component
 // ==========================================
 // Usage (OJS):
-//   import { createLabeledText } from "./assets/js/custom/text.js"
+//   import { createLabeledText } from "./assets/js/components/token-stream.js"
 //
 //   widget = createLabeledText("#my-token-stream", {
 //     text: "L'IA comprend-elle le mot anticonstitutionnellement ? 🤔",
@@ -10,7 +10,7 @@
 //   })
 //
 
-import { theme } from "../core.js";
+import { theme } from "../core/core.js";
 
 /**
  * Default premium tokenizer that splits text into structured tokens resembling BPE tokenization.

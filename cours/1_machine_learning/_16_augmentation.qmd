@@ -71,7 +71,7 @@ Image augmentée
 
 ```{ojs}
 //| echo: false
-import { updateDataAugmentation } from "../../assets/js/custom/augmentation.js"
+import { updateDataAugmentation } from "../../assets/js/simulations/augmentation.js"
 
 renderAugmentation = {
   updateDataAugmentation({

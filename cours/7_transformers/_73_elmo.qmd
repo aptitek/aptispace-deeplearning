@@ -32,7 +32,7 @@ $$\text{ELMo}_k^{\text{task}} = \gamma^{\text{task}} \sum_{j=0}^{L} s_j^{\text{t
 
 ```{ojs}
 //| echo: false
-import { ELMO_TASK_OPTIONS } from "../../assets/js/custom/word_embeddings.js"
+import { ELMO_TASK_OPTIONS } from "../../assets/js/simulations/word-embeddings.js"
 viewof elmo_task = Inputs.select(ELMO_TASK_OPTIONS, { label: "Tâche NLP" })
 ```
 
@@ -49,7 +49,7 @@ viewof elmo_task = Inputs.select(ELMO_TASK_OPTIONS, { label: "Tâche NLP" })
 
 ```{ojs}
 //| echo: false
-import { updateElmoViz } from "../../assets/js/custom/word_embeddings.js"
+import { updateElmoViz } from "../../assets/js/simulations/word-embeddings.js"
 
 _elmoViz = {
   updateElmoViz(document.getElementById("elmo-chart-container"), elmo_task);

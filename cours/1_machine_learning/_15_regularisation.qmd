@@ -109,7 +109,7 @@ viewof regLambda = Inputs.range([0, 100], { value: 15, step: 1, label: "⚡ Inte
 
 ```{ojs}
 //| echo: false
-import { updateRegularization } from "../../assets/js/custom/regularization.js"
+import { updateRegularization } from "../../assets/js/simulations/regularization.js"
 
 renderSimulator = {
   updateRegularization(regType, regLambda, {

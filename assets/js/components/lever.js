@@ -2,7 +2,7 @@
 // lever.js — Analog lever switch component
 // ==========================================
 // Usage (OJS):
-//   import { createLever } from "./assets/js/custom/lever.js"
+//   import { createLever } from "./assets/js/components/lever.js"
 //   viewof powerOn = createLever("#power-lever", invalidation)
 //
 // The matching DOM structure must exist in the page (fenced divs in Quarto):

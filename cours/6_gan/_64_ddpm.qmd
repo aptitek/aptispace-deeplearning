@@ -51,7 +51,7 @@ Signal restant
 
 ```{ojs}
 //| echo: false
-import { updateDiffusionViz } from "../../assets/js/custom/diffusion.js"
+import { updateDiffusionViz } from "../../assets/js/simulations/diffusion.js"
 
 _ddpmViz = {
   updateDiffusionViz(

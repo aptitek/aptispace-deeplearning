@@ -13,7 +13,7 @@ Le passage du traitement de données tabulaires aux grilles de pixels 2D a impos
 :::: {.card-control-row .sim-controls-row}
 ```{ojs}
 //| echo: false
-import { createDimensionalityComparison } from "../../assets/js/custom/convolution.js"
+import { createDimensionalityComparison } from "../../assets/js/simulations/convolution.js"
 viewof res_idx = aptitek.createSlider({
   label: "Résolution d'Entrée",
   labels: ["28x28 (MNIST)", "250x250 (Standard)", "1920x1080 (Full HD)", "3840x2160 (4K UHD)"],

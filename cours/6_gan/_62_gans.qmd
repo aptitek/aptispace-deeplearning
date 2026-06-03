@@ -75,7 +75,7 @@ viewof gan_epoch = Inputs.range([0, 100], {
 
 ```{ojs}
 //| echo: false
-import { createGanDuel } from "../../assets/js/custom/gan.js"
+import { createGanDuel } from "../../assets/js/simulations/gan.js"
 createGanDuel(gan_epoch)
 ```
 
