@@ -2,22 +2,41 @@
 
 Deux réseaux s'affrontent en boucle : le générateur fabrique des faux, le discriminateur tente de les détecter. À force de se mesurer l'un à l'autre, les deux s'améliorent jusqu'à ce que les faux soient indiscernables des vrais.
 
+Un GAN fonctionne donc comme un atelier de contrefaçon supervisé par un expert : le faussaire apprend uniquement grâce aux retours du critique.
+
+::: {.callout-note collapse="true"}
+## 🔍 Cadre théorique
 Introduits par Goodfellow et al. en 2014, les Réseaux Antagonistes Génératifs reformulent la génération comme un **problème de théorie des jeux à somme nulle** [@Goodfellow2014NIPS]. Deux réseaux sont entraînés simultanément dans une compétition asymétrique dont l'issue idéale est un Équilibre de Nash.
+:::
 
 ### Les Deux Acteurs
 
 **Le Générateur $G_\theta$ — Le Faussaire :**
 
+Le générateur est l'apprenti faussaire : il reçoit du bruit au hasard et essaie d'en faire une image assez crédible pour tromper l'expert.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 $G_\theta : \mathbf{z} \mapsto \hat{\mathbf{x}}$ est une fonction paramétrique qui transforme un vecteur de bruit $\mathbf{z} \sim p_z(\mathbf{z})$ (typiquement gaussien) en une donnée synthétique $\hat{\mathbf{x}}$. Son seul objectif : produire des données $\hat{\mathbf{x}} \sim p_G$ qui ressemblent à $p_0$ au point de tromper le discriminateur. Le générateur n'observe jamais les données réelles directement — il ne reçoit que le signal de retour du discriminateur.
+:::
 
 **Le Discriminateur $D_\phi$ — L'Expert :**
 
+Le discriminateur est le critique d'art : il regarde une image et répond "vrai" ou "faux". Sa critique sert ensuite de leçon au générateur.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 $D_\phi : \mathbf{x} \mapsto [0, 1]$ est un classificateur binaire qui estime la probabilité qu'une donnée soit réelle. Son rôle est double : distinguer les réelles des fausses, et simultanément servir d'estimateur de la divergence entre $p_0$ et $p_G$.
+:::
 
 ### L'Objectif Minimax
 
 Le générateur veut minimiser la probabilité que ses faux soient détectés ; le discriminateur veut la maximiser. Le jeu converge quand aucun des deux ne peut plus s'améliorer — l'Équilibre de Nash.
 
+On peut lire ce duel comme une partie de cache-cache : l'un apprend à mieux se cacher, l'autre à mieux repérer. L'objectif n'est pas qu'un joueur gagne pour toujours, mais que les deux arrivent à un niveau où les faux sont aussi convaincants que les vrais.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule minimax et équilibre théorique
 L'entraînement conjoint est décrit par le jeu à deux joueurs [@Goodfellow2014NIPS; @Moghaddam2023] :
 
 $$\min_G \max_D \; V(G, D) = \mathbb{E}_{\mathbf{x} \sim p_0}\!\left[\log D(\mathbf{x})\right] + \mathbb{E}_{\mathbf{z} \sim p_z}\!\left[\log(1 - D(G(\mathbf{z})))\right]$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -36,6 +55,7 @@ $$V(G, D^*) = -\log 4 + 2 \cdot D_{\text{JS}}(p_0 \| p_G)$$ ([voir le Glossaire]
 * **$D_{\text{JS}}(p_0 \| p_G)$** : divergence de Jensen-Shannon (symétrique et toujours positive) comparant la distribution réelle $p_0$ à la distribution générée $p_G$.
 
 L'Équilibre de Nash est atteint quand $p_G = p_0$, auquel cas $D^*(\mathbf{x}) = \frac{1}{2}$ partout et $V = -\log 4$.
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -65,6 +85,10 @@ createGanDuel(gan_epoch)
 
 L'équilibre du jeu GAN est très difficile à atteindre en pratique : soit le discriminateur devient trop fort et coupe tout signal au générateur, soit le générateur trouve un raccourci et ne produit que quelques sorties « sûres ».
 
+Dans la métaphore du peintre, deux pannes reviennent souvent : le critique devient si sévère que l'apprenti ne sait plus quoi corriger, ou l'apprenti répète toujours le même tableau qui passe à peu près.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails des instabilités
 En pratique, cet équilibre théorique est difficile à atteindre en raison de deux instabilités structurelles [@Brownlee2019; @GoogleDev] :
 
 **Vanishing Gradients :**
@@ -74,6 +98,7 @@ Quand le discriminateur est trop performant, $D(\hat{\mathbf{x}}) \approx 0$ pou
 **Mode Collapse :**
 
 Le générateur converge vers un ensemble limité de sorties "sûres" qui trompent le discriminateur, ignorant la diversité de $p_0$. Au lieu d'apprendre toute la distribution, il "mémorise" quelques modes. Le discriminateur, confronté à ces faux répétitifs, converge vers une contre-stratégie locale, et le jeu oscille plutôt que de converger globalement [@PatSnap2025].
+:::
 
 | Pathologie                  | Symptôme                                | Cause                                         |
 | :-------------------------- | :-------------------------------------- | :-------------------------------------------- |
@@ -84,6 +109,9 @@ Le générateur converge vers un ensemble limité de sorties "sûres" qui trompe
 
 ### L'Équilibre de Nash en Pratique
 
-La théorie des jeux garantit l'équilibre uniquement dans des espaces convexes et simples. Les réseaux de neurones fonctionnent dans des espaces de paramètres non-convexes — rien ne garantit donc la convergence, et l'entraînement requiert un équilibre délicat entre les deux adversaires.
+En théorie, le duel a un point d'équilibre. En pratique, avec de grands réseaux de neurones, le terrain est cabossé : les deux joueurs peuvent tourner en rond, se dépasser, ou apprendre à des vitesses trop différentes.
 
+::: {.callout-note collapse="true"}
+## 🔍 Pourquoi la convergence est fragile
 La convergence vers l'Équilibre de Nash dans un espace de paramètres non-convexe est problématique. Les dynamiques de gradient standard (descente de gradient alternée) ne garantissent pas la convergence dans un jeu à somme nulle non-convexe. L'entraînement des GANs requiert un équilibre délicat entre les vitesses d'apprentissage, le nombre de mises à jour relatives du discriminateur et du générateur, et des techniques de régularisation spécifiques [@Moghaddam2023].
+:::

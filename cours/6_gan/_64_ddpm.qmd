@@ -1,6 +1,13 @@
 ## DDPM : La Génération par Diffusion Inverse
 
+Un DDPM apprend à créer en faisant l'inverse d'une destruction contrôlée : on apprend d'abord comment une image devient du bruit, puis le modèle apprend à retirer ce bruit étape par étape.
+
+C'est une autre façon de générer : au lieu d'un duel entre faussaire et critique, on entraîne un spécialiste du "nettoyage" qui sait transformer un nuage de bruit en image cohérente.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Les Denoising Diffusion Probabilistic Models (DDPM) représentent un **changement de paradigme** par rapport aux GANs. Inspirés par la physique statistique, ils déplacent la charge générative de la compétition adversariale vers la **reconstruction thermodynamique** : apprendre à inverser un processus de dégradation progressive [@Ho2020; @Weng2021].
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -57,6 +64,10 @@ _ddpmViz = {
 
 ### Le Processus Forward : Destruction Contrôlée
 
+Le processus *forward* salit progressivement une image avec du bruit. Au début, on reconnaît encore l'image ; à la fin, il ne reste qu'un brouillard aléatoire.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formules du bruit progressif
 Le processus *forward* (ou de diffusion) dégrade itérativement une donnée $\mathbf{x}_0 \sim p_0$ en ajoutant du bruit gaussien à chaque pas de temps $t \in \{1, \ldots, T\}$ [@Singh2024; @SixSimpleSteps2024]. Ce processus est **markovien** et défini par :
 
 $$q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \, \mathbf{x}_{t-1}, \beta_t \mathbf{I})$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -73,6 +84,7 @@ $$q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar\alpha_t}
 * **$\bar\alpha_t$** : le produit cumulatif (via l'opérateur de produit successif $\prod$) des coefficients de conservation du pas $1$ au pas $t$.
 
 Pour $T$ suffisamment grand (typiquement $T = 1000$) et $\bar\alpha_T \approx 0$, $\mathbf{x}_T \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$ — la donnée est devenue du bruit pur.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🌡️ Analogie Thermodynamique : Diffusion de l'Encre
@@ -82,6 +94,10 @@ Imaginez une goutte d'encre dans un verre d'eau. Le processus forward est la **d
 
 ### Le Processus Reverse : Reconstruction Apprise
 
+Le processus *reverse* est le geste inverse : partir du brouillard et retirer un petit morceau de bruit à chaque étape, comme si l'on essayait de reformer la goutte d'encre dispersée.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formules de reconstruction
 Le processus *reverse* apprend à **remonter** de $\mathbf{x}_T$ vers $\mathbf{x}_0$, étape par étape. La distribution inverse est approximée par un réseau de neurones $p_\theta$ [@Ho2020; @Raha] :
 
 $$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -94,9 +110,14 @@ Ho et al. (2020) montrent qu'il est optimal de paramétrer $\boldsymbol{\mu}_\th
 $$\boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} \left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar\alpha_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right)$$
 
 * **$\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$** : le bruit d'écart gaussien estimé par le réseau (U-Net) à partir de la version bruitée $\mathbf{x}_t$ et de l'indice temporel $t$.
+:::
 
 ### L'Objectif Simplifié
 
+À l'entraînement, on donne au modèle une image bruitée et on lui demande : "quel bruit a été ajouté ?" S'il sait prédire ce bruit, il sait aussi l'enlever.
+
+::: {.callout-note collapse="true"}
+## 🔢 Perte de débruitage
 L'objectif d'entraînement ELBO se simplifie remarquablement en une perte de débruitage [@Ho2020; @DiffusionModelsPDF] :
 
 $$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}}\!\left[\|\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\sqrt{\bar\alpha_t}\,\mathbf{x}_0 + \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}, \, t)\|^2\right]$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -105,13 +126,23 @@ $$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilo
 * **$\|\cdot\|^2$** : la norme Euclidienne au carré, pénalisant l'erreur de prédiction de bruit élément par élément.
 
 Le modèle apprend simplement à **prédire le bruit ajouté** à partir de l'image bruitée et du pas de temps $t$. Cette reformulation est à la fois simple à implémenter et efficace à optimiser.
+:::
 
 ### L'Architecture U-Net : Poids Partagés Multi-Échelle
 
+Le U-Net regarde l'image à plusieurs tailles à la fois : les grandes formes d'un côté, les petits détails de l'autre. C'est utile pour enlever du bruit sans perdre la structure globale.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Le réseau $\boldsymbol{\epsilon}_\theta$ est typiquement un **U-Net** — une architecture encodeur-décodeur avec connexions de saut (*skip connections*) permettant de combiner les représentations à différentes échelles [@MilvusReverse]. Le partage de poids entre les couches du U-Net à différentes résolutions spatiales est une forme de **Sparse Weight-Sharing** : le même filtre appris s'applique à différentes échelles, exploitant la structure multi-échelle inhérente aux images naturelles.
+:::
 
 ### DDIM : Accélération par Sampling Déterministe
 
+Le DDPM classique est lent parce qu'il enlève le bruit en beaucoup de petites étapes. DDIM garde le même modèle, mais prend des raccourcis plus directs pour générer plus vite.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule DDIM
 Un défaut majeur des DDPM est la lenteur de la génération : $T = 1000$ passes du réseau pour générer une image. Le DDIM (*Denoising Diffusion Implicit Models*) reformule le processus inverse comme un **ODE déterministe** plutôt qu'une SDE stochastique, permettant de réduire le nombre de pas à 50–100 sans perte significative de qualité [@MilvusDDPM; @Tarricone2026] :
 
 $$\mathbf{x}_{t-1} = \sqrt{\bar\alpha_{t-1}} \underbrace{\frac{\mathbf{x}_t - \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}{\sqrt{\bar\alpha_t}}}_{\text{prédiction de }\mathbf{x}_0} + \sqrt{1-\bar\alpha_{t-1}} \, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -119,3 +150,4 @@ $$\mathbf{x}_{t-1} = \sqrt{\bar\alpha_{t-1}} \underbrace{\frac{\mathbf{x}_t - \s
 * **$\bar\alpha_{t-1}$** : le coefficient cumulatif de conservation du signal à l'étape temporelle précédente $t-1$.
 
 Le DDIM utilise le même modèle entraîné que le DDPM mais change uniquement le schéma de sampling, offrant un compromis vitesse/qualité contrôlable.
+:::

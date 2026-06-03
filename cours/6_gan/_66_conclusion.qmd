@@ -1,15 +1,31 @@
 ## Conclusion : De la Compétition à la Reconstruction
 
+Ce chapitre raconte deux grandes manières de générer : faire progresser un faussaire grâce à un critique (GAN), ou apprendre à nettoyer du bruit jusqu'à faire apparaître une image (diffusion).
+
+Les deux approches ne s'opposent pas totalement : les GANs montrent la puissance de la compétition, tandis que la diffusion montre la puissance d'une reconstruction patiente et guidée.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture technique
 La trajectoire technologique de ce chapitre illustre une transition fondamentale dans le paradigme de la génération : du **duel stratégique** des GANs à la **reconstruction rigoureuse** des DDPM. Ces deux approches ne sont pas mutuellement exclusives — elles sont complémentaires, chacune révélant un aspect différent du problème de la modélisation de $p_0$.
+:::
 
 ### L'Architecture Émergente : Diffusion + Transformers
 
+Les modèles récents mélangent souvent diffusion et Transformers : la diffusion sait générer progressivement, et les Transformers savent relier des éléments éloignés entre eux.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Les modèles de diffusion modernes abandonnent progressivement le U-Net au profit des **Diffusion Transformers (DiT)** (Peebles et Xie, 2023). Un DiT remplace les couches convolutionnelles du U-Net par des blocs d'attention, permettant de modéliser des dépendances à longue portée entre des régions éloignées de l'image. Cette évolution combine les avantages théoriques de la diffusion (optimalité minimax, couverture totale) avec la puissance de modélisation globale des Transformers [@Chen2026; @NewlineDiT].
 
 Les **Latent Diffusion Models** (dont Stable Diffusion) ajoutent une couche d'efficacité en faisant opérer le processus de diffusion non pas dans l'espace des pixels ($D \times D \times 3$) mais dans l'espace latent d'un VAE ($d_z \ll D^2$). Cette séparation des préoccupations — compression sémantique (VAE, chapitre 5) et modélisation générative (diffusion) — est la clé de la scalabilité des modèles texte-to-image modernes.
+:::
 
 ### La Génération Vidéo : La Frontière Active
 
+La vidéo est plus difficile que l'image parce qu'il faut rester cohérent dans le temps. Un personnage ne doit pas changer de visage d'une frame à l'autre, et les mouvements doivent rester plausibles.
+
+::: {.callout-note collapse="true"}
+## 🔍 Pourquoi la vidéo est difficile
 Si les modèles de diffusion dominent aujourd'hui la synthèse d'images, le défi se déplace vers la génération vidéo et audio. La vidéo impose une contrainte de **cohérence temporelle absolue** absente dans la génération d'images statiques [@Weng2024Video; @WengVideoGen] :
 
 * Un objet qui disparaît derrière un autre doit réapparaître cohérent.
@@ -17,6 +33,7 @@ Si les modèles de diffusion dominent aujourd'hui la synthèse d'images, le déf
 * L'identité des personnages doit être préservée entre les frames.
 
 Ces contraintes nécessitent que le modèle encode une véritable **"connaissance du monde"** (*world knowledge*) — une représentation implicite des lois physiques et de la causalité. Sora (OpenAI, 2024) est la première démonstration à grande échelle d'un tel encodage temporel, via un DiT opérant sur des *video patches* 3D.
+:::
 
 ### Points Clés à Retenir
 
@@ -24,9 +41,9 @@ Ces contraintes nécessitent que le modèle encode une véritable **"connaissanc
 ## 🔑 Synthèse du Chapitre 6
 
 * **Goodfellow et al. (2014)** : Introduction du cadre de la théorie des jeux pour la synthèse — duel Générateur / Discriminateur vers l'Équilibre de Nash.
-* **WGAN (Arjovsky 2017)** : Remplacement de la divergence JS par la distance de Wasserstein — premier fondement théorique de la stabilité GAN.
-* **Ho et al. (2020)** : Standardisation des DDPM — objectif de débruitage, paramétrage par prédiction du bruit.
-* **Kwon et al. (2026)** : Preuve de l'optimalité minimax de la diffusion pour les densités factorisables. Le Sparse Weight-Sharing (U-Net) est le mécanisme théorique clé.
-* **Mécanisme central** : Passage de l'estimation de densité explicite à l'échantillonnage par estimation de score $\nabla_\mathbf{x} \log p_t(\mathbf{x})$ — le score remplace la densité comme objet d'apprentissage.
-* **Trajectoire** : GANs → DDPM → LDM → DiT → génération vidéo cohérente. Chaque étape résout une limitation de la précédente.
+* **WGAN (Arjovsky 2017)** : Remplacement du verdict trop brutal par une distance plus progressive, ce qui stabilise mieux le duel.
+* **Ho et al. (2020)** : Standardisation des DDPM : apprendre à prédire le bruit ajouté pour pouvoir l'enlever.
+* **Kwon et al. (2026)** : Explication théorique du succès de la diffusion : les images ont une structure locale que les U-Net exploitent très bien.
+* **Mécanisme central** : On ne cherche plus forcément la formule exacte des données ; on apprend une direction utile pour revenir du bruit vers une donnée plausible.
+* **Trajectoire** : GANs → DDPM → LDM → DiT → génération vidéo cohérente. Chaque étape répond à une limite de la précédente.
 :::

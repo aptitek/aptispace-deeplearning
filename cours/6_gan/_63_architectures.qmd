@@ -1,6 +1,11 @@
 ## Architectures Avancées et Stabilisation des GANs
 
+Les GANs de base sont puissants mais nerveux. Les architectures avancées ajoutent des rails : certaines aident le modèle à mieux comprendre les images, d'autres donnent plus de contrôle, et d'autres rendent le duel plus stable.
+
+::: {.callout-note collapse="true"}
+## 🔍 Vue technique
 L'évolution des GANs est une histoire de stabilisation progressive : chaque architecture répond à une pathologie spécifique identifiée dans les GANs naïfs. Trois axes de progression dominent : les **biais structurels** (convolutions), le **contrôle de la synthèse** (style/conditioning), et la **régularisation théorique** (distance de Wasserstein).
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -38,14 +43,23 @@ _ganArch = {
 
 ### DCGAN : Les Convolutions comme Ancrage Structurel
 
+Un DCGAN donne au GAN les bons outils pour les images : au lieu de regarder les pixels comme une longue liste, il regarde des petits voisinages, comme un œil qui repère d'abord des contours et des textures.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Le DCGAN (*Deep Convolutional GAN*, Radford et al. 2015) est la première architecture systématiquement stable [@Radford2015arXiv]. Son apport fondamental : remplacer les couches entièrement connectées par des **convolutions** dans le générateur et le discriminateur. Ce choix force les deux réseaux à exploiter les corrélations spatiales locales plutôt que de traiter chaque pixel indépendamment.
 
 Le générateur DCGAN utilise des **convolutions transposées** (*transposed convolutions*) pour upsampler progressivement du bruit $\mathbf{z}$ vers l'image finale. Le discriminateur utilise des convolutions avec stride pour downsampler. Des **Batch Normalization** stabilisent les activations à chaque couche. Les fonctions d'activation ReLU (générateur) et Leaky ReLU (discriminateur) complètent le design.
 
 Cette inductive bias spatiale réduit drastiquement les oscillations et le mode collapse pour la génération d'images, établissant les convolutions comme composante standard des GANs visuels.
+:::
 
 ### StyleGAN : Découplage Style–Contenu
 
+StyleGAN sépare ce qui change la structure générale d'une image de ce qui change son apparence fine. C'est comme régler séparément la pose d'un portrait, l'éclairage, la texture de peau et la couleur des cheveux.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 StyleGAN (Karras et al. 2018, 2019) représente un saut qualitatif majeur en réarchitecturant fondamentalement le générateur pour découpler **style** et **contenu** [@Chen2026] :
 
 * **Mapping Network** : Un MLP de 8 couches transforme le vecteur de bruit $\mathbf{z}$ en un vecteur de style intermédiaire $\mathbf{w} \in \mathcal{W}$. Cet espace $\mathcal{W}$ est plus linéaire et disentangled que $\mathcal{Z}$.
@@ -53,17 +67,27 @@ StyleGAN (Karras et al. 2018, 2019) représente un saut qualitatif majeur en ré
 * **Progressive Growing** : L'entraînement commence sur de petites résolutions (4×4) et augmente progressivement jusqu'à 1024×1024, permettant au réseau d'abord d'apprendre la structure globale, puis les détails.
 
 Cette architecture permet un **contrôle sémantique granulaire** : les couches basses du générateur contrôlent la structure haute fréquence (poses, formes) tandis que les couches hautes contrôlent les textures fines (couleur, éclairage).
+:::
 
 ### cGAN : Conditionnement et Synthèse Dirigée
 
+Un cGAN ajoute une consigne au faussaire : "génère un chat", "transforme cette esquisse", ou "augmente la résolution". Le critique vérifie alors deux choses : l'image est-elle réaliste, et respecte-t-elle la consigne ?
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Les GANs Conditionnels (*conditional GANs*) ajoutent une information de condition $\mathbf{c}$ (classe, texte, image) à la fois au générateur et au discriminateur [@CAISGAN] :
 
 $$G(\mathbf{z}, \mathbf{c}) \to \hat{\mathbf{x}}, \qquad D(\mathbf{x}, \mathbf{c}) \to [0,1]$$
 
 Le discriminateur ne juge plus seulement si $\mathbf{x}$ est réaliste, mais si $(\mathbf{x}, \mathbf{c})$ est une paire cohérente. Les cGANs permettent la génération contrôlée : image-to-image (pix2pix), texte-to-image (première génération), ou super-résolution conditionnée sur une image basse résolution.
+:::
 
 ### WGAN : La Distance de Wasserstein comme Régulateur Théorique
 
+Le WGAN change la manière de mesurer l'écart entre les vrais exemples et les faux. Au lieu d'un verdict brutal, il donne une distance plus progressive, comme mesurer combien de travail il faudrait pour transformer un tas de sable en un autre tas.
+
+::: {.callout-note collapse="true"}
+## 🔢 Distance de Wasserstein et WGAN-GP
 La critique théorique la plus fondamentale des GANs originaux identifie la divergence de Jensen-Shannon comme source d'instabilité [@Arjovsky2017arXiv]. Quand $p_0$ et $p_G$ ont des supports disjoints (fréquent en haute dimension), la divergence JS est constante ($\log 2$) partout sauf sur leur intersection — le gradient est donc nul, même si les distributions sont très éloignées.
 
 Le WGAN substitue la **Distance de Wasserstein** (ou Earth Mover's Distance) comme objectif [@WikiWGAN] :
@@ -77,11 +101,17 @@ Contrairement à la divergence JS, $W$ est continue et différentiable même qua
 $$\mathcal{L}_{\text{GP}} = \lambda \, \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat{\mathbf{x}}}}\!\left[\left(\|\nabla_{\hat{\mathbf{x}}} D(\hat{\mathbf{x}})\|_2 - 1\right)^2\right]$$
 
 où $\hat{\mathbf{x}}$ est tiré uniformément sur les segments reliant des points réels et générés.
+:::
 
 ### Normalisation Spectrale : Stabilité sans Contrainte Explicite
 
+La normalisation spectrale limite la violence des réactions du discriminateur. C'est comme régler le volume maximal du critique pour qu'il donne encore un signal utile au générateur.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 La **Normalisation Spectrale** (Miyato et al. 2018) offre une alternative élégante à la pénalité de gradient [@DaviesMeyer2026; @Cosgrove2018]. Elle contrôle la constante de Lipschitz du discriminateur en normalisant chaque couche de poids $\mathbf{W}$ par sa **valeur singulière maximale** $\sigma_{\max}(\mathbf{W})$ :
 
 $$\hat{\mathbf{W}} = \frac{\mathbf{W}}{\sigma_{\max}(\mathbf{W})}$$
 
 $\sigma_{\max}$ est estimée efficacement par l'algorithme de **power iteration**, qui converge en quelques itérations. Cette normalisation garantit que chaque couche est 1-Lipschitz, rendant l'ensemble du réseau K-Lipschitz (pour un $K$ contrôlable). La normalisation spectrale s'applique aussi facilement au discriminateur qu'au générateur, et est devenue un standard de stabilisation [@SemanticScholarSNGAN].
+:::

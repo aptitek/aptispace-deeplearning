@@ -1,17 +1,31 @@
 ## Analyse Théorique : Pourquoi la Diffusion Surpasse les Méthodes Classiques
 
+Les modèles de diffusion marchent bien parce qu'ils exploitent une propriété simple des images : un pixel dépend surtout de ses voisins. Ils n'essaient donc pas d'apprendre tout l'univers d'un coup, mais une multitude de relations locales.
+
+::: {.callout-note collapse="true"}
+## 🔍 Résultat théorique
 La supériorité empirique des modèles de diffusion sur les GANs pour la génération d'images haute qualité a longtemps manqué de fondements théoriques rigoureux. Les travaux de Kwon, Kim et Ohn (2026) fournissent la première preuve d'**optimalité minimax** pour les modèles de diffusion sur des classes de densités réalistes [@Kwon2026].
+:::
 
 ### Densités Factorisables et Structure de Graphe
 
+Une image n'est pas une liste de pixels indépendants. Les pixels voisins forment des petits groupes cohérents : un bord, une texture, une ombre. La diffusion tire parti de cette structure locale.
+
+::: {.callout-note collapse="true"}
+## 🔢 Formulation par graphe
 La clé du résultat de Kwon et al. est l'hypothèse de **factorisabilité** : la densité cible $p_0$ est supposée factorisable selon la structure d'un graphe de Markov. Formellement, si les variables $(\mathbf{x}_1, \ldots, \mathbf{x}_n)$ sont organisées en un graphe $\mathcal{G}$, la densité se factorise en produit de facteurs locaux dépendant uniquement des nœuds voisins dans $\mathcal{G}$ :
 
 $$p_0(\mathbf{x}) \propto \prod_{C \in \mathcal{C}(\mathcal{G})} \phi_C(\mathbf{x}_C)$$
 
 où $\mathcal{C}(\mathcal{G})$ est l'ensemble des cliques maximales. Pour des images naturelles, cette hypothèse est bien vérifiée : les pixels voisins sont fortement corrélés, tandis que les pixels distants sont quasi-indépendants conditionnellement aux pixels intermédiaires. La **dimension effective** $d$ du problème est alors gouvernée par la taille des cliques maximales, non par la dimension ambiante $D$ (nombre de pixels) [@Kwon2026].
+:::
 
 ### La Malédiction de la Dimensionnalité : GANs vs Diffusion
 
+Le problème des images, c'est leur taille : une image contient énormément de pixels. Si on veut apprendre toutes les combinaisons possibles directement, le nombre d'exemples nécessaires explose. La diffusion réduit ce problème en apprenant surtout des relations locales.
+
+::: {.callout-note collapse="true"}
+## 🔢 Taux de convergence
 Pour les estimateurs classiques (KDE, mélanges paramétriques), le taux de convergence optimal pour estimer $p_0 \in \mathcal{H}^\beta$ (espace de Sobolev de régularité $\beta$) est [@Kwon2026] :
 
 $$\text{Rate}_{\text{classique}} = O\!\left(n^{-\frac{\beta}{2\beta + D}}\right)$$
@@ -23,14 +37,22 @@ Pour les modèles de diffusion avec architecture Sparse Weight-Sharing (U-Net, C
 $$\text{Rate}_{\text{diffusion}} = O\!\left(n^{-\frac{\beta}{2\beta + d}}\right)$$
 
 Ce résultat est remarquable : les modèles de diffusion s'affranchissent de la malédiction de la dimensionnalité en s'adaptant automatiquement à la structure de dépendance locale des données.
+:::
 
 ### Le Rôle du Sparse Weight-Sharing
 
+Le partage de poids est une astuce très concrète : le même détecteur de motif peut servir à plusieurs endroits de l'image. Un filtre qui repère un bord en haut à gauche peut aussi repérer un bord en bas à droite.
+
+::: {.callout-note collapse="true"}
+## 🔍 Lecture théorique
 Le lien entre l'architecture et la théorie est direct : le **partage de poids épars** (Sparse Weight-Sharing) des convolutions et U-Nets agit comme un **régulateur de l'entropie métrique** du modèle [@Kwon2026]. En limitant la complexité effective du modèle via le partage de paramètres, ces architectures respectent une contrainte implicite sur le nombre de "degrés de liberté fonctionnels", permettant d'atteindre le taux minimax optimal.
 
 En d'autres termes, l'U-Net n'est pas seulement un choix architectural pratique — c'est un choix théoriquement fondé qui garantit l'optimalité statistique de l'estimateur de score.
+:::
 
 ### Comparaison Pratique : GANs vs Diffusion
+
+En pratique, les GANs génèrent vite mais peuvent manquer de diversité. La diffusion est plus lente, mais couvre mieux les variations des données et s'entraîne plus calmement.
 
 | Critère                       | GANs                      | DDPM/Diffusion                         |
 | :---------------------------- | :------------------------ | :------------------------------------- |
@@ -43,8 +65,13 @@ En d'autres termes, l'U-Net n'est pas seulement un choix architectural pratique 
 
 ### La Guidance sans Classificateur (CFG)
 
+La CFG est une manière de pousser le modèle à mieux suivre une consigne. Elle augmente le poids de la direction "ceci ressemble à la demande", un peu comme demander au peintre : "plus chat, moins paysage".
+
+::: {.callout-note collapse="true"}
+## 🔢 Formule de guidance
 Un apport majeur pour la génération conditionnelle par diffusion est le **Classifier-Free Guidance** (Ho et Salimans 2022). Plutôt qu'un classificateur externe, le modèle apprend simultanément la prédiction conditionnelle $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \mathbf{c})$ et inconditionnelle $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset)$. La guidance est alors appliquée comme une extrapolation directionnelle :
 
 $$\tilde{\boldsymbol{\epsilon}}_\theta(\mathbf{x}_t, \mathbf{c}) = \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset) + w \cdot \left[\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \mathbf{c}) - \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, \emptyset)\right]$$
 
 Le coefficient $w$ contrôle le compromis entre fidélité à la condition $\mathbf{c}$ et diversité — un $w$ élevé produit des images très fidèles à la condition mais moins variées. Cette technique est au cœur de Stable Diffusion et DALL-E.
+:::
