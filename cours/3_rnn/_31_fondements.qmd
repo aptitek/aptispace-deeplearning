@@ -377,11 +377,10 @@ layoutAdjustRNN = {
 
 ### Topologies fondamentales : Elman et Jordan
 
-Deux architectures fondamentales définissent le comportement de la récurrence [@Modelisation2024; @Franck2024] :
+Deux architectures définissent le comportement de la récurrence [@Modelisation2024; @Franck2024] :
 
-* **Réseau d'Elman :** L'état latent $\mathbf{h}_t$ dépend de l'entrée actuelle $\mathbf{x}_t$ et de l'état latent précédent $\mathbf{h}_{t-1}$. C'est la topologie standard, privilégiant la continuité de la dynamique interne.
-
-* **Réseau de Jordan :** La mise à jour de $\mathbf{h}_t$ s'appuie sur la **sortie précédente** $\mathbf{y}_{t-1}$ plutôt que sur l'état caché. Configuration pertinente lorsque les performances observées sont les meilleurs prédicteurs de l'état futur (ex. : commande de robot boucle fermée).
+* **Réseau d'Elman (Standard) :** L'état caché $\mathbf{h}_t$ dépend de l'entrée actuelle $\mathbf{x}_t$ et de l'état caché précédent $\mathbf{h}_{t-1}$, privilégiant la dynamique interne.
+* **Réseau de Jordan :** L'état caché $\mathbf{h}_t$ s'appuie sur la **sortie précédente** $\mathbf{y}_{t-1}$ au lieu de l'état caché (ex. : commande de robot).
 
 ::: {.card .card-window .mb-4}
 
@@ -473,13 +472,13 @@ renderRNNUnrolled = {
 
 ### Topologies séquentielles : modes d'entrée-sortie
 
-Les RNN s'adaptent à quatre configurations principales selon la relation entre la séquence d'entrée et la séquence de sortie [@maurock2020] :
+Les RNN s'adaptent à quatre configurations selon la relation entre la séquence d'entrée et de sortie [@maurock2020] :
 
-| Mode                      | Description                        | Application                          |
-| :------------------------ | :--------------------------------- | :----------------------------------- |
-| **Un-à-Un**               | Pas de récurrence (MLP classique)  | Classification d'image               |
-| **Un-à-Plusieurs**        | Une entrée, une séquence de sortie | Génération de texte, légende d'image |
-| **Plusieurs-à-Un**        | Séquence d'entrée, une sortie      | Classification de sentiment          |
-| **Plusieurs-à-Plusieurs** | Séquences en entrée et sortie      | Traduction, étiquetage de séquence   |
+| Mode | Description | Application |
+| :--- | :--- | :--- |
+| **Un-à-Un** | Pas de récurrence | MLP classique, classification d'image |
+| **Un-à-Plusieurs** | Une entrée, séquence de sortie | Légende d'image, génération de texte |
+| **Plusieurs-à-Un** | Séquence d'entrée, une sortie | Classification de sentiment |
+| **Plusieurs-à-Plusieurs** | Séquences d'entrée et de sortie | Traduction automatique |
 
-Cette flexibilité architecturale est fondamentale : elle explique pourquoi les RNN ont dominé le traitement du langage naturel pendant une décennie, avant d'être supplantés par les Transformers.
+Cette flexibilité explique la domination passée des RNN en NLP avant l'avènement des Transformers.

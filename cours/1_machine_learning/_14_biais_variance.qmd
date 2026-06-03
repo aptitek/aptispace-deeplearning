@@ -176,10 +176,15 @@ graph4 = {
 
 ### Le Phénomène de Double Descente
 
-Historiquement, le compromis entre ces deux erreurs est représenté par une courbe en U : on diminue le biais en augmentant la complexité du modèle, jusqu'au point de bascule où la variance explose (sur-apprentissage).
+La courbe classique en U montre que la variance augmente avec la complexité. Cependant, le Deep Learning montre parfois une **Double Descente** (la perte diminue de nouveau pour de très grands modèles).
 
-Cependant, un phénomène moderne crucial propre au Deep Learning, la **Double Descente**, semble défier cette courbe classique. Toutefois, selon l'hypothèse de l'unfolding [@comesana_double_descent], ce phénomène est souvent un "artefact représentationnel" ou visuel. Il émerge principalement lors d'un *scaling* composite (lorsque l'on fait varier simultanément la capacité du modèle et la taille de l'ensemble de données). La recherche démontre que si l'on fait varier ces axes de complexité de manière indépendante, le modèle réadopte des motifs classiques en U ou en L [@comesana_double_descent].
+::: {.callout-note collapse="true"}
+## 🔍 Explication de la Double Descente et de l'Unfolding
+
+Selon l'hypothèse de l'unfolding, ce phénomène est souvent un artefact visuel lié à un *scaling* composite (variation simultanée de la taille du modèle et des données) [@comesana_double_descent]. Si l'on fait varier la complexité et les données indépendamment, le modèle réadopte des motifs classiques en U ou en L [@comesana_double_descent].
+:::
 
 ### L'Impact Stratégique
 
-Un décideur technique doit savoir diagnostiquer ces symptômes cliniques : une erreur d'entraînement extrêmement basse couplée à une erreur de test élevée est le signe clinique indubitable d'une variance excessive [@ibm_overfitting; @wandb_learning_curves]. Comprendre que la complexité est multidimensionnelle permet d'éviter les interprétations erronées des performances en phase d'interpolation et d'ajuster l'architecture en conséquence [@yates_cross_validation].
+* **Diagnostic :** Une erreur d'entraînement très faible couplée à une erreur de test élevée indique une variance excessive [@ibm_overfitting; @wandb_learning_curves].
+* **Ajustement :** Il faut adapter l'architecture ou régulariser le modèle plutôt que de sur-interpréter les performances [@yates_cross_validation].

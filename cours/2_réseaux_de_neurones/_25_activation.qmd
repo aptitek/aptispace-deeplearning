@@ -3,11 +3,16 @@
 Les fonctions d'activation agissent comme des interrupteurs ou des variateurs, dictant la dynamique de transmission du signal au sein du réseau [@DeeplyLearning_Activation; @Daniella2024]. Elles sont le cœur de la non-linéarité et se divisent en deux grandes familles.
 
 * **Les fonctions classiques et leurs limitations :**
-* **Sigmoïde et TanH :** Inspirées par la biologie, elles offrent une courbe caractéristique en "S". Cependant, leur défaut majeur est qu'elles saturent pour les valeurs extrêmes, ce qui paralyse l'apprentissage lors du calcul des gradients [@RisingScholars_Sigmoid].
+  * **Sigmoïde & TanH :** Courbes en "S" d'inspiration biologique. Elles saturent aux valeurs extrêmes, ce qui paralyse l'apprentissage en bloquant le gradient [@RisingScholars_Sigmoid].
+  * **ReLU (Rectified Linear Unit) :** Simple et rapide ($\max(0, x)$), elle évite la saturation positive mais souffre du "Dying ReLU" (extinction définitive de neurones) [@Youtube_NonLinearite; @CS231n_Part1; @Ultralytics_LeakyReLU].
+  * **Softmax :** Utilisée en sortie pour convertir des scores bruts en distribution de probabilités sur des classes mutuellement exclusives [@Ultralytics_Softmax].
 
-* **ReLU (Rectified Linear Unit) :** Sa règle est d'une grande simplicité (renvoyer $x$ si $x > 0$, sinon $0$), ce qui a révolutionné le domaine. Elle favorise la parcimonie en créant des activations sélectives et évite la saturation positive. Néanmoins, elle souffre du problème du "Dying ReLU", où des neurones recevant uniquement des entrées négatives s'éteignent définitivement et ne se mettent plus à jour [@Youtube_NonLinearite; @CS231n_Part1; @Ultralytics_LeakyReLU].
+::: {.callout-note collapse="true"}
+## 🔍 Détails et Limites des Fonctions Classiques
 
-* **Softmax :** Utilisée majoritairement sur la couche de sortie, elle est réservée aux classifications où les classes sont mutuellement exclusives, contrairement à la Sigmoïde qui traite les étiquettes de manière indépendante. Elle transforme les scores bruts en une distribution de probabilités [@Ultralytics_Softmax].
+* **Saturation du Gradient :** Pour de très grandes ou très petites valeurs de $x$, la dérivée de Sigmoïde et TanH tend vers $0$. Lors de la rétropropagation, ce terme multiplicatif annule le gradient, empêchant la mise à jour des poids précédents.
+* **Problème du "Dying ReLU" :** Si un neurone ReLU reçoit une entrée négative, son gradient est nul. Si ce cas se généralise (poids mal initialisés ou taux d'apprentissage trop élevé), le neurone s'éteint définitivement.
+:::
 
 ::: {.card .card-window .mb-4 .activation-simulator}
 
@@ -58,10 +63,16 @@ _updateClassic = {
 ```
 
 * **Les fonctions modernes :**
-* **GELU (Gaussian Error Linear Unit) :** Devenue aujourd'hui un pilier des architectures avancées comme les Transformers, GELU is une fonction "douce" et probabiliste. Plutôt que de bloquer brutalement le signal négatif comme le ferait ReLU, elle le pondère subtilement, permettant une meilleure fluidité du gradient [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
+  * **GELU (Gaussian Error Linear Unit) :** Fonction probabiliste douce pondérant le signal négatif, pilier des Transformers car elle maintient un flux de gradient fluide [@Youtube_GELU; @Wiki_Transformeur; @Cortial_OpenStudio].
+  * **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, permettant aux réseaux profonds de converger sans normalisation externe [@PlanificationLR; @Stanford_CS230].
+  * **Swish :** Version lissée de ReLU qui laisse passer les petites valeurs négatives pour éviter les coupures abruptes [@Lim2026].
 
-* **SELU (Scaled Exponential Linear Unit) :** Conçue pour introduire des propriétés auto-normalisantes, elle permet aux réseaux très profonds de converger sans nécessiter de couches de normalisation externes complexes [@PlanificationLR; @Stanford_CS230].
-* **Swish :** Développée pour lisser l'activation, elle permet à de petites valeurs négatives de passer, ce qui surpasse souvent ReLU dans les architectures très profondes en évitant les coupures d'information abruptes [@Lim2026].
+::: {.callout-note collapse="true"}
+## 🔍 Fonctionnement des Activations Modernes
+
+* **GELU et Probabilité :** Elle multiplie l'entrée $x$ par la fonction de répartition d'une loi normale standard $\Phi(x)$. Le neurone est donc activé de manière déterministe mais selon son importance probabiliste relative.
+* **Auto-normalisation (SELU) :** En combinant un facteur d'échelle $\lambda$ et un paramètre $\alpha$ sur une fonction ELU, SELU garantit que si la moyenne et la variance des activations d'une couche sont proches de $0$ et $1$, elles le restent après passage dans la couche suivante.
+:::
 
 ::: {.callout-note collapse="true"}
 ## 🔢 Formule de l'activation Swish

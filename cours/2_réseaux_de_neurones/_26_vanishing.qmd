@@ -17,12 +17,9 @@ Si $\forall k, |w^k \sigma'(z^{k-1})| < 1$, alors le terme de produit $\prod_{k=
 Si $\forall k, |w^k \sigma'(z^{k-1})| > 1$, alors ce terme grandit exponentiellement (gradients explosifs).
 :::
 
-* **Illustration concrète avec l'analogie de la transmission humaine :**
-* Imaginez une chaîne de transmission composée de 10 personnes en ligne.
-
-* **Cas d'évanouissement :** Si chaque personne chuchote le message en divisant le volume de la voix par deux (ce qui équivaut à une dérivée constante de $0.5$), la dixième personne transmettra un signal d'une intensité de $0.5^{10} \approx 0.001$. À l'arrivée, l'instruction originale est totalement inaudible.
-
-* **Cas d'explosion :** Si, au contraire, chaque personne utilise un mégaphone pour doubler le volume du message reçu (dérivée de $2$), la dixième personne émettra un signal $2^{10} = 1024$ fois plus fort. Le message original est alors totalement déformé et assourdissant.
+* **Illustration par la transmission de la parole :**
+  * **Évanouissement :** Si 10 personnes se chuchotent un message en divisant le volume par deux à chaque étape (dérivée de $0.5$), la dernière personne recevra $0.5^{10} \approx 0.001$ du signal initial. Le message devient inaudible.
+  * **Explosion :** Si chaque personne double le volume reçu (dérivée de $2$), la dernière personne émettra un signal $2^{10} = 1024$ fois plus fort. Le message est saturé et déformé.
 
 ```{ojs}
 //| panel: input

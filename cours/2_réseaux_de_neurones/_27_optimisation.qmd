@@ -36,10 +36,9 @@ _batchNorm = {
 }
 ```
 
-* **L'utilisation de la fonction ReLU et l'initialisation des poids :**
-* En évitant la saturation pour les valeurs positives, la fonction ReLU maintient un flux de gradient sain à travers les couches.
-
-* L'initialisation des poids joue également un rôle fondamental. Une approche comme la *Sparse Initialization* (initialisation creuse), qui limite par exemple à 15 le nombre de connexions non nulles par neurone, prévient la saturation précoce et favorise la différenciation des unités de calcul [@iNeuron_XavierHe; @Kumar2017; @Stanford_CS230].
+* **Fonction ReLU & Initialisation :**
+  * **Flux du gradient :** Contrairement à Sigmoïde/TanH, ReLU ne sature pas pour les valeurs positives, maintenant un flux de gradient stable [@iNeuron_XavierHe; @Kumar2017; @Stanford_CS230].
+  * **Initialisation des poids :** Des techniques comme la *Sparse Initialization* (limitation des connexions non nulles par neurone) préviennent la saturation précoce [@Stanford_CS230].
 
 ### Batch Normalization : stabiliser le paysage d'optimisation
 
@@ -65,17 +64,19 @@ Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algo
    *(où $\gamma$ et $\beta$ sont deux paramètres apprenables par le réseau pour restituer le pouvoir de représentation)*
 :::
 
-* **L'ordre stratégique :** La pratique standard place la BN entre la transformation linéaire et la fonction d'activation : $\text{Linear} \to \text{BN} \to \text{Activation}$. Cet ordre assure que les entrées de la non-linéarité sont normalisées avant leur application, maximisant la région de sensibilité de la fonction d'activation.
+* **Intégration de la Batch Normalization :**
+  * **Ordre standard :** $\text{Linear} \to \text{BN} \to \text{Activation}$ (maximise la sensibilité de la non-linéarité).
+  * **Bénéfices :** Permet des taux d'apprentissage élevés, réduit la dépendance à l'initialisation des poids et régularise légèrement via les mini-lots.
 
-* **Effets bénéfiques :** La BN permet d'utiliser des taux d'apprentissage plus élevés sans divergence, réduit la dépendance à l'initialisation des poids, et agit comme un régularisateur implicite en introduisant du bruit à travers la variabilité des mini-lots.
+::: {.callout-note collapse="true"}
+## 🔍 L'approche par Portes : LSTM et GRU
 
-* **L'approche architecturale : Les réseaux récurrents avec "portes" (LSTM et GRU) :**
-* Face aux données séquentielles, les réseaux profonds classiques souffrent terriblement de la disparition du gradient sur la longueur.
-* Les architectures spécialisées introduisent le concept de "portes" (gates), comme la porte d'oubli ou la porte de mise à jour. Ces mécanismes agissent comme des valves mathématiques.
+Dans les réseaux récurrents profonds (séquences longues), les architectures spécialisées introduisent des **portes** (gates) (comme dans le LSTM et GRU). Ces mécanismes agissent comme des valves mathématiques contrôlant le flux d'informations :
+* Elles permettent de préserver l'information importante sur de longues distances temporelles.
+* Elles créent des **voies rapides** (l'état de la cellule) où le gradient peut s'écouler sans atténuation, contournant ainsi structurellement la disparition du gradient [@Bourdois2019; @Rosique2017; @ApX_LSTM_GRU; @Scribouillard_Recurrente].
+:::
 
-* Elles permettent de préserver l'information pertinente sur de très longues distances temporelles, contournant ainsi physiquement la disparition du gradient en créant des "voies rapides" de transmission de l'information (l'état de la cellule) [@Bourdois2019; @Rosique2017; @ApX_LSTM_GRU; @Scribouillard_Recurrente].
-
-Ces différentes innovations sont ce qui a permis de transformer des modèles purement théoriques en véritables outils de production, capables aujourd'hui de révolutionner le traitement du langage naturel ou des domaines complexes comme la planification urbaine à l'échelle planétaire [@Socher2018; @Wang2023; @AgilityEffect2025; @BaraudSerfaty2019; @Daoudi2018].
+Ces innovations ont permis d'industrialiser les réseaux profonds pour des tâches complexes (NLP, planification urbaine...) [@Socher2018; @Wang2023; @AgilityEffect2025; @BaraudSerfaty2019; @Daoudi2018].
 
 ```{mermaid}
 graph LR
