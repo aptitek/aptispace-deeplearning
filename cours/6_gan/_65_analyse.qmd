@@ -1,4 +1,4 @@
-## Analyse Théorique : Pourquoi la Diffusion Surpasse les Méthodes Classiques
+## Pourquoi la Diffusion Domine
 
 Les modèles de diffusion marchent bien parce qu'ils exploitent une propriété simple des images : un pixel dépend surtout de ses voisins. Ils n'essaient donc pas d'apprendre tout l'univers d'un coup, mais une multitude de relations locales.
 
@@ -20,7 +20,7 @@ $$p_0(\mathbf{x}) \propto \prod_{C \in \mathcal{C}(\mathcal{G})} \phi_C(\mathbf{
 où $\mathcal{C}(\mathcal{G})$ est l'ensemble des cliques maximales. Pour des images naturelles, cette hypothèse est bien vérifiée : les pixels voisins sont fortement corrélés, tandis que les pixels distants sont quasi-indépendants conditionnellement aux pixels intermédiaires. La **dimension effective** $d$ du problème est alors gouvernée par la taille des cliques maximales, non par la dimension ambiante $D$ (nombre de pixels) [@Kwon2026].
 :::
 
-### La Malédiction de la Dimensionnalité : GANs vs Diffusion
+### Dimensionnalité et Diffusion
 
 Le problème des images, c'est leur taille : une image contient énormément de pixels. Si on veut apprendre toutes les combinaisons possibles directement, le nombre d'exemples nécessaires explose. La diffusion réduit ce problème en apprenant surtout des relations locales.
 
@@ -50,7 +50,7 @@ Le lien entre l'architecture et la théorie est direct : le **partage de poids �
 En d'autres termes, l'U-Net n'est pas seulement un choix architectural pratique — c'est un choix théoriquement fondé qui garantit l'optimalité statistique de l'estimateur de score.
 :::
 
-### Comparaison Pratique : GANs vs Diffusion
+### Comparaison Pratique
 
 En pratique, les GANs génèrent vite mais peuvent manquer de diversité. La diffusion est plus lente, mais couvre mieux les variations des données et s'entraîne plus calmement.
 

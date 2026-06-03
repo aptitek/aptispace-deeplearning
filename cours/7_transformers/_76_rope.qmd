@@ -1,4 +1,4 @@
-## Rotary Position Embedding (RoPE) : Géométrie Rotationnelle
+## Géométrie Rotationnelle RoPE
 
 RoPE encode la position en faisant tourner les vecteurs. Deux mots proches ne sont pas seulement placés à des endroits différents : leur écart devient un angle que l'attention peut lire directement.
 
@@ -23,7 +23,7 @@ Cette propriété garantit que l'attention capturée entre deux tokens dépend d
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔄 Simulation : RoPE — Rotation des Tokens dans l'Espace Complexe
+🔄 Rotation RoPE
 ::::
 
 :::: {.card-control-row .sim-controls-row .flex-wrap .gap-2}
@@ -192,7 +192,7 @@ $$\mathbf{R}(m) \mathbf{q} = \begin{pmatrix} \cos(m\theta_1) & -\sin(m\theta_1) 
 La matrice $\mathbf{R}(m)$ est orthogonale et creuse — elle préserve la norme des vecteurs (les rotations ne changent pas la magnitude) et peut être calculée efficacement.
 :::
 
-### Implémentation dans LLaMA : Optimisation par Complexes
+### Optimisation par Complexes
 
 Dans LLaMA, RoPE est calculé de manière efficace en exploitant les nombres complexes. L'idée mathématique reste la même, mais l'implémentation évite des calculs inutiles.
 

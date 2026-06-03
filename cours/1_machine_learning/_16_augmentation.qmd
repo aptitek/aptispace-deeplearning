@@ -20,7 +20,7 @@ Pour enrichir artificiellement le jeu d'entraînement, on applique diverses tran
 ::: {.card .card-window .mb-4 .augmentation-simulator}
 
 :::: {.card-header}
-Augmentation de Données : Vue Machine
+🧪 Vue Machine
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -53,7 +53,7 @@ viewof augTransforms = Inputs.checkbox(
 ::::: {.col-md-7}
 :::::: {.card .border .m-0 .h-100}
 ::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-Image augmentée
+🖼️ Image Augmentée
 :::::::
 ::::::: {#augmentation-preview .card-body .augmentation-preview-shell}
 :::::::

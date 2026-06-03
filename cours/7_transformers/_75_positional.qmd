@@ -1,4 +1,4 @@
-## Encodage Positionnel : Restaurer l'Ordre dans le Parallélisme
+## Restaurer l'Ordre
 
 Un Transformer lit tous les mots en même temps. C'est rapide, mais il perd naturellement l'ordre ; l'encodage positionnel lui donne une boussole pour savoir qui vient avant qui.
 
@@ -26,7 +26,7 @@ Selon Kazemnejad (2019), un encodage positionnel optimal doit satisfaire quatre 
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🌊 Simulateur — Matrice d'Encodage Positionnel Sinusoïdal
+🌊 Matrice Positionnelle
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -69,7 +69,7 @@ _peViz = {
 }
 ```
 
-### L'Encodage Sinusoïdal : La Solution Originale
+### Encodage Sinusoïdal
 
 L'encodage sinusoïdal ressemble à une horloge à plusieurs aiguilles : certaines tournent vite pour les petites distances, d'autres lentement pour les grandes positions.
 
@@ -108,7 +108,7 @@ Ajouter la position au vecteur du mot garde une taille fixe. C'est plus économi
 Le choix de *sommer* l'encodage aux embeddings (plutôt que de concaténer) est une décision d'efficacité : la dimension du modèle reste constante ($d_{\text{model}}$), sans surcoût. Le modèle apprend à isoler l'information positionnelle dans certaines dimensions de l'espace [@Kazemnejad2019].
 :::
 
-### Embeddings de Position Appris : BERT et GPT
+### Positions Apprises
 
 Certains modèles apprennent une table de positions, comme une liste de places numérotées. Cela marche bien dans la longueur prévue, mais pas au-delà.
 
@@ -121,7 +121,7 @@ BERT et les premiers GPT remplacent l'encodage sinusoïdal fixe par des **embedd
 **Limite critique** : Ces embeddings souffrent d'une **incapacité à l'extrapolation**. Un modèle BERT entraîné sur 512 tokens n'a jamais vu la position 513 — le paramètre correspondant n'existe pas et l'inférence échoue. Le modèle est strictement limité à $T_{\max}$ tokens.
 :::
 
-### ALiBi : Biases d'Attention pour la Longueur Variable
+### ALiBi pour Longueur Variable
 
 ALiBi ne donne pas une fiche à chaque position. Il ajoute plutôt une pénalité avec la distance : plus deux tokens sont éloignés, moins ils sont favorisés au départ.
 

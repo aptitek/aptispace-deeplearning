@@ -1,4 +1,4 @@
-## PEFT, LoRA et Alignement : L'Expertise à Grande Échelle
+## PEFT, LoRA et Alignement
 
 Le fine-tuning complet coûte cher. Le Parameter-Efficient Fine-Tuning (PEFT) cherche une idée plus légère : garder le grand modèle presque intact et n'entraîner que de petits modules d'adaptation.
 
@@ -10,7 +10,7 @@ Le fine-tuning complet d'un LLM de 7 milliards de paramètres requiert plusieurs
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔑 Simulateur — Décomposition LoRA : W vs B·A
+🔑 Décomposition LoRA
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -41,7 +41,7 @@ _loraViz = {
 }
 ```
 
-### LoRA : Adaptation par Matrices de Bas Rang
+### LoRA et Bas Rang
 
 LoRA ajoute de petites pièces entraînables sur un modèle gelé. C'est comme corriger une grande machine avec quelques réglages externes plutôt que de reconstruire tout le moteur.
 
@@ -69,7 +69,7 @@ où $\mathbf{A} \in \mathbb{R}^{r \times d}$, $\mathbf{B} \in \mathbb{R}^{d \tim
 | `dropout`          | Régularisation des matrices A, B                 | 0.05–0.1               |
 :::
 
-### QLoRA : Quantification et Entraînement sur GPU Grand Public
+### QLoRA sur GPU Grand Public
 
 QLoRA pousse l'économie plus loin : le modèle de base est stocké en très basse précision, et seuls les petits adaptateurs restent entraînés finement.
 
@@ -84,7 +84,7 @@ QLoRA pousse l'économie plus loin : le modèle de base est stocké en très bas
 L'inférence QLoRA reste en 4 bits ; seuls les adaptateurs LoRA sont en précision complète (bf16). Les performances sont comparables au fine-tuning complet en bf16 sur les benchmarks standards [@Dettmers2023].
 :::
 
-### L'Alignement : Du Prédicteur Statistique à l'Agent Professionnel
+### Alignement Professionnel
 
 Après le fine-tuning, il reste une question : le modèle répond-il de façon utile, sûre et conforme aux attentes humaines ? L'alignement sert à régler ce comportement.
 
@@ -110,7 +110,7 @@ Dans les déploiements production, les modèles sont continuellement mis à jour
 :::
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🔑 Synthèse du Chapitre 8 : Le Cycle de Vie d'un LLM
+## 🔑 Cycle de Vie d'un LLM
 
 * **Pré-entraînement** : Le modèle apprend une culture générale en lisant beaucoup de texte et en devinant la suite.
 * **Lois d'échelle** : Choisir la bonne taille de modèle dépend aussi du nombre de tokens disponibles et du coût futur d'utilisation.

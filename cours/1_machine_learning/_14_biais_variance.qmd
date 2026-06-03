@@ -1,4 +1,4 @@
-## La Physique du Modèle : Le Compromis Biais-Variance
+## Le Compromis Biais-Variance
 
 Trouver le bon modèle est une affaire de compromis : soit il est trop rigide et rate les grandes tendances (le **biais**), soit il est trop fluide et mémorise les moindres détails inutiles, y compris le bruit (la **variance**).
 
@@ -44,7 +44,7 @@ Dans notre analogie, la matière du moule est ici beaucoup trop liquide et réac
 
 ::: {.card .card-window}
 :::: {.card-header}
-Généralisation : Le compromis Biais / Variance
+⚖️ Biais et Variance
 ::::
 
 :::: {.card-control-row .d-flex .flex-column .gap-2}

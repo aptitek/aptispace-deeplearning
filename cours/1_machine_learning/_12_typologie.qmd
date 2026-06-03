@@ -2,7 +2,7 @@
 
 Avant de choisir un modèle, il faut répondre à une question : **qu'est-ce qu'on a comme données, et qu'est-ce qu'on veut faire avec ?** La réponse détermine tout. C'est comme choisir le bon outil avant de commencer un chantier — un marteau ne remplace pas une scie [@bmc_bias_variance].
 
-### Cartographie des Fondations : Les Quatre Paradigmes de l'Apprentissage
+### Quatre Paradigmes d'Apprentissage
 
 Les modèles d'apprentissage se structurent autour de quatre grands paradigmes, selon la nature des données d'entraînement et le mode d'interaction avec l'environnement :
 
@@ -11,7 +11,7 @@ Les modèles d'apprentissage se structurent autour de quatre grands paradigmes, 
 :::: {.g-col-12 .g-col-md-6}
 ::::: {.card .card-concept .h-100}
 :::::: {.card-header}
-Apprentissage Supervisé [Supervisé]{.badge .bg-primary .float-end}
+🎯 Apprentissage Supervisé
 ::::::
 :::::: {.card-body}
 Apprendre avec un enseignant qui donne les bonnes réponses.
@@ -34,7 +34,7 @@ L'algorithme s'entraîne sur des couples entrée-sortie étiquetés (contenant l
 :::: {.g-col-12 .g-col-md-6}
 ::::: {.card .card-concept .h-100}
 :::::: {.card-header}
-Apprentissage Non-Supervisé [Non-Supervisé]{.badge .bg-success .float-end}
+🧩 Apprentissage Non Supervisé
 ::::::
 :::::: {.card-body}
 Apprendre à trouver des structures par soi-même, sans guide.
@@ -57,7 +57,7 @@ L'algorithme reçoit des données brutes sans étiquettes et cherche à découvr
 :::: {.g-col-12 .g-col-md-6}
 ::::: {.card .card-concept .h-100}
 :::::: {.card-header}
-Apprentissage Semi-Supervisé [Semi-Supervisé]{.badge .bg-warning .float-end}
+🌗 Apprentissage Semi-Supervisé
 ::::::
 :::::: {.card-body}
 Utiliser quelques exemples corrigés pour s'aider à trier une montagne de données brutes.
@@ -80,7 +80,7 @@ Cette approche hybride associe une petite quantité de données étiquetées à 
 :::: {.g-col-12 .g-col-md-6}
 ::::: {.card .card-concept .h-100}
 :::::: {.card-header}
-Apprentissage par Renforcement [Renforcement]{.badge .bg-danger .float-end}
+🎮 Apprentissage par Renforcement
 ::::::
 :::::: {.card-body}
 Apprendre par l'action, l'erreur, et la récompense.

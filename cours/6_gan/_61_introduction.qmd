@@ -1,4 +1,4 @@
-## L'Apprentissage Génératif : Modéliser la Distribution des Données
+## Modéliser la Distribution
 
 Un classifieur apprend à reconnaître. Un modèle génératif apprend à **inventer des exemples crédibles** — comme un peintre qui a vu assez de tableaux pour en créer un nouveau dans le même style.
 
@@ -9,7 +9,7 @@ L'idée centrale est simple : au lieu de seulement dire "ceci est un chat", le m
 Le passage de l'apprentissage discriminatif à l'apprentissage génératif représente un saut conceptuel majeur. Là où un classificateur apprend la frontière de décision $p(y|\mathbf{x})$ — une partition de l'espace — un modèle génératif ambitionne de modéliser la **distribution sous-jacente** $p_0(\mathbf{x})$ qui a généré les données. Capturer cette distribution, c'est capturer l'essence structurelle du réel : non pas distinguer les données, mais les comprendre suffisamment pour les reconstruire [@WikipediaGAN; @WengGenModel].
 :::
 
-### Estimation de Densité : Deux Philosophies
+### Deux Philosophies
 
 Face à des données compliquées, deux stratégies existent : essayer de calculer leur "recette exacte", ou apprendre à produire des exemples qui y ressemblent. Pour les images, la deuxième stratégie est souvent la plus réaliste.
 
@@ -22,7 +22,7 @@ Face au problème d'estimer $p_0$, deux approches philosophiquement distinctes �
 **L'approche implicite** contourne ce problème en n'estimant pas $p_0$ directement. Elle apprend soit une **transformation** qui mappe une distribution simple (bruit gaussien) vers $p_0$, soit la **fonction de score** $\nabla_\mathbf{x} \log p_0(\mathbf{x})$ qui permet un échantillonnage efficace via des dynamiques de Langevin. Cette transition vers l'implicite a trouvé sa première réalisation transformatrice dans les Réseaux Antagonistes Génératifs [@Goodfellow2014].
 :::
 
-### Du VAE au GAN : Un Changement de Paradigme
+### Du VAE au GAN
 
 Les VAE compressent puis reconstruisent. Les GANs retirent la partie "compression" : ils partent d'un bruit aléatoire et apprennent directement à le transformer en image réaliste.
 
@@ -37,7 +37,7 @@ Les autoencodeurs variationnels (chapitre précédent) introduisent un encodeur 
 L'apprentissage génératif via un GAN s'apparente à un jeu entre un **peintre apprenti** (le générateur) et un **critique d'art expert** (le discriminateur). Le peintre tente de produire des faux tableaux assez convaincants pour tromper le critique. Le critique, de son côté, s'entraîne à distinguer les originaux des contrefaçons. En améliorant mutuellement leur expertise, les deux convergent vers un équilibre où les faux sont indiscernables des originaux. La "qualité artistique" n'est jamais définie explicitement : elle émerge de la compétition [@PatSnap2025].
 :::
 
-### Le Cadre Mathématique : Mesures de Divergence
+### Mesures de Divergence
 
 Le générateur cherche à réduire l'écart entre ses faux exemples et les vrais. Plus cet écart est mal mesuré, plus l'entraînement devient instable — comme un peintre qui recevrait une critique confuse.
 

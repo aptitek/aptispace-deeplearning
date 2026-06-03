@@ -1,10 +1,10 @@
-## La Cellule LSTM : Long Short-Term Memory
+## La Cellule LSTM
 
 La LSTM résout le problème de mémoire du RNN basique en ajoutant une **autoroute de l'information** (état de cellule) qui traverse le temps sans être multipliée à chaque étape, accompagnée de trois valves (portes) qui contrôlent ce qu'on laisse passer, mémoriser ou oublier.
 
 La cellule LSTM (*Long Short-Term Memory*), introduite par Hochreiter et Schmidhuber en 1997, constitue la réponse architecturale au problème de disparition du gradient. Son innovation fondamentale est l'introduction d'un **état de cellule** $\mathbf{c}_t$, distinct de l'état caché $\mathbf{h}_t$, qui fonctionne comme une autoroute de l'information à travers le temps [@DATAROCKSTARS2025; @Habbou2022; @Xu2024].
 
-### Le principe : dynamique additive vs multiplicative
+### Dynamique Additive
 
 Dans un RNN simple, chaque pas de temps **multiplie** l'information passée, ce qui créé des instabilités. La LSTM remplace cette multiplication par une **addition contrôlée** : on ajoute de nouvelles informations au lieu de tout recalculer à zéro.
 

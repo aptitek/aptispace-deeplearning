@@ -1,4 +1,4 @@
-## Le VAE : Du Déterminisme au Probabilisme
+## Du Déterminisme au Probabilisme
 
 Là où l'autoencodeur encode chaque donnée en un point fixe, le VAE l'encode en une **zone floue** : plutôt que d'un point précis dans l'espace latent, on obtient un nuage gaussien, ce qui garantit que l'espace entre les zones est navigable.
 
@@ -15,7 +15,7 @@ $$q_\phi(\mathbf{z} | \mathbf{x}) = \mathcal{N}(\mathbf{z}; \boldsymbol{\mu}_\ph
 Cette modélisation force chaque point de données $\mathbf{x}$ à être représenté non pas comme un point mais comme une **ellipsoïde gaussienne** dans l'espace latent. Le décodeur doit apprendre à reconstruire correctement n'importe quel point échantillonné dans cette ellipsoïde, ce qui contraint l'espace latent à être dense et continu [@bergmann_nd].
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🎯 La "Gaussian Ball" : Régions de Confiance Latentes
+## 🎯 Régions de Confiance Latentes
 
 Conceptualisons chaque donnée $\mathbf{x}$ comme une "balle gaussienne" centrée en $\boldsymbol{\mu}$ avec un rayon proportionnel à $\boldsymbol{\sigma}$. L'entraînement établit un **contrat** entre encodeur et décodeur : l'encodeur s'engage à compacter l'information dans cette balle, le décodeur s'engage à produire une reconstruction valide pour *tout* point tiré dans cette balle. En forçant les balles à se recouvrir et à couvrir uniformément l'espace latent, le VAE crée un continuum naviguable — contrairement à l'AE classique où seuls les points encodés sont valides [@shi_nd].
 :::
@@ -23,7 +23,7 @@ Conceptualisons chaque donnée $\mathbf{x}$ comme une "balle gaussienne" centré
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🕹️ Simulation : Interpolation dans l'Espace Latent — AE vs VAE
+🕹️ AE vs VAE
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -48,7 +48,7 @@ renderLatentInterpolation({ mode: vae_mode, alpha: vae_alpha })
 
 :::
 
-### L'ELBO : L'Objectif d'Optimisation
+### L'Objectif ELBO
 
 L'ELBO résoud un compromis : le terme de reconstruction pousse le modèle à mémoriser précisément (faire des petites zones), le terme KL le force à garder ces zones proches de l'origine et à ne pas s'effondrer en points (faire des zones suffisamment étales).
 
@@ -62,7 +62,7 @@ $$\mathcal{L}_{\text{ELBO}}(\theta, \phi) = \underbrace{\mathbb{E}_{q_\phi(\math
 
 Cette tension est productive : le terme KL interdit à l'encodeur de "tricher" en mémorisant les données avec $\boldsymbol{\sigma} \to 0$, forçant une généralisation réelle.
 
-### Le $\beta$-VAE : Contrôle du Disentanglement
+### Le $\beta$-VAE
 
 En augmentant $\beta$, on serre davantage le corset sur l'espace latent : chaque dimension est forcée à contrôler un seul facteur de variation indépendant (rotation, couleur, échelle), au prix d'une reconstruction un peu moins fidèle.
 

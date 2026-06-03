@@ -1,4 +1,4 @@
-## Le Pipeline des Transformers : De la Donnée Brute aux Vecteurs
+## Pipeline des Transformers
 
 Avant qu'un Transformer puisse raisonner sur du texte, il faut transformer la phrase en une suite de petits morceaux numériques. Le pipeline fait ce travail : découper, convertir en vecteurs, puis ajouter l'ordre.
 
@@ -7,7 +7,7 @@ Avant qu'un Transformer puisse raisonner sur du texte, il faut transformer la ph
 Avant d'entrer dans le mécanisme d'attention, le texte brut subit un pipeline de préparation critique qui conditionne toute la chaîne de traitement. Ce pipeline n'est pas un détail technique anodin : c'est souvent le **véritable goulot d'étranglement des performances**, tant en termes de qualité des représentations que d'efficacité computationnelle [@vanRijn2026; @HuggingFaceND2].
 :::
 
-### Étape 1 : Tokenisation — Du Texte aux Unités Discrètes
+### Tokenisation du Texte
 
 La tokenisation découpe le texte en pièces manipulables. Un mot rare peut être coupé en sous-mots, comme "anti" + "constitution" + "nellement", pour éviter de bloquer sur un mot jamais vu.
 
@@ -37,7 +37,7 @@ Opère directement sur les caractères Unicode sans pré-tokenisation par espace
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔤 Simulation : Le Tokenizer BPE en Action
+🔤 Tokenizer BPE
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -59,7 +59,7 @@ createTokenizerDemoPanel(bpe_text)
 
 :::
 
-### Étape 2 : Embedding Layer — Des Indices aux Vecteurs
+### Des Indices aux Vecteurs
 
 Une fois les tokens numérotés, le modèle remplace chaque numéro par un vecteur dense. C'est comme remplacer un code-barres par une fiche descriptive numérique.
 
@@ -70,7 +70,7 @@ Chaque token $t_i \in \{1, \ldots, |\mathcal{V}|\}$ est mappé vers un vecteur d
 En pratique, pour traiter un *batch* de séquences de longueurs variables, on utilise des structures comme `EmbeddingBag` qui agrège plusieurs vecteurs en un seul. Des **vecteurs d'indices** (`idxs`) et des **pointeurs de segments** (`ptrs`) indiquent les frontières entre séquences dans le batch, permettant un traitement efficace des séquences de longueurs hétérogènes.
 :::
 
-### Étape 3 : Les Défis Matériels des Lookups
+### Défis Matériels des Lookups
 
 Chercher des embeddings peut être lent : le modèle saute partout dans une grande table mémoire. Même si le calcul semble simple, l'accès aux données devient le vrai bouchon.
 
@@ -87,7 +87,7 @@ Les opérations de lookup d'embeddings constituent un **goulot d'étranglement m
 Le compilateur **Ember** résout ce problème via une architecture **DAE** (*Decoupled Access-Execute*) avec un TMU (*Tensor Marshaling Unit*) dédié aux lookups — voir la section sur l'optimisation architecturale.
 :::
 
-### Étape 4 : Addition de l'Encodage Positionnel
+### Ajout de l'Encodage Positionnel
 
 Le Transformer regarde les tokens en parallèle, donc il faut lui dire où chaque morceau se trouve dans la phrase. L'encodage positionnel ajoute cette information d'ordre.
 

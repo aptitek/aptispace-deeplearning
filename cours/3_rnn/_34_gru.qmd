@@ -1,4 +1,4 @@
-## La GRU : Efficacité et Compromis
+## La GRU Efficace
 
 La GRU est une version allégée de la LSTM qui fusionne deux de ses trois portes en une seule, ce qui la rend plus rapide à entraîner tout en conservant l'essentiel de sa capacité à mémoriser le long terme.
 
@@ -73,7 +73,7 @@ Soit environ **25 % de paramètres en moins** que la LSTM pour les mêmes dimens
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-⚖️ LSTM vs GRU — Comparaison des Paramètres et Cas d'Usage
+⚖️ LSTM vs GRU
 ::::
 
 :::: {.card-control-row}

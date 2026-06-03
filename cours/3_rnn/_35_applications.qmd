@@ -4,7 +4,7 @@ Même le moteur le plus puissant devient inutile si on lui met du mauvais carbur
 
 L'évolution des RNN vers des modèles hybrides permet d'atteindre une précision remarquable dans des domaines critiques. Deux directions de recherche marquent l'état de l'art : l'extension **bidirectionnelle** des architectures récurrentes, et l'intégration dans des frameworks multi-tâches. Mais leur puissance computationnelle est vaine sans une rigueur méthodologique absolue sur les données [@Zhu2024; @Ji2023; @Albelali2025].
 
-### Bi-LSTM : contexte bidirectionnel
+### Contexte Bidirectionnel
 
 Une Bi-LSTM lit la séquence deux fois : une fois dans l'ordre normal et une fois à l'envers, puis combine les deux lectures — comme un correcteur qui relit un texte dans les deux sens pour détecter des incohérences.
 
@@ -28,7 +28,7 @@ L'apprentissage **multi-tâches** (*Multi-Task Learning*, MTL) impose au modèle
 
 Le modèle **MTLTFT** (Multi-Task Learning + Temporal Fusion Transformer) pousse cette logique plus loin : le Transformer gère l'attention globale sur la séquence, tandis que le MTL optimise conjointement des têtes de prédiction sur plusieurs horizons. La génération multi-tâches force le modèle à extraire des représentations partagées invariantes à l'horizon temporel, ce qui améliore significativement les performances en situation de pénurie de données [@Ji2023].
 
-### Intégrité méthodologique : le danger du Data Leakage
+### Danger du Data Leakage
 
 Le **Data Leakage** est l'erreur la plus insidieuse sur les séries temporelles : si on mélange les données d'entraînement et de test **avant** de construire les fenêtres d'observation, le modèle "voit le futur" pendant son entraînement et semble perfomer à tort très bien — avant de échouer complètement en production.
 
@@ -45,7 +45,7 @@ Les preuves empiriques de [@Albelali2025] sont sans appel :
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-⚠️ Impact du Data Leakage sur l'Évaluation des Modèles
+⚠️ Data Leakage
 ::::
 
 ```{ojs}

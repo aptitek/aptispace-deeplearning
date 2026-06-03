@@ -1,4 +1,4 @@
-## Le Pré-entraînement : Construction de la Fondation
+## Construire la Fondation
 
 Le pré-entraînement est la grande phase de lecture d'un grand modèle de langage (LLM). Le modèle lit énormément de texte et apprend surtout une tâche simple : deviner le prochain token.
 
@@ -33,7 +33,7 @@ _pretraining = {
 }
 ```
 
-### La Modélisation Autoregressive : Chaînes de Markov d'Ordre $k$
+### Modélisation Autorégressive
 
 Pendant le pré-entraînement, le modèle joue à compléter la phrase. À force de prédire la suite, il apprend quels mots vont ensemble et quelles structures sont plausibles.
 
@@ -51,12 +51,12 @@ Pour que les garanties théoriques de généralisation s'appliquent, on suppose 
 :::
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 📚 Analogie : L'Élève et le Corpus
+## 📚 L'Élève et le Corpus
 
 Imaginez un élève qui apprend une langue en lisant des millions de textes. S'il complète seulement des phrases déjà vues, il mémorise. S'il complète correctement des phrases nouvelles, il commence à généraliser. Un bon corpus doit donc être varié : sinon, le modèle apprend surtout à répéter.
 :::
 
-### Le Pipeline de Données : Qualité avant Quantité
+### Qualité avant Quantité
 
 Un bon modèle ne vient pas seulement de beaucoup de texte. Il faut aussi nettoyer ce texte : enlever les doublons, filtrer les contenus faibles, puis découper le corpus pour nourrir l'entraînement régulièrement.
 
@@ -77,7 +77,7 @@ Les pipelines modernes (ex. : FineWeb d'Hugging Face) filtrent le web par classi
 Pour les corpus de plusieurs tera-tokens, le pipeline de tokenisation et de découpage (*sharding*) devient un problème d'ingénierie en lui-même. Des systèmes comme Youmu (Zhong et al. 2025) optimisent le pipeline de données columnar pour alimenter l'entraînement sans créer de stalls [@Zhong2025].
 :::
 
-### La Généralisation : Au-delà de la Mémorisation
+### Au-delà de la Mémorisation
 
 Le but n'est pas de réciter le corpus. Un bon modèle doit utiliser ce qu'il a vu pour répondre correctement à des phrases nouvelles.
 

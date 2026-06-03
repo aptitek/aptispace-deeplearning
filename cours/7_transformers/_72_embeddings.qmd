@@ -1,4 +1,4 @@
-## Plongements Denses : Word2Vec, GloVe et FastText
+## Plongements Denses
 
 Un embedding place les mots sur une carte : des mots proches par le sens deviennent proches dans l'espace. "chat" et "chien" se retrouvent voisins, tandis que "moteur" part ailleurs.
 
@@ -7,7 +7,7 @@ Un embedding place les mots sur une carte : des mots proches par le sens devienn
 La rupture technologique des **plongements denses** (*dense embeddings*) permet de représenter chaque mot dans un espace continu de dimension réduite (typiquement 100 à 300), contre $|\mathcal{V}| \sim 10^5$ pour le BoW. La sémantique devient géométrie : deux mots sémantiquement proches sont voisins dans cet espace [@rong_2014; @pennington_2014].
 :::
 
-### Word2Vec : Apprentissage par Prédiction de Contexte
+### Word2Vec
 
 Word2Vec apprend en jouant à deviner : soit il devine un mot à partir de ses voisins, soit il devine les voisins à partir du mot. À force de jouer, il construit une carte utile du vocabulaire.
 
@@ -32,7 +32,7 @@ L'interaction entre $v_w$ et $v'_w$ durant l'entraînement crée un effet de "tr
 $$\mathbf{v}(\text{Roi}) - \mathbf{v}(\text{Homme}) + \mathbf{v}(\text{Femme}) \approx \mathbf{v}(\text{Reine})$$
 :::
 
-### GloVe : Co-occurrences Globales
+### Co-occurrences GloVe
 
 GloVe regarde le corpus avec plus de recul : il ne se contente pas d'une fenêtre locale, il cherche les grands motifs de co-occurrence entre les mots.
 
@@ -45,7 +45,7 @@ $$\mathcal{L}_{\text{GloVe}} = \sum_{i,j} f(X_{ij}) \left(v_i^T v_j + b_i + b_j 
 où $X_{ij}$ est le nombre de co-occurrences des mots $i$ et $j$ dans une fenêtre de contexte, et $f$ est une fonction de pondération diminuant le poids des co-occurrences très fréquentes. GloVe capture les associations globales que Word2Vec, entraîné localement, peut manquer.
 :::
 
-### FastText : Granularité Morphologique et OOV
+### Granularité FastText
 
 FastText ne regarde pas seulement le mot entier : il regarde aussi ses petits morceaux. Cela lui permet de fabriquer une représentation pour un mot jamais vu, à partir de fragments déjà connus.
 

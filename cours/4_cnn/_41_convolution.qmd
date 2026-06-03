@@ -1,4 +1,4 @@
-## La Convolution : Filtrage Spatial Appris
+## Filtrage Spatial Appris
 
 Pluttôt que de regarder chaque pixel d'une image tout seul, un CNN utilise une petite loupe qui glisse sur toute l'image et détecte des motifs locaux (bords, textures) — comme un cartographe qui parcourt le terrain case par case pour dresser une carte des reliefs.
 
@@ -7,7 +7,7 @@ Le passage du traitement de données tabulaires aux grilles de pixels 2D a impos
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-⚖️ Le Fléau de la Dimensionnalité : MLP vs CNN
+⚖️ MLP vs CNN
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -42,7 +42,7 @@ La solution réside dans l'application du **Principe de Responsabilité Unique**
 
 ::: {.card .card-window .mb-4 .local-filter-card}
 :::: {.card-header}
-🔍 Connectivité Locale : Champ Récepteur et Architecture CNN
+🔍 Champ Récepteur
 ::::
 
 :::: {.tab-actions}
@@ -282,7 +282,7 @@ $$
 
 Chaque filtre produit une **carte de caractéristiques** (*feature map*) de taille $W_2 \times H_2$.
 
-### Optimisation GPU : l'algorithme im2col et GEMM
+### Optimisation GPU
 
 Pour que le GPU puisse traiter des milliers d'images en parallèle, on "déroule" les patches de l'image en une grande matrice, afin de remplacer la convolution par une simple multiplication de matrices — opération que les GPU font extrêmement vite.
 

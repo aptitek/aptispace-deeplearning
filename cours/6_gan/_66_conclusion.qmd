@@ -1,4 +1,4 @@
-## Conclusion : De la Compétition à la Reconstruction
+## De la Compétition à la Reconstruction
 
 Ce chapitre raconte deux grandes manières de générer : faire progresser un faussaire grâce à un critique (GAN), ou apprendre à nettoyer du bruit jusqu'à faire apparaître une image (diffusion).
 
@@ -9,7 +9,7 @@ Les deux approches ne s'opposent pas totalement : les GANs montrent la puissance
 La trajectoire technologique de ce chapitre illustre une transition fondamentale dans le paradigme de la génération : du **duel stratégique** des GANs à la **reconstruction rigoureuse** des DDPM. Ces deux approches ne sont pas mutuellement exclusives — elles sont complémentaires, chacune révélant un aspect différent du problème de la modélisation de $p_0$.
 :::
 
-### L'Architecture Émergente : Diffusion + Transformers
+### Diffusion et Transformers
 
 Les modèles récents mélangent souvent diffusion et Transformers : la diffusion sait générer progressivement, et les Transformers savent relier des éléments éloignés entre eux.
 
@@ -20,7 +20,7 @@ Les modèles de diffusion modernes abandonnent progressivement le U-Net au profi
 Les **Latent Diffusion Models** (dont Stable Diffusion) ajoutent une couche d'efficacité en faisant opérer le processus de diffusion non pas dans l'espace des pixels ($D \times D \times 3$) mais dans l'espace latent d'un VAE ($d_z \ll D^2$). Cette séparation des préoccupations — compression sémantique (VAE, chapitre 5) et modélisation générative (diffusion) — est la clé de la scalabilité des modèles texte-to-image modernes.
 :::
 
-### La Génération Vidéo : La Frontière Active
+### Génération Vidéo
 
 La vidéo est plus difficile que l'image parce qu'il faut rester cohérent dans le temps. Un personnage ne doit pas changer de visage d'une frame à l'autre, et les mouvements doivent rester plausibles.
 

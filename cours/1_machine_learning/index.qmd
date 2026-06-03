@@ -14,7 +14,7 @@ bibliography: bibliography.bib
 {{< include _16_augmentation.qmd >}}
 <!-- DYNAMIC_INCLUDES_END -->
 
-## TP2 : Machine Learning sur le cancer du sein
+## TP Machine Learning
 
 ::: {.filetree title="Cancer du sein" zip="lab/tp02.zip"}
 

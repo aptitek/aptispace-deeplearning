@@ -27,7 +27,7 @@ $$\frac{\partial \mathcal{L}}{\partial w} = \frac{\partial \mathcal{L}}{\partial
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🕸️ Réseau de Neurones [Combinaison Linéaire & ReLU]{.badge .bg-success .float-end}
+🕸️ Réseau de Neurones
 ::::
 
 :::: {.card-control-row .flex-column}

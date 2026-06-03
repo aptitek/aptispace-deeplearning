@@ -1,4 +1,4 @@
-## Genèse et Évolution : La Grande Histoire de l'Apprentissage Automatique
+## Grande Histoire du Machine Learning
 
 L'histoire de l'IA est un match de ping-pong de 60 ans entre deux visions opposées : d'un côté, donner des règles toutes faites à la machine (l'**IA symbolique**, comme une recette de cuisine), et de l'autre, la laisser apprendre par elle-même à force d'exemples (le **connexionnisme**, comme un bébé qui découvre le monde).
 
@@ -47,7 +47,7 @@ L'IA n'est pas née en 2023. C'est une histoire de soixante ans, faite d'espoirs
 :::
 
 ::: {.callout-note collapse="true"}
-## 🔍 Détails : Les 4 grandes époques de l'histoire de l'IA
+## 🔍 Grandes Époques de l'IA
 
 ### Les Pionniers et l'Aube de l'Apprentissage (1950 - 1960)
 

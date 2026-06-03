@@ -7,7 +7,7 @@ ELMo corrige une limite importante : un mot n'a pas toujours le même sens. Le v
 La limitation fondamentale de Word2Vec, GloVe et FastText est leur caractère **statique** : chaque mot reçoit un vecteur unique, indépendamment de son contexte phrastique. "avocat" dans "je consulte mon avocat" et "avocat" dans "j'ajoute de l'avocat à ma salade" ont exactement le même plongement. ELMo (Embeddings from Language Models, Peters et al. 2018) introduit la **dynamicité contextuelle** [@peters_2018].
 :::
 
-### Architecture biLM : Bidirectionnalité Profonde
+### Architecture biLM
 
 ELMo lit la phrase dans les deux sens : de gauche à droite et de droite à gauche. C'est comme comprendre un mot avec ce qui vient avant et ce qui vient après.
 
@@ -25,7 +25,7 @@ $$\text{ELMo}_k^{\text{task}} = \gamma^{\text{task}} \sum_{j=0}^{L} s_j^{\text{t
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📈 Simulateur — Poids des couches ELMo par tâche
+📈 Couches ELMo
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -82,7 +82,7 @@ Deux hyperparamètres critiques gouvernent l'adaptation d'ELMo à une tâche cib
 * **$\lambda$ (régularisation L2)** : Force les poids de mélange $s_j^{\text{task}}$ à rester proches de l'uniforme ($s_j = \frac{1}{L+1}$). Un $\lambda$ trop faible conduit à sur-spécialiser sur une couche ; trop élevé empêche l'adaptation.
 :::
 
-### L'Étude QUINE : Pré-entraînement vs Fine-tuning
+### L'Étude QUINE
 
 Un modèle pré-entraîné connaît bien la langue générale, mais pas forcément le vocabulaire d'un domaine très spécialisé. Pour un petit corpus technique, il faut souvent l'adapter.
 

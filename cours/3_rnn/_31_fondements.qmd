@@ -1,4 +1,4 @@
-## Fondements des RNN : Mémoire et Récurrence
+## Mémoire et Récurrence
 
 Un RNN (réseau de neurones récurrent) est un réseau qui possède une **mémoire** : au lieu de traiter chaque donnée de manière isolée, il conserve un résumé de ce qu'il a vu avant pour interpréter ce qu'il voit maintenant — comme un lecteur qui relit mentalement le début de la phrase avant d'en comprendre la fin.
 
@@ -50,7 +50,7 @@ Où :
 :::
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🏪 Analogie : La Trésorerie du Magasin Connecté
+## 🏪 La Trésorerie du Magasin
 Pour comprendre comment le réseau se souvient du passé, reprenons l'analogie du **magasin connecté** (chapitre 2) :
 
 * **Le flux quotidien ($\mathbf{x}_t$) :** Chaque jour (pas de temps $t$), le magasin fait face à un flux d'activité extérieure (clients, livraisons, météo).
@@ -64,7 +64,7 @@ Pour comprendre comment le réseau se souvient du passé, reprenons l'analogie d
 ::: {.card .card-window .rnn-card-window .mb-4}
 
 :::: {.card-header}
-🔄 Mise à jour de la Trésorerie (Cellule RNN) [Somme Pondérée & ReLU]{.badge .bg-success .float-end}
+🔄 Cellule RNN
 ::::
 
 :::: {.card-control-row .rnn-control-row .flex-column}
@@ -382,7 +382,7 @@ layoutAdjustRNN = {
 }
 ```
 
-### Topologies fondamentales : Elman et Jordan
+### Topologies Elman et Jordan
 
 Il existe deux façons de "boucler" la mémoire : soit on réutilise l'**état interne** du réseau (Elman, la plus courante), soit on réutilise sa **dernière sortie** (Jordan, utile pour les robots qui doivent savoir ce qu'ils viennent de faire).
 
@@ -394,7 +394,7 @@ Deux architectures définissent le comportement de la récurrence [@Modelisation
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔁 RNN Déroulé dans le Temps (*Unrolled*)
+🔁 RNN Déroulé
 ::::
 
 :::: {.card-control-row .flex-column}
@@ -479,7 +479,7 @@ renderRNNUnrolled = {
 }
 ```
 
-### Topologies séquentielles : modes d'entrée-sortie
+### Modes d'Entrée-Sortie
 
 Les RNN s'adaptent à quatre configurations selon la relation entre la séquence d'entrée et de sortie [@maurock2020] :
 

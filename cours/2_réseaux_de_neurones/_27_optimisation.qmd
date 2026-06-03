@@ -7,7 +7,7 @@ La résolution des problèmes de gradient a été un tournant majeur qui a permi
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📊 Simulateur — Batch Normalization : avant vs après
+📊 Batch Normalization
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -42,7 +42,7 @@ _batchNorm = {
   * **Flux du gradient :** Contrairement à Sigmoïde/TanH, ReLU ne sature pas pour les valeurs positives, maintenant un flux de gradient stable [@iNeuron_XavierHe; @Kumar2017; @Stanford_CS230].
   * **Initialisation des poids :** Des techniques comme la *Sparse Initialization* (limitation des connexions non nulles par neurone) préviennent la saturation précoce [@Stanford_CS230].
 
-### Batch Normalization : stabiliser le paysage d'optimisation
+### Batch Normalization
 
 La **Batch Normalization** agit comme un rouleau compresseur qui aplanit la route : elle recentre et redimensionne les signaux à chaque couche pour que l'apprentissage se fasse sur une autoroute lisse plutôt que sur un sentier de montagne chaotique.
 
@@ -84,7 +84,7 @@ Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algo
   * **Bénéfices :** Permet des taux d'apprentissage élevés, réduit la dépendance à l'initialisation des poids et régularise légèrement via les mini-lots.
 
 ::: {.callout-note collapse="true"}
-## 🔍 L'approche par Portes : LSTM et GRU
+## 🔍 L'Approche par Portes
 
 Dans les réseaux récurrents profonds (séquences longues), les architectures spécialisées introduisent des **portes** (gates) (comme dans le LSTM et GRU). Ces mécanismes agissent comme des valves mathématiques contrôlant le flux d'informations :
 

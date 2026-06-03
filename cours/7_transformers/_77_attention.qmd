@@ -1,4 +1,4 @@
-## Anatomie du Bloc Attention : Q, K, V et Optimisation Matérielle
+## Anatomie du Bloc Attention
 
 L'attention permet à chaque mot de demander : "quels autres mots m'aident à comprendre mon rôle dans cette phrase ?" C'est le cœur du Transformer.
 
@@ -7,7 +7,7 @@ L'attention permet à chaque mot de demander : "quels autres mots m'aident à co
 Le **bloc d'attention** est l'unité de calcul fondamentale du Transformer. Contrairement aux convolutions qui capturent les corrélations locales, l'attention permet à chaque token d'interagir directement avec tous les autres tokens de la séquence — quel que soit leur éloignement. C'est ce mécanisme de **connectivité globale** qui distingue fondamentalement les Transformers des RNNs et CNNs [@June2023; @KamarainenND].
 :::
 
-### La Triade Q, K, V : Rôles Vectoriels
+### La Triade Q, K, V
 
 Q, K et V ressemblent à un système de recherche : la Query pose une question, la Key indique ce que chaque token peut offrir, et la Value contient l'information à récupérer.
 
@@ -47,7 +47,7 @@ $$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\!\left(\
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔍 Simulation : Le Mécanisme d'Attention — Cliquez sur un Token (Query)
+🔍 Carte d'Attention
 ::::
 
 ```{ojs}
@@ -83,7 +83,7 @@ renderSelfAttention(d3, { tokens: attn_sentence, matrix: attn_matrix, activeQuer
 
 :::
 
-### Multi-Head Attention : Sous-Espaces Parallèles
+### Sous-Espaces Parallèles
 
 Une seule tête d'attention ne suffit pas toujours. Plusieurs têtes permettent au modèle de regarder la phrase sous plusieurs angles : grammaire, référence, thème, relation longue distance.
 
@@ -100,7 +100,7 @@ $$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{hea
 Chaque tête apprend à se focaliser sur un type différent de dépendance : certaines têtes capturent la syntaxe (sujet-verbe), d'autres la coréférence (pronom-antécédent), d'autres encore les relations sémantiques thématiques. La concaténation des sorties puis la projection $\mathbf{W}_O$ recombinent ces représentations parallèles.
 :::
 
-### Stabilisation : Résiduels, Normalisation et MLP
+### Stabilisation du Bloc
 
 Un bloc Transformer ne contient pas seulement l'attention. Il ajoute aussi des raccourcis, de la normalisation et un petit réseau MLP pour stabiliser et enrichir les représentations.
 
@@ -131,7 +131,7 @@ $$\text{FFN}(\mathbf{x}) = \text{GELU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\ma
 avec $d_{\text{ff}} = 4 d_{\text{model}}$ typiquement. Le MLP est responsable de 2/3 des paramètres du Transformer — c'est là que réside la "mémoire factuelle" du modèle.
 :::
 
-### Optimisation Matérielle : DAE et Ember
+### Optimisation Matérielle
 
 À grande échelle, comprendre l'attention ne suffit pas : il faut aussi l'exécuter vite. Certaines optimisations séparent la lecture des embeddings et le calcul pour éviter que le matériel attende la mémoire.
 

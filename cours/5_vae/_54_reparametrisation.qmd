@@ -37,12 +37,12 @@ $$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon
 La transformation $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$ est **déterministe** par rapport aux paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$ — seul $\boldsymbol{\epsilon}$ est aléatoire, et il est tiré indépendamment. Le gradient peut désormais s'écouler librement à travers $\boldsymbol{\mu}$ et $\boldsymbol{\sigma}$ jusqu'à l'encodeur.
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🎲 Analogie : Dé Pipé vs Dé Standard
+## 🎲 Dé Pipé vs Dé Standard
 
 Imaginez que vous deviez optimiser la mise d'un pari sur un dé pipé. Il est impossible de différencier directement par rapport au "biais" du dé si vous l'incluez dans le lancer (nœud stochastique). La reparamétrisation consiste à utiliser un dé standard équitable $\boldsymbol{\epsilon}$ (source de hasard externe, non-optimisable), puis à appliquer une transformation déterministe $\boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$ pour simuler le dé pipé. Le gradient peut maintenant traverser la transformation et atteindre les paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$.
 :::
 
-### Analyse Critique : Compacité vs Stochasticité
+### Compacité et Stochasticité
 
 La question de fond : est-ce le hasard du VAE qui crée de bonnes représentations, ou simplement la contrainte géométrique imposée par la KL ? Des résultats récents suggèrent que c'est la contrainte qui fait tout le travail.
 

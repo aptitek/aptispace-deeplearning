@@ -31,27 +31,27 @@ gantt
 
 ## 📑 Détail des Sessions
 
-### 🧹 Jour 1 : Raffiner la donnée brute (Acquisition & Preprocessing)
+### 🧹 Raffiner la Donnée Brute
 
 * **09h00 - 12h30** : Formats de données, statistiques descriptives et nettoyage (outliers, NaN, corrélations).
 * **13h30 - 17h00** : Lab de preprocessing avancé et réduction de dimensions avec l'ACP (PCA).
 
-### 🛠️ Jour 2 : Façonner les outils classiques (Machine Learning Supervisé)
+### 🛠️ Façonner les Outils Classiques
 
 * **09h00 - 12h30** : Théorie de la régression (linéaire, logistique) et classification (arbres de décision, SVM).
 * **13h30 - 17h00** : Lab Scikit-Learn : Implémentation de Random Forest, Gradient Boosting et comparaison d'algorithmes.
 
-### 📊 Jour 3 : Segmenter et diagnostiquer (Non Supervisé & Évaluation)
+### 📊 Segmenter et Diagnostiquer
 
 * **09h00 - 12h30** : Clustering avec K-Means et classification hiérarchique. Métriques de validation (ROC, confusion matrix).
 * **13h30 - 17h00** : Lab pratique : Segmentation client et évaluation fine de la performance des modèles.
 
-### 🧠 Jour 4 : Forger les réseaux de neurones (Fondations du Deep Learning)
+### 🧠 Forger les Réseaux de Neurones
 
 * **09h00 - 12h30** : Histoire du perceptron, architecture PMC, fonctions d'activation, rétropropagation du gradient.
 * **13h30 - 17h00** : Lab from scratch : Écriture et entraînement d'un réseau de neurones multicouche en Python pur.
 
-### 🚀 Jour 5 : Lancer la production (Projet Final & Soutenances)
+### 🚀 Lancer la Production
 
 * **09h00 - 11h00** : Cycle de vie du modèle, principes des APIs de prédiction et de mise en production.
 * **11h00 - 12h30** : Finalisation du projet final en équipe et préparation des supports de présentation.

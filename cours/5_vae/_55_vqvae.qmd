@@ -1,4 +1,4 @@
-## VQ-VAE : Discrétisation et Espace Latent Vectoriel
+## VQ-VAE et Espace Latent Discret
 
 Pluttôt qu'un nuage de points continus, le VQ-VAE contraint l'espace latent à un **dictionnaire fini** de mots : chaque image est décrite par un index pointant vers le mot le plus proche du dictionnaire, comme choisir le meilleur équivalent dans un lexique de 256 entrées.
 
@@ -7,7 +7,7 @@ Le VQ-VAE (*Vector Quantized Variational Autoencoder*) propose une alternative r
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🗂️ Simulation : Quantification Vectorielle — Le Codebook VQ-VAE
+🗂️ Codebook VQ-VAE
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -125,7 +125,7 @@ renderVqVaeMetrics({ codebook: vq_codebook, x: vq_x, y: vq_y })
 
 :::
 
-### Le Codebook : Dictionnaire Latent
+### Le Codebook Latent
 
 L'encodeur produit un vecteur continu, puis on cherche dans le dictionnaire le mot le plus proche et on l'utilise à la place — comme arrondir un nombre décimal au nombre entier le plus proche.
 
@@ -180,7 +180,7 @@ $$\mathbf{e}_k \leftarrow (1 - \gamma) \mathbf{e}_k + \gamma \cdot \frac{\sum_i 
 
 Cette approche est plus stable que l'optimisation directe par descente de gradient et évite que le codebook oscille entre les mises à jour [@shrivastava_2024].
 
-### Risque : Le Codebook Collapse
+### Risque de Codebook Collapse
 
 Si l'encodeur prend l'habitude d'utiliser toujours les mêmes 5 entrées sur 256, les 251 autres deviennent inutiles — la capacité du dictionnaire est gaspillée et la qualité de génération s'effondre.
 
@@ -189,7 +189,7 @@ La pathologie principale du VQ-VAE est le **Codebook Collapse** : une fraction d
 Les solutions incluent : la réinitialisation périodique des vecteurs inactifs, l'augmentation du coefficient $\beta$ du commitment loss, ou des techniques de *codebook dropout* forçant l'encodeur à utiliser des codes alternatifs.
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 📚 Analogie : L'Alphabet d'un Système de Compression
+## 📚 L'Alphabet de Compression
 
 Imaginez construire un alphabet de $K$ symboles pour encoder les phonèmes d'une langue. Si l'encodeur apprend à tout exprimer avec 5 symboles sur 256 (collapse), la plupart des distinctions sémantiques se perdent. À l'inverse, si chaque phonème est trop précisément représenté par un seul symbole (espace trop large), la généralisation en souffre. La tension entre expressivité du codebook et utilisation uniforme des vecteurs est le défi fondamental du VQ-VAE.
 :::

@@ -1,4 +1,4 @@
-## Synthèse : La Contrainte comme Source de Sémantique
+## La Contrainte comme Sémantique
 
 Trois approches, un même principe : plus on contraint l'espace latent, plus le modèle est forcé à apprendre des représentations compactes et généralisables. AE serre légèrement, VAE serre avec des garde-fous probabilistes, VQ-VAE impose un alphabet fini.
 

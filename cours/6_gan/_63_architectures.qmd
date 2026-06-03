@@ -10,7 +10,7 @@ L'évolution des GANs est une histoire de stabilisation progressive : chaque arc
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📉 Courbes d'entraînement — Stabilité des architectures GAN
+📉 Stabilité GAN
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -41,7 +41,7 @@ _ganArch = {
 }
 ```
 
-### DCGAN : Les Convolutions comme Ancrage Structurel
+### DCGAN et Convolutions
 
 Un DCGAN donne au GAN les bons outils pour les images : au lieu de regarder les pixels comme une longue liste, il regarde des petits voisinages, comme un œil qui repère d'abord des contours et des textures.
 
@@ -54,7 +54,7 @@ Le générateur DCGAN utilise des **convolutions transposées** (*transposed con
 Cette inductive bias spatiale réduit drastiquement les oscillations et le mode collapse pour la génération d'images, établissant les convolutions comme composante standard des GANs visuels.
 :::
 
-### StyleGAN : Découplage Style–Contenu
+### StyleGAN et Style
 
 StyleGAN sépare ce qui change la structure générale d'une image de ce qui change son apparence fine. C'est comme régler séparément la pose d'un portrait, l'éclairage, la texture de peau et la couleur des cheveux.
 
@@ -69,7 +69,7 @@ StyleGAN (Karras et al. 2018, 2019) représente un saut qualitatif majeur en ré
 Cette architecture permet un **contrôle sémantique granulaire** : les couches basses du générateur contrôlent la structure haute fréquence (poses, formes) tandis que les couches hautes contrôlent les textures fines (couleur, éclairage).
 :::
 
-### cGAN : Conditionnement et Synthèse Dirigée
+### cGAN Conditionnel
 
 Un cGAN ajoute une consigne au faussaire : "génère un chat", "transforme cette esquisse", ou "augmente la résolution". Le critique vérifie alors deux choses : l'image est-elle réaliste, et respecte-t-elle la consigne ?
 
@@ -82,7 +82,7 @@ $$G(\mathbf{z}, \mathbf{c}) \to \hat{\mathbf{x}}, \qquad D(\mathbf{x}, \mathbf{c
 Le discriminateur ne juge plus seulement si $\mathbf{x}$ est réaliste, mais si $(\mathbf{x}, \mathbf{c})$ est une paire cohérente. Les cGANs permettent la génération contrôlée : image-to-image (pix2pix), texte-to-image (première génération), ou super-résolution conditionnée sur une image basse résolution.
 :::
 
-### WGAN : La Distance de Wasserstein comme Régulateur Théorique
+### WGAN et Distance de Wasserstein
 
 Le WGAN change la manière de mesurer l'écart entre les vrais exemples et les faux. Au lieu d'un verdict brutal, il donne une distance plus progressive, comme mesurer combien de travail il faudrait pour transformer un tas de sable en un autre tas.
 
@@ -103,7 +103,7 @@ $$\mathcal{L}_{\text{GP}} = \lambda \, \mathbb{E}_{\hat{\mathbf{x}} \sim p_{\hat
 où $\hat{\mathbf{x}}$ est tiré uniformément sur les segments reliant des points réels et générés.
 :::
 
-### Normalisation Spectrale : Stabilité sans Contrainte Explicite
+### Normalisation Spectrale
 
 La normalisation spectrale limite la violence des réactions du discriminateur. C'est comme régler le volume maximal du critique pour qu'il donne encore un signal utile au générateur.
 

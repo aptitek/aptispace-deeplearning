@@ -13,7 +13,7 @@ Chaque opération de pooling parcourt la carte de caractéristiques avec une fen
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔎 Max-Pooling Interactif : Distiller l'Essentiel
+🔎 Max-Pooling
 ::::
 
 :::: {.pooling-simulator}
@@ -76,7 +76,7 @@ renderPoolingExplanation(poolGroup)
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🔎 Comparaison Max Pooling vs Average Pooling
+🔎 Max vs Average
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -94,7 +94,7 @@ renderPoolingComparison(pool_size)
 
 :::
 
-### Global Average Pooling vs Fully Connected : un choix stratégique
+### Global Average Pooling vs Fully Connected
 
 Passer par des couches denses (à la fin du CNN) ressemble à utiliser un interrogatoire détaillé pour obtenir une réponse. Le Global Average Pooling, lui, demande simplement la moyenne de chaque piste et rend le verdict directement — plus économique et souvent tout aussi efficace.
 
@@ -106,7 +106,7 @@ La transition vers la décision finale s'opère selon deux approches [@CS231n202
 
 La distinction stratégique : un réseau Fully Convolutional peut être entraîné à se comporter comme un GAP, tandis que le GAP ne peut pas représenter le routage localisé d'un FCN. Dans les architectures modernes (ResNet, EfficientNet), le GAP avant la couche de classification finale est devenu le standard.
 
-### Le problème Picasso : perte de cohérence spatiale
+### Le Problème Picasso
 
 Le pooling rend le réseau aveugle aux positions relatives des éléments : il peut reconnaître un visage même si les yeux et la bouche sont à l'envers — comme un cherche-mot qui trouve tous les bons mots mais ignore leur ordre dans le texte.
 

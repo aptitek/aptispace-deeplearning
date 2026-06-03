@@ -48,7 +48,7 @@ $$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma
 * **$|\boldsymbol{\Sigma}|$ (Déterminant)** : valeur scalaire mesurant la dilatation des volumes induite par la matrice de covariance.
 * **$k$** : dimension de l'espace latent (nombre de variables aléatoires gaussiennes).
 
-### Cas Pratique du VAE : Gaussiennes Diagonales
+### Gaussiennes Diagonales du VAE
 
 Dans la pratique, puisqu'on ne considère que des gaussiennes sans corrélations entre dimensions, la formule complexe se réduit à une simple somme sur chaque dimension latente — facile à calculer et à différencier.
 
@@ -81,7 +81,7 @@ La trace et le log-déterminant agissent conjointement comme un **garde-fou cont
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📐 Simulateur — Divergence KL entre deux Gaussiennes
+📐 Divergence KL
 ::::
 
 :::: {.card-control-row .sim-controls-row}

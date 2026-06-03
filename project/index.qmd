@@ -17,7 +17,7 @@ Si l'une des cases ci-dessous est cochée "NON", le projet n'est pas corrigé (N
 | Le Dataset **n'est pas** versionné/inclus dans le dépôt Git             |    ☐    |    ☐    |
 | Le code métier est modulaire (fichiers `.py` importés dans le `.ipynb`) |    ☐    |    ☐    |
 
-## 📊 NOTE 1 : Data Science & Baseline ML ( / 20 )
+## 📊 Data Science et Baseline ML
 
 *Cette note évalue votre capacité à préparer le terrain, comprendre vos données et établir une base de référence solide.*
 
@@ -29,7 +29,7 @@ Si l'une des cases ci-dessous est cochée "NON", le projet n'est pas corrigé (N
 | **📍 Jalon 4 : Éval ML**         | Évaluation correcte du modèle classique. Analyse approfondie du compromis Biais/Variance (surapprentissage/sous-apprentissage).                    |  **/ 5**   |
 | **🌐 Points Globaux (Partie 1)** | Respect des labels Git (`data`, `eda`, `ml`, `eval-ml`). Propreté du code d'exploration et clarté des commentaires dans le notebook.               |  **/ 3**   |
 
-## 📊 NOTE 2 : Deep Learning Fondamental ( / 20 )
+## 📊 Deep Learning Fondamental
 
 *Cette note sanctionne la maîtrise des architectures de base, des mathématiques sous-jacentes (optimisation) et la rigueur de la démarche comparative.*
 
@@ -40,7 +40,7 @@ Si l'une des cases ci-dessous est cochée "NON", le projet n'est pas corrigé (N
 | **📍 Jalon 7 : Comparaison**     | Analyse critique et argumentée comparant les performances, limites et temps de calcul entre la baseline ML et l'approche DL.                                                         |  **/ 5**   |
 | **🌐 Points Globaux (Partie 2)** | Respect des labels Git (`dl`, `opti-dl`, `eval-dl`). Modularité du code (architecture des réseaux placée dans des fichiers `.py` externes).                                          |  **/ 3**   |
 
-## 📊 NOTE 3 : Deep Learning Avancé & Ingénierie ( / 20 )
+## 📊 Deep Learning Avancé et Ingénierie
 
 *Cette dernière note valorise votre curiosité technique (état de l'art), vos compétences en MLOps/déploiement et la qualité de votre rendu final.*
 

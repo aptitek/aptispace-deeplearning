@@ -10,7 +10,7 @@ Les lois d'échelle (*scaling laws*) établissent des relations quantitatives en
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📐 Lois d'échelle : perte vs taille du modèle (log-log)
+📐 Lois d'Échelle
 ::::
 
 :::: {.card-body .p-2}
@@ -31,7 +31,7 @@ _scaling = {
 }
 ```
 
-### La Loi de Chinchilla : Optimal d'Entraînement
+### Loi de Chinchilla
 
 La règle Chinchilla dit : ne construisez pas seulement un modèle énorme ; donnez-lui aussi assez de texte. Un grand cerveau sous-entraîné reste mal utilisé.
 
@@ -50,7 +50,7 @@ La règle pratique est la suivante : **entraîner sur environ 20 tokens par para
 L'approche Chinchilla minimise la *perte finale d'entraînement* pour un budget $C$ fixé. Mais la perte d'entraînement n'est pas l'objectif ultime — la performance à l'**inférence** l'est. Cette distinction cruciale redéfinit le problème d'optimisation.
 :::
 
-### L'Approche Inférence-Optimale : Scalabilité du Déploiement
+### Inférence Optimale
 
 Quand un modèle sert des milliards de requêtes, le coût d'utilisation devient aussi important que le coût d'entraînement. Parfois, un modèle plus petit mais mieux entraîné coûte moins cher au total.
 
@@ -83,7 +83,7 @@ Les lois d'échelle ne remplacent pas le choix d'architecture. Selon la tâche, 
 Les lois d'échelle font apparaître une tension entre architecture et données. Concernant les modèles encoder-only (BERT-like) vs decoder-only (GPT-like), GisserotBoukhlef et al. (2026) montrent que les encodeurs pré-entraînés avec MLM (*Masked Language Modeling*) maintiennent des avantages spécifiques pour les tâches de classification en régime de peu de données, même à l'ère des LLMs génératifs. La question "faut-il encore pré-entraîner des encodeurs ?" reste ouverte et dépend du cas d'usage [@GisserotBoukhlef2026].
 :::
 
-### Jalons Pratiques : De LLaMA à LLaMA 3
+### Jalons de LLaMA
 
 L'évolution de LLaMA illustre le changement : les modèles récents sont souvent entraînés beaucoup plus longtemps sur plus de tokens, même quand leur taille reste modérée.
 

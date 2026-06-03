@@ -4,7 +4,7 @@ number-sections: false
 
 # 📑 Plan de Cours {.unnumbered}
 
-## 1.1. Acquisition & Preprocessing : Raffiner la donnée brute
+## Raffiner la Donnée Brute
 
 - Découverte des formats de données structurées et non structurées.
 - Nettoyage : détection et correction des valeurs aberrantes (*outliers*) et manquantes (*NaN*).
@@ -12,7 +12,7 @@ number-sections: false
 - Réduction de dimension par Analyse en Composantes Principales (PCA).
 - **Activité :** Lab pratique de traitement et de préparation de données hétérogènes.
 
-## 1.2. Algorithmes de Machine Learning : Les outils classiques
+## Outils Classiques de Machine Learning
 
 - Régression linéaire (simple & multiple, Lasso).
 - Régression logistique et application pour le scoring.
@@ -20,7 +20,7 @@ number-sections: false
 - Algorithmes avancés : Gradient Boosting et Support Vector Machines (SVM).
 - **Activité :** Défi de modélisation et comparaison de modèles prédictifs.
 
-## 1.3. Apprentissage Non Supervisé & Évaluation : Segmenter et diagnostiquer
+## Segmenter et Diagnostiquer
 
 - Algorithmes de clustering : Classification hiérarchique et K-Means.
 - Stratégies d'évaluation : Train / Test / Validation set.
@@ -28,7 +28,7 @@ number-sections: false
 - Métriques de diagnostic : Matrice de confusion, Courbes ROC et Lift.
 - **Activité :** Segmentation de clients et diagnostic des forces/faiblesses des modèles.
 
-## 1.4. Fondations du Deep Learning : Forger les réseaux de neurones
+## Forger les Réseaux de Neurones
 
 - Historique et genèse du Deep Learning.
 - Architecture du Perceptron Multicouche (PMC) : couches d'entrée, cachées et de sortie.
@@ -36,7 +36,7 @@ number-sections: false
 - Réglages du réseau : fonctions d'activation (ReLU, Sigmoid, Softmax) et fonctions de coût (MSE, Cross-Entropy).
 - **Activité :** Implémentation complète d'un réseau de neurones multicouche *from scratch* en Python.
 
-## 1.5. Déploiement & Projet Final : La Forge en action
+## Lancer la Forge
 
 - Cycle de vie d'un modèle et principes fondamentaux de mise en production (APIs, serving).
 - Travail collaboratif en équipe sur un projet d'entraînement de bout en bout (ML/DL).

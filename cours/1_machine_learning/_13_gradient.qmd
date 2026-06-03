@@ -1,8 +1,8 @@
-## Fondements et Mécanique de l'Optimisation : Du Gradient aux Optimiseurs
+## Mécanique de l'Optimisation
 
 Un modèle qui prédit bien, ce n'est pas qu'une bonne architecture — c'est surtout un apprentissage bien guidé. Comment une machine apprend-elle ? En commettant des erreurs, en les mesurant, et en se corrigeant — encore et encore. C'est cette mécanique qu'on appelle l'**optimisation**.
 
-### Les Fondements : Modèles, Données et Apprentissage
+### Modèles, Données et Apprentissage
 
 Pour démystifier ce qu'est réellement l'apprentissage en machine learning, nous pouvons utiliser une analogie physique simple : le moulage.
 
@@ -11,13 +11,13 @@ Pour démystifier ce qu'est réellement l'apprentissage en machine learning, nou
 * **L'Apprentissage (Le processus) :** Apprendre consiste à presser, déformer et ajuster cette matière itérativement pour qu'elle épouse le plus parfaitement possible la forme de la figurine originale, afin de pouvoir en générer de nouvelles à l'avenir.
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🛠️ Concept : Le Moule et l'Objet
+## 🛠️ Le Moule et l'Objet
 Imaginez que votre jeu de données est une **pièce mécanique** complexe (avec sa forme globale et ses micro-rayures). Votre modèle d'IA est un **matériau de moulage**. L'apprentissage (les *époques*) consiste à presser ce matériau sur l'objet pour en capturer la forme.
 :::
 
 ::: {.card .card-window}
 :::: {.card-header}
-Simulation de Presse
+🛠️ Presse en Action
 ::::
 
 :::: {.card-body .card-vslider-layout}
@@ -120,7 +120,7 @@ graph1 = {
 }
 ```
 
-### L'Anatomie du Modèle : Poids et Biais
+### Poids et Biais
 
 Pour ajuster notre moule à la bonne forme, nous tournons deux types de boutons : les **poids** (qui augmentent ou diminuent l'importance d'une information) et le **biais** (qui décale l'ensemble du moule vers le haut ou le bas).
 
@@ -141,7 +141,7 @@ où $x$ est l'entrée, $w$ le poids (importance), $b$ le biais (décalage). Le b
 
 ::: {.card .card-window}
 :::: {.card-header}
-Anatomie de la Déformation : Poids (w) & Biais (b)
+🎛️ Poids et Biais
 ::::
 
 :::: {.card-body .card-vslider-layout}
@@ -320,7 +320,7 @@ Le gradient est un vecteur de dérivées partielles de la fonction de perte par 
 
 ::: {.card .card-window}
 :::: {.card-header}
-Optimisation : Évaluation de la Perte (Loss) & Direction du Gradient
+🧭 Perte et Gradient
 ::::
 
 :::: {.card-body .card-vslider-layout}
@@ -581,7 +581,7 @@ Visualisez de manière interactive comment le choix de l'optimiseur et ses param
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🏔️ Simulateur 3D de la Descente de Gradient et Optimiseurs Modernes
+🏔️ Descente de Gradient 3D
 ::::
 
 :::: {.tab-actions}
@@ -666,7 +666,7 @@ viewof optParam = {
 ::::: {.col-12 .mb-3}
 :::::: {.card .border .m-0}
 ::::::: {.card-header .font-monospace .text-uppercase .text-muted .py-2 .small}
-🔍 Représentation 3D du Paysage de Coût (Loss Surface)
+🔍 Surface de Coût 3D
 :::::::
 ::::::: {#gradient-descent-container .card-body .gradient-3d-container .p-0}
 :::::::

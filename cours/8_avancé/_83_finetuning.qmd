@@ -1,4 +1,4 @@
-## Fine-Tuning : Du Savoir Général au Savoir-Faire Métier
+## Du Savoir Général au Métier
 
 Le pré-entraînement donne une culture générale au modèle. Le fine-tuning lui apprend ensuite un comportement précis : répondre dans un format, respecter un domaine, ou suivre des instructions.
 
@@ -10,7 +10,7 @@ Le pré-entraînement produit un modèle aux capacités générales remarquables
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-📊 Dynamiques précoces — bon run vs mauvais run
+📊 Dynamiques Précoces
 ::::
 
 :::: {.card-body .p-2}
@@ -46,7 +46,7 @@ Le choix de la profondeur d'adaptation dépend de l'ampleur du **Domain Shift** 
 **Domain-Adaptive Post-Training** : Une phase intermédiaire de pré-entraînement sur des données du domaine (sans supervision), avant le fine-tuning supervisé. Particulièrement efficace pour les domaines à terminologie spécialisée (finance, biomédical) [@Ke2025].
 :::
 
-### SFT : La Structure des Données d'Instruction
+### Données d'Instruction SFT
 
 Le Supervised Fine-Tuning (SFT) entraîne le modèle avec des exemples du type : instruction → bonne réponse. C'est une façon directe de lui montrer le comportement attendu.
 
@@ -61,7 +61,7 @@ Une controverse active porte sur l'ordonnancement optimal des données. L'approc
 Les travaux de Pareja et al. (2025) sur les modèles 3B–7B démontrent que le **Stacked training** est systématiquement plus efficace en termes d'échantillonnage : la méthode *Phased* n'apporte aucun gain mesurable et risque de provoquer un oubli partiel des premières phases lors des transitions [@Pareja2025].
 :::
 
-### Recette de Succès : Early Dynamics et Hyperparamètres
+### Dynamiques Précoces
 
 On peut souvent repérer très tôt si un entraînement part bien. Comme pour une course longue, un départ régulier vaut mieux qu'un départ brutal.
 
@@ -89,7 +89,7 @@ Ce diagnostic précoce permet d'**arrêter prématurément** les runs sous-optim
 | Stabilité des poids | Faibles variations   | Grandes mises à jour    |
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🏃 Analogie : Diagnostiquer un Marathon en Km 1
+## 🏃 Marathon en Premier Kilomètre
 
 Un entraîneur de marathon peut prédire la performance finale d'un coureur dès le premier kilomètre — non pas par la vitesse, mais par la régularité de la foulée et la fréquence cardiaque. Un rythme trop élevé dès le départ (équivalent : gradient élevé) signale un coureur qui s'épuisera avant l'arrivée. Un départ régulier et contrôlé, même plus lent, prédit une meilleure performance finale. Les dynamiques précoces du SFT suivent la même logique.
 :::

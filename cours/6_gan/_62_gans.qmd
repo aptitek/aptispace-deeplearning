@@ -1,4 +1,4 @@
-## GANs : La Mécanique du Duel Algorithmique
+## Le Duel Algorithmique des GANs
 
 Deux réseaux s'affrontent en boucle : le générateur fabrique des faux, le discriminateur tente de les détecter. À force de se mesurer l'un à l'autre, les deux s'améliorent jusqu'à ce que les faux soient indiscernables des vrais.
 
@@ -60,7 +60,7 @@ L'Équilibre de Nash est atteint quand $p_G = p_0$, auquel cas $D^*(\mathbf{x}) 
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-⚔️ Simulation : L'Équilibre du Duel GAN
+⚔️ Duel GAN
 ::::
 
 :::: {.card-control-row .sim-controls-row}

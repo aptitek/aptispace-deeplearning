@@ -1,4 +1,4 @@
-## DDPM : La Génération par Diffusion Inverse
+## Génération par Diffusion Inverse
 
 Un DDPM apprend à créer en faisant l'inverse d'une destruction contrôlée : on apprend d'abord comment une image devient du bruit, puis le modèle apprend à retirer ce bruit étape par étape.
 
@@ -12,7 +12,7 @@ Les Denoising Diffusion Probabilistic Models (DDPM) représentent un **changemen
 ::: {.card .card-window .mb-4}
 
 :::: {.card-header}
-🌡️ Simulateur — Processus de Diffusion Forward (DDPM)
+🌡️ Diffusion DDPM
 ::::
 
 :::: {.card-control-row .sim-controls-row}
@@ -62,7 +62,7 @@ _ddpmViz = {
 }
 ```
 
-### Le Processus Forward : Destruction Contrôlée
+### Destruction Contrôlée
 
 Le processus *forward* salit progressivement une image avec du bruit. Au début, on reconnaît encore l'image ; à la fin, il ne reste qu'un brouillard aléatoire.
 
@@ -87,12 +87,12 @@ Pour $T$ suffisamment grand (typiquement $T = 1000$) et $\bar\alpha_T \approx 0$
 :::
 
 ::: {.callout-note appearance="simple" icon="false"}
-## 🌡️ Analogie Thermodynamique : Diffusion de l'Encre
+## 🌡️ Diffusion de l'Encre
 
 Imaginez une goutte d'encre dans un verre d'eau. Le processus forward est la **diffusion naturelle** : l'encre se disperse progressivement jusqu'à ce que la solution soit uniformément colorée (état de haute entropie = bruit pur). Le processus reverse est la **diffusion inverse** : apprendre à reconcentrer l'encre en une goutte cohérente à partir du chaos. La physique interdit ce retour spontané (deuxième loi de la thermodynamique), mais un modèle entraîné peut l'apprendre statistiquement, à condition de connaître le "gradient de densité" — la fonction de score.
 :::
 
-### Le Processus Reverse : Reconstruction Apprise
+### Reconstruction Apprise
 
 Le processus *reverse* est le geste inverse : partir du brouillard et retirer un petit morceau de bruit à chaque étape, comme si l'on essayait de reformer la goutte d'encre dispersée.
 
@@ -128,7 +128,7 @@ $$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilo
 Le modèle apprend simplement à **prédire le bruit ajouté** à partir de l'image bruitée et du pas de temps $t$. Cette reformulation est à la fois simple à implémenter et efficace à optimiser.
 :::
 
-### L'Architecture U-Net : Poids Partagés Multi-Échelle
+### L'Architecture U-Net
 
 Le U-Net regarde l'image à plusieurs tailles à la fois : les grandes formes d'un côté, les petits détails de l'autre. C'est utile pour enlever du bruit sans perdre la structure globale.
 
@@ -137,7 +137,7 @@ Le U-Net regarde l'image à plusieurs tailles à la fois : les grandes formes d'
 Le réseau $\boldsymbol{\epsilon}_\theta$ est typiquement un **U-Net** — une architecture encodeur-décodeur avec connexions de saut (*skip connections*) permettant de combiner les représentations à différentes échelles [@MilvusReverse]. Le partage de poids entre les couches du U-Net à différentes résolutions spatiales est une forme de **Sparse Weight-Sharing** : le même filtre appris s'applique à différentes échelles, exploitant la structure multi-échelle inhérente aux images naturelles.
 :::
 
-### DDIM : Accélération par Sampling Déterministe
+### DDIM Déterministe
 
 Le DDPM classique est lent parce qu'il enlève le bruit en beaucoup de petites étapes. DDIM garde le même modèle, mais prend des raccourcis plus directs pour générer plus vite.
 
