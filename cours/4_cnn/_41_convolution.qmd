@@ -267,13 +267,20 @@ $$
 W_2 = \frac{W_1 - F + 2P}{S} + 1 \qquad H_2 = \frac{H_1 - F + 2P}{S} + 1 \qquad D_2 = K
 $$
 
-où $P$ est le **padding** (remplissage avec des zéros pour contrôler la taille de sortie) et $S$ est la **stride** (pas de déplacement du filtre). Chaque filtre produit une **carte de caractéristiques** (*feature map*) de taille $W_2 \times H_2$.
+* **$W_1, H_1$** : largeur et hauteur du volume d'entrée.
+* **$W_2, H_2$** : largeur et hauteur du volume de sortie.
+* **$F$** : taille spatiale du filtre (*kernel*).
+* **$P$** : padding (largeur de la bordure de zéros ajoutée aux limites de l'image).
+* **$S$** : stride (le pas de déplacement du filtre sur l'image).
+* **$K$** : le nombre de filtres appliqués (qui donne la profondeur de la sortie $D_2$).
+
+Chaque filtre produit une **carte de caractéristiques** (*feature map*) de taille $W_2 \times H_2$.
 
 ### Optimisation GPU : l'algorithme im2col et GEMM
 
 Pour maximiser le débit de calcul sur GPU, les frameworks de deep learning reformulent la convolution en **multiplication de matrices généralisée** (GEMM) via l'algorithme `im2col` [@CS231n2026] :
 
-1. Chaque bloc spatial $F \times F$ de l'entrée est déroulé en un vecteur colonne → matrice $\mathbf{X}_{\text{col}} \in \mathbb{R}^{(F^2 D_1) \times (W_2 H_2)}$.
+1. Chaque bloc spatial $F \times F$ de l'entrée est déroulé en un vecteur colonne → matrice $\mathbf{X}_{\text{col}} \in \mathbb{R}^{(F^2 D_1) \times (W_2 H_2)}$ (où $\in$ désigne l'appartenance à l'espace des matrices de nombres réels de dimensions correspondantes, [voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)).
 2. Les $K$ filtres sont déroulés en vecteurs lignes → matrice $\mathbf{W}_{\text{row}} \in \mathbb{R}^{K \times (F^2 D_1)}$.
 3. La convolution entière devient : $\mathbf{Y}_{\text{col}} = \mathbf{W}_{\text{row}} \mathbf{X}_{\text{col}}$
 

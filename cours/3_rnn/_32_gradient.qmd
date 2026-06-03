@@ -4,19 +4,29 @@ La robustesse d'un RNN ne se mesure pas à sa profondeur structurelle, mais à s
 
 ### Backpropagation Through Time (BPTT)
 
-Le BPTT est la généralisation de la rétropropagation au cas séquentiel. On "déplie" (*unroll*) le RNN sur $T$ pas de temps pour obtenir un réseau profond de $T$ couches partageant les mêmes poids. Le gradient de la perte totale $\mathcal{L} = \sum_t \mathcal{L}_t$ par rapport aux poids $\mathbf{W}_h$ nécessite de calculer, pour chaque pas $t$ :
+Le BPTT est la généralisation de la rétropropagation au cas séquentiel. On "déplie" (*unroll*) le RNN sur $T$ pas de temps pour obtenir un réseau profond de $T$ couches partageant les mêmes poids. Le gradient de la perte totale $\mathcal{L} = \sum_t \mathcal{L}_t$ par rapport aux poids $\mathbf{W}_h$ nécessite de calculer, pour chaque pas $t$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$
 \frac{\partial \mathcal{L}_t}{\partial \mathbf{W}_h} = \sum_{i=1}^{t} \frac{\partial \mathcal{L}_t}{\partial \mathbf{h}_t} \cdot \frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i} \cdot \frac{\partial \mathbf{h}_i}{\partial \mathbf{W}_h}
 $$
 
-Le terme critique est le **produit de matrices jacobiennes** :
+* **$\mathcal{L}_t$** : la perte (*loss*) au pas de temps $t$.
+* **$\mathbf{W}_h$** : la matrice des poids récurrents.
+* **$\mathbf{h}_t$** : le vecteur d'état caché au pas de temps $t$.
+* **$\sum_{i=1}^{t}$** : la sommation des contributions de tous les pas temporels précédents $i$ jusqu'à $t$.
+
+Le terme critique est le **produit de matrices jacobiennes** (qui mesurent la sensibilité de chaque état caché par rapport au précédent) :
 
 $$
 \frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i} = \prod_{j=i}^{t-1} \frac{\partial \mathbf{h}_{j+1}}{\partial \mathbf{h}_j} = \prod_{j=i}^{t-1} \operatorname{diag}\!\left(\sigma'(\mathbf{z}^{j+1})\right) \mathbf{W}_h
 $$
 
-La stabilité de ce produit est dictée par le **rayon spectral** $\rho(\mathbf{W}_h)$ (la valeur propre dominante de $\mathbf{W}_h$) [@Pascanu2013; @Franck2024].
+* **$\prod_{j=i}^{t-1}$** : le produit multiplicatif successif (calculé du pas $i$ au pas $t-1$).
+* **$\operatorname{diag}(\cdot)$** : l'opérateur créant une matrice diagonale à partir d'un vecteur.
+* **$\sigma'$** : la dérivée de la fonction d'activation.
+* **$\mathbf{z}^{j+1}$** : le vecteur des pré-activations à l'étape $j+1$.
+
+La stabilité de ce produit est dictée par son **rayon spectral** (la valeur propre dominante de la matrice de poids récurrents $\mathbf{W}_h$, notée $\rho(\mathbf{W}_h)$ où $\rho$ est la lettre grecque rho) [@Pascanu2013; @Franck2024].
 
 ### Disparition et explosion du gradient (version temporelle)
 
@@ -29,6 +39,11 @@ L'évolution de la norme du gradient est directement gouvernée par la valeur pr
 $$
 \left\|\frac{\partial \mathbf{h}_t}{\partial \mathbf{h}_i}\right\| \approx \begin{cases} \to 0 & \text{si } \rho(\mathbf{W}_h) < 1 \text{ (disparition dans les dépendances lointaines)} \\ \to \infty & \text{si } \rho(\mathbf{W}_h) > 1 \text{ (explosion chaotique des poids)} \end{cases}
 $$
+
+* **$\|\cdot\|$** : la norme matricielle (mesurant la magnitude de la matrice jacobienne).
+* **$\approx$** : l'opérateur d'approximation (approximativement égal à).
+* **$\to$** : la notation "tend vers" (indique une limite).
+* **La grande accolade $\begin{cases}$** : décrit une alternative par cas selon les conditions à droite.
 
 * **La disparition :** Si $\rho(\mathbf{W}_h) < 1$, ou si l'activation sature (dérivée $\sigma' < 1$), le gradient s'évanouit exponentiellement en remontant le temps. Le réseau perd toute mémoire à long terme.
 * **L'explosion :** Si $\rho(\mathbf{W}_h) > 1$, le gradient croît exponentiellement vers l'infini, provoquant des sauts de paramètres incontrôlés qui déstabilisent complètement l'entraînement.
@@ -72,7 +87,7 @@ _gradMag = {
 
 Deux stratégies palliatives existent pour les RNN simples, avant d'adopter des architectures à portes [@Pascanu2013; @Xu2024] :
 
-* **Écrêtage du gradient** (*Gradient Clipping*) : Lorsque la norme du gradient global dépasse un seuil $\tau$, on le remet à l'échelle : $\mathbf{g} \leftarrow \tau \cdot \mathbf{g} / \|\mathbf{g}\|$. Cette technique règle le problème d'explosion mais ne résout pas la disparition.
+* **Écrêtage du gradient** (*Gradient Clipping*) : Lorsque la norme du gradient global dépasse un seuil $\tau$ (lettre grecque tau), on le remet à l'échelle : $\mathbf{g} \leftarrow \tau \cdot \mathbf{g} / \|\mathbf{g}\|$ (où $\mathbf{g}$ désigne le gradient, $\leftarrow$ l'affectation, et $\|\mathbf{g}\|$ sa norme Euclidienne, [voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)). Cette technique règle le problème d'explosion mais ne résout pas la disparition.
 
 * **Troncature du BPTT** (*Truncated BPTT*) : On ne propage le gradient que sur une fenêtre de $k$ pas de temps au lieu de la séquence complète. Compromis entre efficacité computationnelle et capacité de mémoire à long terme.
 

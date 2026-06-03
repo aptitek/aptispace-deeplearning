@@ -556,9 +556,20 @@ Les **optimiseurs modernes** automatisent ces réglages [@lecture2_optimization;
 ::: {.callout-note collapse="true"}
 ## 🔢 Mécanisme des optimiseurs
 
-La mise à jour des poids à chaque étape : $w \leftarrow w - \eta \cdot \nabla_w \mathcal{L}$, où $\eta$ est le taux d'apprentissage et $\nabla_w \mathcal{L}$ le gradient.
+La mise à jour des poids à chaque étape s'écrit ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
+$$w \leftarrow w - \eta \cdot \nabla_w \mathcal{L}$$
 
-**Adam** maintient deux moyennes mobiles — le gradient moyen ($m_t$) et le gradient carré moyen ($v_t$) — pour adapter le pas à chaque paramètre : $\hat{w} = w - \eta \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$.
+* **$\leftarrow$ (flèche gauche)** : l'opérateur d'affectation (le paramètre à gauche prend la nouvelle valeur calculée à droite à chaque étape).
+* **$\eta$ (lettre grecque êta)** : le taux d'apprentissage (*learning rate*).
+* **$\nabla_w$ (nabla avec indice $w$)** : le gradient de la perte par rapport aux poids $w$ (vecteur des dérivées partielles).
+* **$\mathcal{L}$** : la fonction de perte (*loss*).
+
+**Adam** adapte le pas pour chaque paramètre en maintenant deux moyennes mobiles — le gradient moyen ($m_t$) et le gradient carré moyen ($v_t$) :
+$$\hat{w} = w - \eta \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+
+* **$t$ en indice** (ex: $m_t$) : représente le pas d'optimisation ou l'itération temporelle en cours.
+* **La notation chapeau $\hat{}$** (ex: $\hat{m}_t, \hat{v}_t$) : désigne les moyennes mobiles corrigées pour éliminer le biais d'initialisation à zéro.
+* **$\epsilon$ (lettre grecque epsilon)** : une constante de stabilité numérique (ex: $10^{-8}$) empêchant toute division par zéro.
 :::
 
 ### Simulation de la Trajectoire d'Optimisation

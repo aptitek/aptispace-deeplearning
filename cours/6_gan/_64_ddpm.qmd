@@ -59,11 +59,18 @@ _ddpmViz = {
 
 Le processus *forward* (ou de diffusion) dégrade itérativement une donnée $\mathbf{x}_0 \sim p_0$ en ajoutant du bruit gaussien à chaque pas de temps $t \in \{1, \ldots, T\}$ [@Singh2024; @SixSimpleSteps2024]. Ce processus est **markovien** et défini par :
 
-$$q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \, \mathbf{x}_{t-1}, \beta_t \mathbf{I})$$
+$$q(\mathbf{x}_t | \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \, \mathbf{x}_{t-1}, \beta_t \mathbf{I})$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-où $\{\beta_t\}_{t=1}^T$ est un calendrier de bruit (*noise schedule*) croissant. En définissant $\alpha_t = 1 - \beta_t$ et $\bar\alpha_t = \prod_{s=1}^t \alpha_s$, on obtient la **forme fermée** permettant d'échantillonner $\mathbf{x}_t$ directement depuis $\mathbf{x}_0$ sans simuler toutes les étapes intermédiaires :
+* **$q(\mathbf{x}_t | \mathbf{x}_{t-1})$** : la probabilité conditionnelle de transition d'état au pas $t$.
+* **$\beta_t$ (bêta)** : coefficient de bruit au pas $t$ (déterminant la quantité de bruit injectée).
+* **$\mathbf{I}$** : la matrice identité (bruit isotrope, identique et indépendant sur chaque dimension).
+
+où $\{\beta_t\}_{t=1}^T$ est un calendrier de bruit (*noise schedule*) croissant. En définissant $\alpha_t = 1 - \beta_t$ et $\bar\alpha_t = \prod_{s=1}^t \alpha_s$, on obtient la **forme fermée** permettant d'échantillonner $\mathbf{x}_t$ directement depuis $\mathbf{x}_0$ sans simuler toutes les étapes intermédiaires ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$q(\mathbf{x}_t | \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar\alpha_t} \, \mathbf{x}_0, (1 - \bar\alpha_t) \mathbf{I})$$
+
+* **$\alpha_t$ (alpha)** : coefficient de conservation du signal original au pas $t$.
+* **$\bar\alpha_t$** : le produit cumulatif (via l'opérateur de produit successif $\prod$) des coefficients de conservation du pas $1$ au pas $t$.
 
 Pour $T$ suffisamment grand (typiquement $T = 1000$) et $\bar\alpha_T \approx 0$, $\mathbf{x}_T \approx \mathcal{N}(\mathbf{0}, \mathbf{I})$ — la donnée est devenue du bruit pur.
 
@@ -77,17 +84,25 @@ Imaginez une goutte d'encre dans un verre d'eau. Le processus forward est la **d
 
 Le processus *reverse* apprend à **remonter** de $\mathbf{x}_T$ vers $\mathbf{x}_0$, étape par étape. La distribution inverse est approximée par un réseau de neurones $p_\theta$ [@Ho2020; @Raha] :
 
-$$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))$$
+$$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-Ho et al. (2020) montrent qu'il est optimal de paramétrer $\boldsymbol{\mu}_\theta$ non pas directement, mais via une **prédiction du bruit** $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$ :
+* **$p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)$** : distribution inverse apprise paramétrée par les poids $\theta$ du réseau.
+* **$\boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t)$** : moyenne et covariance de l'état précédent estimées par le réseau de neurones.
+
+Ho et al. (2020) montrent qu'il est optimal de paramétrer $\boldsymbol{\mu}_\theta$ non pas directement, mais via une **prédiction du bruit** $\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$\boldsymbol{\mu}_\theta(\mathbf{x}_t, t) = \frac{1}{\sqrt{\alpha_t}} \left(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar\alpha_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)\right)$$
+
+* **$\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$** : le bruit d'écart gaussien estimé par le réseau (U-Net) à partir de la version bruitée $\mathbf{x}_t$ et de l'indice temporel $t$.
 
 ### L'Objectif Simplifié
 
 L'objectif d'entraînement ELBO se simplifie remarquablement en une perte de débruitage [@Ho2020; @DiffusionModelsPDF] :
 
-$$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}}\!\left[\|\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\sqrt{\bar\alpha_t}\,\mathbf{x}_0 + \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}, \, t)\|^2\right]$$
+$$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}}\!\left[\|\boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\sqrt{\bar\alpha_t}\,\mathbf{x}_0 + \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}, \, t)\|^2\right]$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}}$** : espérance mathématique calculée sur le pas $t$ (tiré uniformément), l'échantillon initial $\mathbf{x}_0$, et le bruit gaussien standard $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$.
+* **$\|\cdot\|^2$** : la norme Euclidienne au carré, pénalisant l'erreur de prédiction de bruit élément par élément.
 
 Le modèle apprend simplement à **prédire le bruit ajouté** à partir de l'image bruitée et du pas de temps $t$. Cette reformulation est à la fois simple à implémenter et efficace à optimiser.
 
@@ -99,6 +114,8 @@ Le réseau $\boldsymbol{\epsilon}_\theta$ est typiquement un **U-Net** — une a
 
 Un défaut majeur des DDPM est la lenteur de la génération : $T = 1000$ passes du réseau pour générer une image. Le DDIM (*Denoising Diffusion Implicit Models*) reformule le processus inverse comme un **ODE déterministe** plutôt qu'une SDE stochastique, permettant de réduire le nombre de pas à 50–100 sans perte significative de qualité [@MilvusDDPM; @Tarricone2026] :
 
-$$\mathbf{x}_{t-1} = \sqrt{\bar\alpha_{t-1}} \underbrace{\frac{\mathbf{x}_t - \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}{\sqrt{\bar\alpha_t}}}_{\text{prédiction de }\mathbf{x}_0} + \sqrt{1-\bar\alpha_{t-1}} \, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$$
+$$\mathbf{x}_{t-1} = \sqrt{\bar\alpha_{t-1}} \underbrace{\frac{\mathbf{x}_t - \sqrt{1-\bar\alpha_t}\,\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)}{\sqrt{\bar\alpha_t}}}_{\text{prédiction de }\mathbf{x}_0} + \sqrt{1-\bar\alpha_{t-1}} \, \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t)$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\bar\alpha_{t-1}$** : le coefficient cumulatif de conservation du signal à l'étape temporelle précédente $t-1$.
 
 Le DDIM utilise le même modèle entraîné que le DDPM mais change uniquement le schéma de sampling, offrant un compromis vitesse/qualité contrôlable.

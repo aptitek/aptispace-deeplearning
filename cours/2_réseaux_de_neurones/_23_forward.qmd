@@ -15,14 +15,17 @@ Le calcul vectorisé pour une couche $l$ s'écrit :
 
 $$
 \mathbf{a}^l = \sigma\!\left(\mathbf{W}^l \mathbf{a}^{l-1} + \mathbf{b}^l\right)
-$$
+$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-Où :
-* $\mathbf{a}^l$ est le vecteur d'activations de la couche $l$
-* $\mathbf{W}^l \in \mathbb{R}^{n_l \times n_{l-1}}$ est la matrice des poids de la couche $l$
-* $\mathbf{a}^{l-1}$ est le vecteur d'activations de la couche précédente $l-1$
-* $\mathbf{b}^l$ est le vecteur des biais de la couche $l$
-* $\sigma$ est la fonction d'activation, appliquée élément par élément
+* **Lettres grasses** (ex: $\mathbf{a}, \mathbf{W}, \mathbf{b}$) : désignent des tenseurs (vecteurs ou matrices) plutôt que des nombres isolés (scalaires).
+* **L'exposant $l$** (ex: $\mathbf{a}^l$) : indique la couche du réseau de neurones à laquelle la variable appartient.
+* **$\mathbf{a}^l$** : le vecteur d'activations de la couche $l$.
+* **$\mathbf{W}^l \in \mathbb{R}^{n_l \times n_{l-1}}$** : la matrice des poids de la couche $l$.
+  * Le symbole $\in$ signifie **"appartient à"**.
+  * $\mathbb{R}^{n_l \times n_{l-1}}$ représente l'espace des matrices de nombres réels à $n_l$ lignes (nombre de neurones de la couche $l$) et $n_{l-1}$ colonnes (nombre de neurones de la couche précédente $l-1$).
+* **$\mathbf{a}^{l-1}$** : le vecteur d'activations de la couche précédente $l-1$ (la couche $\mathbf{a}^0$ correspondant à l'entrée $\mathbf{x}$).
+* **$\mathbf{b}^l$** : le vecteur des biais de la couche $l$.
+* **$\sigma$** (lettre grecque *sigma*) : la fonction d'activation, appliquée élément par élément sur le vecteur de pré-activation.
 :::
 
 * **L'impératif de la non-linéarité :** Appliquer une fonction d'activation non linéaire empêche le réseau de s'effondrer mathématiquement en une simple régression linéaire [@Youtube_NonLinearite; @Maths_IA]. Cette non-linéarité lui permet de modéliser les motifs complexes et les ruptures de la réalité.

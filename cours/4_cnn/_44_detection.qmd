@@ -8,7 +8,7 @@ YOLO (*You Only Look Once*, Redmon et al., 2016) révolutionne la détection en 
 
 **Principe :** L'image est divisée en une grille $S \times S$. Chaque cellule prédit $B$ boîtes englobantes (*bounding boxes*) avec leur score de confiance et $C$ probabilités de classe. La sortie est un tenseur de taille $S \times S \times (B \times 5 + C)$.
 
-**Fonction de perte SSE stratégiquement pondérée** — La perte combine plusieurs termes avec des poids distincts pour éviter l'instabilité d'apprentissage [@AraIntelligence2022; @Educative2026] :
+**Fonction de perte SSE stratégiquement pondérée** — La perte combine plusieurs termes avec des poids distincts pour éviter l'instabilité d'apprentissage ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) [@AraIntelligence2022; @Educative2026] :
 
 $$
 \mathcal{L} = \lambda_{\text{coord}} \sum_{\text{box}} \left[(x - \hat{x})^2 + (y - \hat{y})^2 + (\sqrt{w} - \sqrt{\hat{w}})^2 + (\sqrt{h} - \sqrt{\hat{h}})^2\right]
@@ -16,15 +16,22 @@ $$
 + \lambda_{\text{obj}} \mathcal{L}_{\text{conf}} + \lambda_{\text{noobj}} \mathcal{L}_{\text{conf,vide}} + \mathcal{L}_{\text{classe}}
 $$
 
-avec $\lambda_{\text{coord}} = 5$ (sur-pondère la localisation) et $\lambda_{\text{noobj}} = 0{,}5$ (réduit l'impact des nombreuses cellules vides).
+* **$x, y, w, h$** : les coordonnées réelles de la boîte (centre $x, y$, largeur $w$, hauteur $h$).
+* **La notation chapeau $\hat{}$** (ex: $\hat{x}, \hat{y}, \hat{w}, \hat{h}$) : représente la prédiction estimée par le modèle.
+* **$\sum_{\text{box}}$** : sommation sur toutes les boîtes prédites.
+* **$\lambda_{\text{coord}}, \lambda_{\text{obj}}, \lambda_{\text{noobj}}$ (lettres grecques lambda)** : facteurs de pondération (hyperparamètres) de la perte (avec $\lambda_{\text{coord}} = 5$ et $\lambda_{\text{noobj}} = 0{,}5$).
+* **$\mathcal{L}_{\text{conf}}, \mathcal{L}_{\text{conf,vide}}, \mathcal{L}_{\text{classe}}$** : les composants de la fonction de perte pour la confiance (objet présent), la confiance (boîte vide), et la classe.
 
 **L'astuce de la racine carrée pour $w$ et $h$ :** Plutôt que de pénaliser directement $(w - \hat{w})^2$, YOLO pénalise $(\sqrt{w} - \sqrt{\hat{w}})^2$. Puisque $\frac{d}{dx}\sqrt{x} = \frac{1}{2\sqrt{x}}$, la pente est plus forte pour les petites valeurs de $x$. Ainsi, une erreur de 10 pixels sur une petite boîte est pénalisée bien plus sévèrement que sur une grande boîte — comportement souhaitable pour préserver la précision sur les petits objets [@AIknow2026].
 
-**NMS et IoU :** En post-traitement, le *Non-Maximum Suppression* (NMS) élimine les boîtes redondantes. Pour chaque paire de boîtes, l'*Intersection over Union* (IoU) est calculée :
+**NMS et IoU :** En post-traitement, le *Non-Maximum Suppression* (NMS) élimine les boîtes redondantes. Pour chaque paire de boîtes, l'*Intersection over Union* (IoU) est calculée ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$
 \text{IoU} = \frac{\text{Aire}(B_1 \cap B_2)}{\text{Aire}(B_1 \cup B_2)}
 $$
+
+* **$\cap$ (opérateur d'intersection)** : représente la zone où les deux boîtes $B_1$ et $B_2$ se chevauchent.
+* **$\cup$ (opérateur d'union)** : représente la zone totale englobée par l'union des deux boîtes.
 
 Si l'IoU dépasse un seuil (typiquement 0,5), la boîte avec le score de confiance le plus faible est supprimée.
 
@@ -109,11 +116,15 @@ yolo_renderGrid = {
 
 Les Capsule Networks (Sabour, Frosst & Hinton, 2017) constituent une réponse architecturale au Problème Picasso des CNN [@Sabour2017; @Pechyonkin2017; @Fritz2023]. Leur innovation fondamentale : remplacer les scalaires d'activation par des **vecteurs** dont la direction encode les paramètres de pose d'une entité (position, orientation, échelle, déformation).
 
-**La fonction de squashing** : Pour garantir que la longueur du vecteur capsule représente une probabilité (entre 0 et 1) tout en préservant son orientation :
+**La fonction de squashing** : Pour garantir que la longueur du vecteur capsule représente une probabilité (entre 0 et 1) tout en préservant son orientation ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$
 \mathbf{v}_j = \frac{\|\mathbf{s}_j\|^2}{1 + \|\mathbf{s}_j\|^2} \cdot \frac{\mathbf{s}_j}{\|\mathbf{s}_j\|}
 $$
+
+* **$\mathbf{v}_j$** : le vecteur d'activation final de la capsule $j$.
+* **$\mathbf{s}_j$** : le vecteur d'entrée pondéré reçu par la capsule $j$.
+* **$\|\cdot\|$ (norme Euclidienne)** : mesure la longueur géométrique du vecteur.
 
 Le premier terme compresse la magnitude dans $[0,1)$ ; le second préserve la direction unitaire du vecteur. Contrairement à la sigmoïde appliquée à des scalaires, cette opération maintient l'information directionnelle.
 
@@ -122,6 +133,11 @@ Le premier terme compresse la magnitude dans $[0,1)$ ; le second préserve la di
 $$
 \hat{\mathbf{u}}_{j|i} = \mathbf{W}_{ij} \mathbf{u}_i
 $$
+
+* **$\hat{\mathbf{u}}_{j|i}$** : le vecteur de prédiction de la capsule parente $j$ émis par la capsule enfant $i$.
+* **La notation $j|i$ (indice $j$ sachant $i$)** : désigne une valeur relative ou une prédiction d'une entité $j$ calculée à partir d'une entité $i$.
+* **$\mathbf{W}_{ij}$** : la matrice de poids de transformation affine entre les couches $i$ et $j$.
+* **$\mathbf{u}_i$** : le vecteur d'activation de la capsule inférieure $i$.
 
 Le mécanisme d'accord itératif renforce les connexions entre capsules dont les prédictions concordent et affaiblit celles qui divergent. Ce routage remplace avantageusement le pooling en préservant les **relations spatiales** entre les parties.
 

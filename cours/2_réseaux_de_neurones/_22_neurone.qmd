@@ -12,9 +12,13 @@ Le neurone artificiel constitue l'atome de calcul fondamental de tout réseau de
 
 Le calcul de la sommation pondérée s'écrit :
 
-$$h = \sum_{i} w_i x_i + b$$
+$$h = \sum_{i} w_i x_i + b$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-Où $x_i$ représente les signaux d'entrée, $w_i$ les poids et $b$ le biais.
+* **$h$** : la valeur de **pré-activation** (la somme pondérée brute accumulée par le neurone avant d'appliquer la fonction d'activation).
+* **$\sum_{i}$** : le symbole de sommation, indiquant que l'on additionne les contributions de toutes les entrées indexées par $i$.
+* **$x_i$** : le signal de la $i$-ème entrée.
+* **$w_i$** : le poids synaptique associé à la $i$-ème entrée.
+* **$b$** : le biais (valeur de décalage).
 :::
 
 ::: {.card .card-window .mb-4}

@@ -6,11 +6,13 @@ Le **bloc d'attention** est l'unité de calcul fondamentale du Transformer. Cont
 
 Pour chaque token $i$ dans la séquence, l'attention compute trois vecteurs dérivés par projection linéaire de l'embedding $\mathbf{x}_i \in \mathbb{R}^{d_{\text{model}}}$ [@June2023] :
 
-$$\mathbf{q}_i = \mathbf{W}_Q \mathbf{x}_i, \quad \mathbf{k}_i = \mathbf{W}_K \mathbf{x}_i, \quad \mathbf{v}_i = \mathbf{W}_V \mathbf{x}_i$$
+$$\mathbf{q}_i = \mathbf{W}_Q \mathbf{x}_i, \quad \mathbf{k}_i = \mathbf{W}_K \mathbf{x}_i, \quad \mathbf{v}_i = \mathbf{W}_V \mathbf{x}_i$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-* **Query $\mathbf{q}_i$** : La "requête" du token $i$ — ce qu'il cherche dans le contexte. Analogie : un moteur de recherche exprimant une intention.
-* **Key $\mathbf{k}_j$** : La "signature" du token $j$ — ce qu'il offre comme information. Analogie : un titre d'article indexé.
-* **Value $\mathbf{v}_j$** : Le contenu informationnel du token $j$, agrégé proportionnellement à la pertinence. Analogie : le corps de l'article récupéré.
+* **$\mathbf{x}_i \in \mathbb{R}^{d_{\text{model}}}$** : le vecteur d'embedding du $i$-ème token de la séquence.
+* **$\mathbf{W}_Q, \mathbf{W}_K, \mathbf{W}_V$** : les matrices de projection linéaire apprises pour les requêtes, clés et valeurs.
+* **Query $\mathbf{q}_i$** : La "requête" du token $i$ — ce qu'il cherche dans le contexte.
+* **Key $\mathbf{k}_j$** : La "signature" du token $j$ — ce qu'il offre comme information.
+* **Value $\mathbf{v}_j$** : Le contenu informationnel du token $j$.
 
 ### Le Scaled Dot-Product Attention
 
@@ -20,9 +22,12 @@ $$a_{ij} = \frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_k}}$$
 
 La normalisation par $\sqrt{d_k}$ (dimension des clés) est cruciale : sans elle, les produits scalaires croissent en $O(d_k)$ en magnitude, poussant le Softmax dans ses zones de saturation à gradient quasi-nul. Après softmax, on obtient les poids d'attention $\alpha_{ij} = \text{softmax}(a_{ij})$, et la sortie est l'agrégation pondérée des valeurs :
 
-$$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}$$
+$$\text{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}^T}{\sqrt{d_k}}\right) \mathbf{V}$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-en notation matricielle pour un batch.
+* **$\mathbf{Q}, \mathbf{K}, \mathbf{V}$** : matrices regroupant les vecteurs requêtes, clés et valeurs de toute la séquence.
+* **$\mathbf{K}^T$** : transposée de la matrice des clés (indiquant la transposition par l'exposant $T$).
+* **$\text{softmax}(\cdot)$** : fonction d'activation normalisant les scores en probabilités (les poids d'attention).
+* **$\sqrt{d_k}$** : facteur d'échelle, racine carrée de la dimension des clés.
 
 ::: {.card .card-window .mb-4}
 
@@ -181,9 +186,11 @@ renderSelfAttention = {
 
 Plutôt qu'une seule attention globale, l'architecture Transformer utilise $H$ têtes d'attention parallèles, chacune opérant dans un sous-espace de dimension $d_k = d_{\text{model}} / H$ [@KamarainenND] :
 
-$$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) \mathbf{W}_O$$
+$$\text{MultiHead}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H) \mathbf{W}_O$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-où $\text{head}_h = \text{Attention}(\mathbf{Q}\mathbf{W}_Q^h, \mathbf{K}\mathbf{W}_K^h, \mathbf{V}\mathbf{W}_V^h)$.
+* **$H$** : nombre de têtes d'attention indépendantes travaillant en parallèle.
+* **$\text{Concat}(\cdot)$** : opération de concaténation des sorties de toutes les têtes.
+* **$\mathbf{W}_O$** : matrice de projection de sortie recombinante.
 
 Chaque tête apprend à se focaliser sur un type différent de dépendance : certaines têtes capturent la syntaxe (sujet-verbe), d'autres la coréférence (pronom-antécédent), d'autres encore les relations sémantiques thématiques. La concaténation des sorties puis la projection $\mathbf{W}_O$ recombinent ces représentations parallèles.
 
@@ -205,7 +212,11 @@ Deux variantes coexistent : LayerNorm (BERT, GPT-2) normalise sur les dimensions
 
 Après l'attention (qui capture les *relations* entre tokens), un MLP effectue un **raffinement des caractéristiques** dans l'espace latent de chaque token indépendamment. La structure standard est une expansion-contraction :
 
-$$\text{FFN}(\mathbf{x}) = \text{GELU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2$$
+$$\text{FFN}(\mathbf{x}) = \text{GELU}(\mathbf{x}\mathbf{W}_1 + \mathbf{b}_1)\mathbf{W}_2 + \mathbf{b}_2$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\text{GELU}(\cdot)$** : fonction d'activation non linéaire.
+* **$\mathbf{W}_1, \mathbf{b}_1$** : poids et biais de la première couche linéaire (expansion de dimension).
+* **$\mathbf{W}_2, \mathbf{b}_2$** : poids et biais de la seconde couche linéaire (contraction de dimension).
 
 avec $d_{\text{ff}} = 4 d_{\text{model}}$ typiquement. Le MLP est responsable de 2/3 des paramètres du Transformer — c'est là que réside la "mémoire factuelle" du modèle.
 

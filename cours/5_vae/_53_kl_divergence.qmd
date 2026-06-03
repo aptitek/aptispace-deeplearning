@@ -34,15 +34,26 @@ $$H_3 = \frac{k}{2}$$
 
 ### Forme Fermée Finale
 
-La sommation $D_{\text{KL}} = H_1 + H_2 - H_3$ donne la **formule standard** [@munoz_nd] :
+La sommation $D_{\text{KL}} = H_1 + H_2 - H_3$ donne la **formule standard** [@munoz_nd] ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T \boldsymbol{\Sigma}_2^{-1} (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1) - k + \log\frac{|\boldsymbol{\Sigma}_2|}{|\boldsymbol{\Sigma}_1|} \right)}$$
 
+* **$\text{tr}(\cdot)$ (Trace)** : somme des éléments diagonaux d'une matrice carrée.
+* **$\boldsymbol{\Sigma}_2^{-1}$ (Covariance inverse)** : inverse de la matrice de covariance $\boldsymbol{\Sigma}_2$.
+* **$(\cdot)^T$ (Transposition)** : convertit un vecteur colonne en vecteur ligne pour permettre le produit matriciel (calcul de forme quadratique).
+* **$|\boldsymbol{\Sigma}|$ (Déterminant)** : valeur scalaire mesurant la dilatation des volumes induite par la matrice de covariance.
+* **$k$** : dimension de l'espace latent (nombre de variables aléatoires gaussiennes).
+
 ### Cas Pratique du VAE : Gaussiennes Diagonales
 
-Dans l'implémentation standard du VAE, les covariances sont **diagonales** : $\boldsymbol{\Sigma}_1 = \text{diag}(\sigma_1^2, \ldots, \sigma_k^2)$ et $\boldsymbol{\Sigma}_2 = \mathbf{I}$ (l'*a priori* standard). La formule se simplifie considérablement :
+Dans l'implémentation standard du VAE, les covariances sont **diagonales** : $\boldsymbol{\Sigma}_1 = \text{diag}(\sigma_1^2, \ldots, \sigma_k^2)$ et $\boldsymbol{\Sigma}_2 = \mathbf{I}$ (l'*a priori* standard). La formule se simplifie considérablement ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \mathcal{N}(\mathbf{0}, \mathbf{I})\right) = \frac{1}{2} \sum_{j=1}^{k} \left(\sigma_j^2 + \mu_j^2 - 1 - \log \sigma_j^2\right)$$
+
+* **$\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)$** : distribution normale paramétrée par son vecteur de moyenne $\boldsymbol{\mu}$ et son écart-type $\boldsymbol{\sigma}$.
+* **$\mathbf{0}$ et $\mathbf{I}$** : le vecteur de moyennes nul et la matrice de covariance identité (pas de corrélation, variance unitaire).
+* **$\sigma_j^2$** : la variance de la $j$-ème composante de l'espace latent.
+* **$\mu_j$** : la moyenne de la $j$-ème composante.
 
 Cette forme est remarquablement simple à calculer et à différencier. Son gradient est disponible analytiquement, sans nécessiter d'échantillonnage.
 

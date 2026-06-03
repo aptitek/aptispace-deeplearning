@@ -16,11 +16,20 @@ $D_\phi : \mathbf{x} \mapsto [0, 1]$ est un classificateur binaire qui estime la
 
 L'entraînement conjoint est décrit par le jeu à deux joueurs [@Goodfellow2014NIPS; @Moghaddam2023] :
 
-$$\min_G \max_D \; V(G, D) = \mathbb{E}_{\mathbf{x} \sim p_0}\!\left[\log D(\mathbf{x})\right] + \mathbb{E}_{\mathbf{z} \sim p_z}\!\left[\log(1 - D(G(\mathbf{z})))\right]$$
+$$\min_G \max_D \; V(G, D) = \mathbb{E}_{\mathbf{x} \sim p_0}\!\left[\log D(\mathbf{x})\right] + \mathbb{E}_{\mathbf{z} \sim p_z}\!\left[\log(1 - D(G(\mathbf{z})))\right]$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\min_G \max_D$** : jeu minimax où le discriminateur $D$ cherche à maximiser le critère $V$ tandis que le générateur $G$ cherche à le minimiser.
+* **$\mathbb{E}_{\mathbf{x} \sim p_0}$** : espérance mathématique calculée sur les données réelles échantillonnées selon la distribution de données $p_0$.
+* **$\mathbb{E}_{\mathbf{z} \sim p_z}$** : espérance calculée sur les vecteurs de bruit latent $\mathbf{z}$ échantillonnés selon l'a priori gaussien $p_z$.
+* **$D(\mathbf{x})$** : prédiction du discriminateur pour une vraie donnée $\mathbf{x}$.
+* **$G(\mathbf{z})$** : donnée synthétique générée à partir du bruit $\mathbf{z}$.
 
 À l'optimum global, si $G$ est assez expressif, le discriminateur optimal satisfait $D^*(\mathbf{x}) = \frac{p_0(\mathbf{x})}{p_0(\mathbf{x}) + p_G(\mathbf{x})}$. En substituant $D^*$ dans $V$, la valeur du jeu devient la **divergence de Jensen-Shannon** :
 
-$$V(G, D^*) = -\log 4 + 2 \cdot D_{\text{JS}}(p_0 \| p_G)$$
+$$V(G, D^*) = -\log 4 + 2 \cdot D_{\text{JS}}(p_0 \| p_G)$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$D^*$** : le discriminateur théorique optimal à chaque étape de l'entraînement.
+* **$D_{\text{JS}}(p_0 \| p_G)$** : divergence de Jensen-Shannon (symétrique et toujours positive) comparant la distribution réelle $p_0$ à la distribution générée $p_G$.
 
 L'Équilibre de Nash est atteint quand $p_G = p_0$, auquel cas $D^*(\mathbf{x}) = \frac{1}{2}$ partout et $V = -\log 4$.
 

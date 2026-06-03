@@ -47,7 +47,7 @@ La *Batch Normalization* (BN) [@CodeSignal_BatchNorm_2025; @Holbrook_nd; @Golmsc
 ::: {.callout-note collapse="true"}
 ## 🔢 Formules de la Batch Normalization
 
-Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algorithme normalise et met à l'échelle chaque valeur $z_i$ :
+Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algorithme normalise et met à l'échelle chaque valeur $z_i$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 1. **Calcul de la moyenne du mini-lot :**
    $$\mu_{\mathcal{B}} = \frac{1}{m} \sum_{i=1}^m z_i$$
@@ -57,11 +57,21 @@ Pour un mini-lot de pré-activations $\mathcal{B} = \{z_1, \dots, z_m\}$, l'algo
 
 3. **Normalisation :**
    $$\hat{z}_i = \frac{z_i - \mu_{\mathcal{B}}}{\sqrt{\sigma_{\mathcal{B}}^2 + \epsilon}}$$
-   *(où $\epsilon$ est une constante de stabilité numérique pour éviter la division par zéro)*
 
 4. **Mise à l'échelle et décalage (Scaling & Shift) :**
    $$\tilde{z}_i = \gamma \hat{z}_i + \beta$$
-   *(où $\gamma$ et $\beta$ sont deux paramètres apprenables par le réseau pour restituer le pouvoir de représentation)*
+
+**Guide des symboles :**
+* **$\mathcal{B}$** : le mini-lot (*mini-batch*) de données, c'est-à-dire le sous-ensemble d'échantillons calculés simultanément.
+* **$m$** : la taille (nombre d'exemples) du mini-lot.
+* **$\mu_{\mathcal{B}}$ (lettre grecque mu)** : la moyenne des pré-activations sur le mini-lot.
+* **$\sigma_{\mathcal{B}}^2$ (lettre grecque sigma au carré)** : la variance des pré-activations sur le mini-lot (l'écart-type étant $\sigma_{\mathcal{B}}$).
+* **$\hat{z}_i$ ("z-chapeau")** : la valeur de pré-activation normalisée (centrée sur 0 avec une variance de 1).
+* **$\epsilon$ (lettre grecque epsilon)** : une très petite constante positive de stabilité numérique (pour éviter la division par zéro).
+* **$\tilde{z}_i$ ("z-tilde")** : la valeur finale après normalisation, mise à l'échelle et décalage.
+* **$\gamma$ (lettre grecque gamma)** : le paramètre d'échelle (*scaling*) apprenable.
+* **$\beta$ (lettre grecque bêta)** : le paramètre de décalage (*shift*) apprenable.
+  *(Note : à ne pas confondre avec le coefficient d'inertie de l'optimiseur Adam ou le calendrier de bruit de diffusion)*.
 :::
 
 * **Intégration de la Batch Normalization :**

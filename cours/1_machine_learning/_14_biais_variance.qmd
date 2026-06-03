@@ -9,7 +9,11 @@ Le **Biais** est l'erreur systématique d'un modèle trop simplet. Il "manque" l
 ::: {.callout-note collapse="true"}
 ## 🔢 Définition formelle (Biais)
 
-$$\text{Biais}(\hat{Y}) = E[\hat{Y}] - Y$$
+$$\text{Biais}(\hat{Y}) = E[\hat{Y}] - Y$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\hat{Y}$ ("Y-chapeau")** : la prédiction estimée par le modèle. La notation chapeau ($\hat{}$) est la convention standard en statistiques pour désigner un estimateur.
+* **$Y$** : la valeur réelle de référence (la vérité terrain).
+* **$E[\cdot]$** : l'espérance mathématique (la moyenne théorique attendue des prédictions sur différents jeux d'entraînement).
 
 L'espérance de la prédiction moins la vraie valeur — l'écart *moyen* et *systématique* entre ce que le modèle prédit et la réalité.
 :::
@@ -21,7 +25,11 @@ La **Variance** représente l'erreur liée à une sensibilité excessive aux flu
 ::: {.callout-note collapse="true"}
 ## 🔢 Définition formelle (Variance)
 
-$$\text{Variance}(\hat{Y}) = E\left[(\hat{Y} - E[\hat{Y}])^2\right]$$
+$$\text{Variance}(\hat{Y}) = E\left[(\hat{Y} - E[\hat{Y}])^2\right]$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
+
+* **$\hat{Y}$** : la prédiction du modèle.
+* **$E[\hat{Y}]$** : la valeur moyenne prédite par le modèle sur tous les entraînements possibles.
+* **$E[\cdot]$** (crochets extérieurs) : l'espérance calculée sur l'écart au carré, mesurant ainsi la dispersion.
 
 La mesure de la dispersion des prédictions du modèle autour de sa moyenne pour différents jeux d'entraînement.
 :::

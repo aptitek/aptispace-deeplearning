@@ -26,6 +26,8 @@ $$
 \mathbf{h}_t = (1 - \mathbf{z}_t) \odot \mathbf{h}_{t-1} + \mathbf{z}_t \odot \tilde{\mathbf{h}}_t
 $$
 
+* **$\odot$ (produit de Hadamard)** : représente le produit élément par élément de deux vecteurs de même taille ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)).
+
 Cette équation finale révèle l'élégance de la GRU : $\mathbf{z}_t$ interpole linéairement entre l'ancien état $\mathbf{h}_{t-1}$ et le candidat $\tilde{\mathbf{h}}_t$. Lorsque $\mathbf{z}_t \approx 0$, l'état est presque inchangé (mémoire long terme) ; lorsque $\mathbf{z}_t \approx 1$, l'état est entièrement remplacé par le candidat (réactivité court terme).
 
 ```{mermaid}
@@ -54,6 +56,9 @@ Avec trois sous-réseaux (z, r, h) au lieu de quatre pour la LSTM [@Sycorax2018;
 $$
 N_{\text{GRU}} = 3 \times \left[d_h (d_h + d_x) + d_h\right] = 3 d_h (d_h + d_x + 1)
 $$
+
+* **$d_h$** : la dimension du vecteur d'état caché $\mathbf{h}_t$ (mémoire du réseau).
+* **$d_x$** : la dimension du vecteur d'entrée $\mathbf{x}_t$.
 
 Soit environ **25 % de paramètres en moins** que la LSTM pour les mêmes dimensions, avec un temps d'entraînement proportionnellement réduit.
 

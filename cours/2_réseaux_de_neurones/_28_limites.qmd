@@ -20,11 +20,11 @@ Il est important de noter que le MLP ne disparaît pas pour autant dans les arch
 
 Un taux d'apprentissage (LR) fixe est rarement optimal tout au long de l'entraînement : trop élevé, il fait osciller la perte autour d'un minimum sans jamais converger ; trop bas, il piège le réseau dans un minimum local médiocre [@DiveIntoDeepLearning_nd; @Chugani_2025; @Frans_2023]. Les **planificateurs de LR** (*learning rate schedulers*) adaptent dynamiquement ce taux au cours de l'entraînement :
 
-* **StepLR :** Réduit le LR d'un facteur multiplicatif $\gamma$ tous les $k$ pas d'optimisation [@CodeSignal_StepLR_2025]. Simple et prédictible mais nécessite un réglage manuel de $k$.
+* **StepLR :** Réduit le LR d'un facteur multiplicatif $\gamma$ (le coefficient de décroissance gamma) tous les $k$ pas d'optimisation [@CodeSignal_StepLR_2025]. Simple et prédictible mais nécessite un réglage manuel de $k$.
 
 * **ReduceLROnPlateau :** Réduit le LR lorsque la métrique surveillée (typiquement la perte de validation) n'améliore plus depuis $p$ époques. Adaptatif et particulièrement robuste dans les pipelines de production.
 
-* **CosineAnnealingLR :** Fait décroître le LR selon un cosinus depuis $\eta_{\max}$ jusqu'à $\eta_{\min}$, permettant un refroidissement progressif qui favorise la convergence vers des minima larges et plus généralisables.
+* **CosineAnnealingLR :** Fait décroître le LR selon un cosinus depuis $\eta_{\max}$ jusqu'à $\eta_{\min}$ (où la lettre grecque $\eta$ [êta] représente le taux d'apprentissage), permettant un refroidissement progressif qui favorise la convergence vers des minima larges et plus généralisables.
 
 * **Warmup + Decay :** Utilisé dans les Transformers, le LR monte linéairement pendant quelques milliers de pas (*warmup*) puis décroît selon $1/\sqrt{t}$. Cela permet aux paramètres initiaux de se stabiliser avant d'appliquer de grandes mises à jour.
 

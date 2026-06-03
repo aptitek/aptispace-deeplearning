@@ -10,12 +10,14 @@ La rétropropagation est véritablement le moteur algorithmique de l'apprentissa
 
 Pour calculer la contribution d'un poids $w$ d'une couche intermédiaire à l'erreur finale $\mathcal{L}$, on multiplie les dérivées partielles le long du chemin de propagation :
 
-$$\frac{\partial \mathcal{L}}{\partial w} = \frac{\partial \mathcal{L}}{\partial a} \cdot \frac{\partial a}{\partial z} \cdot \frac{\partial z}{\partial w}$$
+$$\frac{\partial \mathcal{L}}{\partial w} = \frac{\partial \mathcal{L}}{\partial a} \cdot \frac{\partial a}{\partial z} \cdot \frac{\partial z}{\partial w}$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
 
-Où :
-* $\frac{\partial \mathcal{L}}{\partial a}$ est la sensibilité de la perte par rapport à la sortie du neurone
-* $\frac{\partial a}{\partial z} = \sigma'(z)$ est la dérivée de la fonction d'activation
-* $\frac{\partial z}{\partial w} = x$ est la valeur d'entrée connectée à ce poids
+* **$\partial$ (symbole de dérivation partielle)** : représente la sensibilité d'une fonction aux variations d'une seule variable (ex: $\frac{\partial \mathcal{L}}{\partial w}$ mesure la variation de la perte globale $\mathcal{L}$ lorsque le poids $w$ change, toutes les autres variables étant fixes).
+* **$\mathcal{L}$** : la fonction de perte (*loss*).
+* **$a$** : l'activation de sortie du neurone ($a = \sigma(z)$).
+* **$z$** : la valeur intermédiaire de pré-activation ($z = w \cdot x + b$).
+* **$\sigma'(z)$** : la dérivée première de la fonction d'activation $\sigma$ (le symbole prime $'$ indiquant la dérivée).
+* **$x$** : la valeur d'entrée connectée à ce poids.
 :::
 
 * **L'ajustement (Descente de gradient) :** Les gradients calculés indiquent la direction et l'amplitude de la correction à appliquer aux poids pour minimiser la perte au pas suivant [@Wiki_AlgorithmeGradient; @Ruder2016; @IEConcept2026; @Mallat2019].

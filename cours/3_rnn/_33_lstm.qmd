@@ -38,6 +38,8 @@ $$
 \mathbf{c}_t = \mathbf{f}_t \odot \mathbf{c}_{t-1} + \mathbf{i}_t \odot \tilde{\mathbf{c}}_t
 $$
 
+* **$\odot$ (produit de Hadamard)** : représente la multiplication élément par élément de deux vecteurs ou matrices de même taille ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)).
+
 **Porte de sortie $\mathbf{o}_t$** — Quelle partie de la cellule expose-t-on en état caché ?
 $$
 \mathbf{o}_t = \sigma(\mathbf{W}_o \mathbf{h}_{t-1} + \mathbf{U}_o \mathbf{x}_t + \mathbf{b}_o)
