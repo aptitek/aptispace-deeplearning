@@ -1,0 +1,64 @@
+Le Cycle de Vie d'un LLM : Du Texte Brut à l'Expert Métier
+
+Le développement d'un grand modèle de langage (LLM) ne se résume pas à une phase de calcul massive et indifférenciée. Il s'agit de l'étape critique où le système acquiert son "capital de connaissances" initial, sa structure cognitive et sa compréhension statistique du monde. Ce pré-entraînement transforme le texte brut en une fondation architecturale robuste, dont la qualité déterminera la capacité de généralisation et l'efficacité des spécialisations ultérieures.
+
+1. Le Pré-entraînement : Construction de la Fondation et Acquisition de la Grammaire
+
+1.1. La Mécanique de la Prédiction : Des Chaînes de Markov à la Généralisation
+
+Sous l'angle mathématique, l'apprentissage autorégressif par la prédiction du prochain jeton (next-token prediction) modélise le langage comme une chaîne de Markov d'ordre k [@yuksel2025sample]. Pour que les garanties théoriques de généralisation s'appliquent, nous supposons des fonctions de logit bornées et Lipschitziennes. Cette structure permet d'évaluer la performance selon deux axes de complexité d'échantillonnage :
+
+* Erreur de prédiction in-sample : Elle mesure la précision sur des contextes déjà observés. Elle décroît de façon optimale en O(1/NT) par rapport au nombre total de jetons.
+* Erreur de prédiction out-of-sample : Elle évalue la performance sur des contextes inédits. Cette erreur est intrinsèquement liée aux propriétés de mélange (mixing properties, τ_{mix}) de la chaîne de Markov, représentant le temps nécessaire au modèle pour explorer de nouveaux états de contexte.
+
+La capacité de généralisation d'un modèle — sa faculté à s'extraire de la simple mémorisation pour traiter l'inédit — ne dépend pas du nombre brut de paramètres, mais de la complexité statistique de sa classe d'hypothèse. Une architecture bien définie permet de briser la "malédiction de la dimensionnalité" des modèles n-grammes classiques, offrant des taux de généralisation qui ne croissent pas exponentiellement avec l'ordre k.
+
+1.2. Lois d'Échelle et Optimisation du Compute (Chinchilla vs Inférence)
+
+L'arbitrage entre la taille du modèle et le volume de données a évolué du dogme "Chinchilla-Optimal" vers une vision centrée sur l'inférence [@sardana2024beyond]. Si l'approche de DeepMind visait à minimiser le coût d'entraînement, l'architecte moderne doit viser la réduction du coût total sur le cycle de vie du produit. Pour un déploiement massif dépassant le milliard de requêtes, il est stratégiquement plus rentable d'entraîner un modèle plus petit sur beaucoup plus de jetons.
+
+Caractéristique	Approche Chinchilla-Optimale	Approche Inférence-Optimale
+Objectif Stratégique	Minimiser le coût de l'entraînement.	Minimiser le coût de déploiement (Inférence).
+Seuil de Décision	Prototypage / Recherche.	> 1 milliard de requêtes (Inférence massive).
+Volume de Données	~20 jetons par paramètre.	Jusqu'à 10 000 jetons par paramètre.
+Exemple Concret	Llama 2 (2 billions de tokens).	Llama 3 (15 billions de tokens).
+
+L'impact financier est majeur : un développeur anticipant 2 billions de jetons d'inférence peut réduire son compute total de 17% (soit 1,7 \times 10^{22} FLOPs) en choisissant un modèle de 7B entraîné intensivement plutôt qu'un modèle de 13B Chinchilla-optimal. En poussant les modèles vers des "frontières de compute-optimalité" extrêmes, on réduit radicalement la latence et les coûts d'exploitation sans sacrifier la qualité.
+
+2. Le Fine-tuning sur Tâche Spécifique : Spécialisation et Formatage
+
+Le passage du "savoir" universel au "savoir-faire" métier s'opère par le fine-tuning. Cette phase sculpte le modèle de fondation pour qu'il adopte des protocoles de réponse précis et maîtrise les nuances sémantiques propres à une industrie.
+
+2.1. Transfer Learning vs Fine-tuning : Choisir la Profondeur d'Adaptation
+
+Le choix de la stratégie dépend de l'ampleur du Domain Shift (décalage de domaine) entre le web et les données métier [@greennode2025finetuning].
+
+1. L'apprentissage par transfert (Transfer Learning) : On gèle le "Backbone" (l'essentiel des poids) pour ne réentraîner que le "Classifier Head" (la tête de classification). C'est la voie de l'efficacité pour les jeux de données limités.
+2. Le fine-tuning complet : Toutes les couches sont mises à jour. C'est impératif lorsque la logique métier (juridique, médicale) diverge radicalement des structures linguistiques générales.
+
+Les critères de décision reposent sur un équilibre coût/performance : le volume du dataset disponible, la spécificité du jargon métier et les ressources GPU allouées conditionnent la profondeur de l'adaptation.
+
+2.2. Stratégies d'Organisation des Données : Stacked vs Phased Training
+
+Les méthodologies récentes de structuration des données d'instruction remettent en question l'approche "Phased" (entraînement séquentiel par étapes de difficulté, type Orca). Des recherches approfondies [@pareja2025unveiling] démontrent que pour les modèles de taille intermédiaire (3B-7B) :
+
+* Le Stacked training (mélange global des données de connaissances et de compétences) s'avère plus efficace en termes d'échantillonnage.
+* La méthode Phased, bien que séduisante théoriquement, n'apporte aucun gain de performance significatif et risque de provoquer un oubli partiel des premières phases.
+
+3. Fine-tuning Efficient et Alignement : L'État de l'Art Indispensable
+
+L'optimisation industrielle permet désormais d'atteindre des performances d'expert sur du matériel grand public, en utilisant des méthodes mathématiques de réduction de rang et une surveillance fine des dynamiques d'entraînement.
+
+3.1. Le Paramètre-Efficient Fine-Tuning (PEFT) et LoRA
+
+Le PEFT permet d'ajuster des modèles de plusieurs milliards de paramètres sans réentraîner l'intégralité du réseau [@greennode2025finetuning]. La méthode LoRA (Low-Rank Adaptation) est ici la norme : au lieu de modifier les matrices de poids originales, on insère des matrices de bas rang (A et B) qui capturent l'adaptation spécifique à la tâche.
+
+"L'avantage économique est décisif : en ne mettant à jour qu'une fraction infime des paramètres, LoRA préserve le capital de connaissances du modèle de base tout en permettant une spécialisation métier sur des infrastructures GPU modestes."
+
+3.2. Recettes de Succès pour les Petits Modèles (SFT Guide)
+
+Pour le Supervised Fine-Tuning (SFT), les travaux de Pareja et al. (2025) révèlent une "recette secrète" pour maximiser les performances des modèles 3B-7B :
+
+* Leviers de calcul : Privilégier une taille de lot (batch size) élevée (ex: 4k) avec un faible taux d'apprentissage. L'accumulation de gradient (gradient accumulation) est le levier pragmatique essentiel pour simuler ces larges batchs sur des ressources limitées.
+* Indicateurs de performance précoces (Early Dynamics) : Contrairement à l'intuition, une norme de gradient faible couplée à des valeurs de perte (loss) initialement élevées durant les premiers centaines de pas sont des prédicteurs de succès final. Cette dynamique robuste permet d'identifier et d'arrêter prématurément les runs sous-optimaux.
+* Finalité de l'Alignement : La spécialisation ne vaut que si elle est sécurisée. L'alignement garantit que l'expert métier produit des réponses non seulement techniquement précises, mais aussi "utiles et sûres" (helpful and safe), transformant le prédicteur statistique en un agent professionnel fiable.

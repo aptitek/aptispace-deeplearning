@@ -1,0 +1,121 @@
+Cours Magistral - Module 3 : Représentation, Compression et Transfert
+
+1. Introduction à la Maîtrise de l'Espace Latent
+
+Au sein de l'apprentissage non supervisé, le Module 3 constitue une rupture épistémologique : nous passons de la manipulation de signaux bruts à la gestion stratégique de l'espace latent. Cette transition n'est pas une simple compression de données, mais le pivot central de la compréhension sémantique en Deep Learning. L'objectif fondamental est d'extraire des structures invariantes sans le secours d'étiquettes, en opérant une distillation du signal vers une représentation compacte et structurée [@Bengio2013b].
+
+Ce module explore les trois piliers de cette transformation : la compression déterministe (Autoencodeur classique), la régularisation probabiliste (VAE) et la discrétisation vectorielle (VQ-VAE). Nous verrons que la capacité d'un modèle à "comprendre" et à générer dépend moins de la stochasticité de son processus que de la contrainte de compacité exercée sur son manifold latent. C'est dans ce goulot d'étranglement, où le bruit est sacrifié au profit de l'essence sémantique, que se forge la puissance des modèles génératifs modernes.
+
+
+--------------------------------------------------------------------------------
+
+
+2. L'Autoencodeur Classique (AE) : Fondations et Architecture
+
+L'autoencodeur classique ne doit pas être perçu comme un simple mécanisme de copie, mais comme une architecture de contrainte forçant l'extraction de caractéristiques sémantiques. En privant le réseau de ressources dimensionnelles, nous l'obligeons à résoudre un problème d'optimisation sous contrainte de goulot d'étranglement (bottleneck).
+
+Le Triptyque Architectural
+
+Le système s'articule autour de trois composantes fondamentales [@Rumelhart1986] :
+
+* L'Encodeur (z = f_\theta(x)) : Une fonction paramétrique projetant l'entrée x de haute dimension vers un espace latent z de dimensionnalité réduite.
+* Le Goulot d'étranglement (Bottleneck) : La couche critique qui limite le flux d'information, agissant comme un filtre sémantique.
+* Le Décodeur (\hat{x} = g_\phi(z)) : La fonction réciproque qui tente de reconstruire le signal original à partir de la représentation compressée.
+
+Dynamique de Reconstruction
+
+Mathématiquement, l'objectif est de minimiser la perte de reconstruction : L(\theta, \phi) = E[\|x - g_\phi(f_\theta(x))\|^2] Cette contrainte force le modèle à ignorer les variations stochastiques (le bruit) pour ne conserver que les composantes principales du jeu de données, agissant comme une extension non-linéaire de la PCA [@Baldi1989a].
+
+Évaluation des Applications
+
+* Compression et Réduction de Dimension : Capture efficace du manifold de données [@Rolinek2019].
+* Débruitage : En restreignant l'espace latent, le modèle apprend à reconstruire la structure saine du signal, le bruit ne pouvant être encodé faute de capacité.
+* Détection d'anomalies : Une erreur de reconstruction élevée devient le signal d'une donnée hors-distribution, le modèle n'ayant pas de "vocabulaire latent" pour la décrire.
+
+Cependant, l'AE classique souffre d'une fragmentation du manifold : l'espace latent est discontinu, parsemé de "trous sémantiques" rendant l'interpolation et la génération instables. Ce constat impose le passage vers une régularisation plus rigoureuse.
+
+
+--------------------------------------------------------------------------------
+
+
+3. L'Évolution Probabiliste : Le Variational Autoencoder (VAE)
+
+Le passage au VAE marque une transition d'un paradigme déterministe (un point unique) vers un paradigme probabiliste (une distribution). Ce saut conceptuel résout la fragmentation du manifold en remplaçant les coordonnées fixes par des régions de confiance, souvent conceptualisées sous le terme de "Gaussian Ball" [@Shi2024].
+
+L'encodeur ne produit plus un vecteur z, mais les paramètres (\mu, \sigma) d'une distribution gaussienne multivariée. Cette approche garantit que l'espace latent est un continuum où chaque région, et non plus seulement chaque point, possède une validité sémantique. L'optimisation repose sur l'Evidence Lower Bound (ELBO), qui arbitre le conflit entre fidélité de reconstruction (log-vraisemblance) et régularisation informationnelle (Divergence KL) [@Kingma2013]. Comme le souligne @Shi2024, le VAE établit un véritable "contrat" entre l'encodeur et le décodeur : l'un s'engage à compacter l'information, l'autre à apprendre à reconstruire à partir de n'importe quel échantillon au sein de l'ellipsoïde latent.
+
+
+--------------------------------------------------------------------------------
+
+
+4. Deep Dive : Dérivation de la Divergence KL entre Gaussiennes
+
+Pour comprendre comment le VAE préserve la continuité de son espace latent, une dérivation rigoureuse de la Divergence de Kullback-Leibler (D_{KL}) est indispensable. Nous cherchons à quantifier l'écart entre la distribution postérieure apprise q_\phi(z|x) \sim N(\mu_1, \Sigma_1) et la distribution a priori p(z) \sim N(\mu_2, \Sigma_2), avec typiquement p(z) \sim N(0, I) [@Muñoz2024].
+
+Décomposition de l'Intégrale
+
+À partir de la définition D_{KL}(P\|Q) = \int p(x) \log \frac{p(x)}{q(x)} dx, nous décomposons l'expression en trois termes analytiques : H_1, H_2 et H_3 [@Muñoz2024].
+
+1. Terme H_1 (Log-Déterminant) : H_1 = \frac{1}{2} \log \frac{|\Sigma_2|}{|\Sigma_1|} Ce terme mesure le rapport de volume entre les deux distributions.
+2. Terme H_2 (Forme Quadratique) : En utilisant l'identité E[x^T Ax] = tr(A \Sigma) + \mu^T A \mu, nous obtenons : H_2 = \frac{1}{2} [tr(\Sigma_2^{-1}\Sigma_1) + (\mu_2-\mu_1)^T\Sigma_2^{-1}(\mu_2-\mu_1)] Ce terme pénalise l'éloignement des moyennes et la divergence des échelles.
+3. Terme H_3 (Dimensionnalité) : Provient de l'espérance du terme de normalisation de la distribution P. Pour une distribution en dimension k : H_3 = \frac{1}{2} k
+
+Forme Fermée Finale
+
+La sommation H_1 + H_2 - H_3 nous donne la formule standard utilisée dans les implémentations de VAE : D_{KL}(P\|Q) = \frac{1}{2} \left( tr(\Sigma_2^{-1}\Sigma_1) + (\mu_2-\mu_1)^T\Sigma_2^{-1}(\mu_2-\mu_1) - k + \log\frac{|\Sigma_2|}{|\Sigma_1|} \right)
+
+Interprétation : La trace et le log-déterminant agissent comme un garde-fou contre l'effondrement des "Gaussian balls" en points déterministes (empêchant \sigma \to 0), tandis que la forme quadratique centre le manifold à l'origine.
+
+
+--------------------------------------------------------------------------------
+
+
+5. Le "Trick" de Reparamétrisation et la Géométrie du Latent
+
+Le défi majeur du VAE réside dans la non-différentiabilité de l'échantillonnage. Le reparameterization trick déplace la stochasticité vers une variable externe \epsilon \sim N(0, I), permettant au gradient de s'écouler à travers les paramètres déterministes \mu et \sigma : z = \mu + \sigma \odot \epsilon
+
+Analyse Critique : Compacité vs Stochasticité
+
+Une perspective récente, portée par @Shi2024, suggère que la reparamétrisation est avant tout un mécanisme de régularisation géométrique plutôt qu'une nécessité probabiliste pure. Pour évaluer la qualité du latent, nous utilisons deux métriques clés :
+
+* CV-NND (Coefficient of Variation of Nearest-Neighbor Distances) : Mesure l'uniformité de la densité locale. Un CV-NND bas indique une distribution géométriquement régulière et dispersée, caractéristique du VAE.
+* DLC (Dynamic Latent Coverage) : Évalue la capacité de l'encodeur à couvrir efficacement le domaine de la distribution a priori au fil de l'entraînement.
+
+L'étude montre que l'on peut obtenir des résultats similaires au VAE via des méthodes de "Compactness Regularization" sans échantillonnage stochastique, comme l'Asymmetric Expansion (ReLU(-\log Var)) ou la Symmetric Stabilization. Cela démontre que le rôle de la KL est d'être un "bouclier géométrique" contre l'effondrement représentationnel.
+
+
+--------------------------------------------------------------------------------
+
+
+6. Discrétisation et VQ-VAE (Vector Quantized VAE)
+
+Le VQ-VAE propose une alternative radicale : la transition vers un espace latent discret, particulièrement adapté aux structures hiérarchiques (image, audio).
+
+Architecture et "Deux Chemins"
+
+Le système remplace la distribution continue par un Codebook (dictionnaire de vecteurs apprenables). Deux dynamiques coexistent [@vandenOord2017] :
+
+* Path A (Régularisation vers le Codebook) : L'encodeur produit un vecteur continu z_e(x) qui est régularisé pour rester proche du vecteur le plus proche dans le dictionnaire.
+* Path B (Quantification/Remplacement) : Le vecteur continu est remplacé par son index discret du codebook avant d'entrer dans le décodeur.
+
+Sémantique et Risques
+
+La capacité générative du VQ-VAE ne provient pas d'un bruit de Gaussienne, mais de la compacité extrême induite par la perte de codebook (commitment loss). Le décodeur, forcé de travailler avec des tokens fixes, développe un mécanisme contractuel robuste. Le risque majeur est le Codebook Collapse (où une fraction des vecteurs capture toute la variance, laissant les autres inutilisés). Pour stabiliser l'apprentissage, on utilise souvent l'EMA (Exponential Moving Average) pour la mise à jour des vecteurs du dictionnaire. De plus, une augmentation excessive du codebook peut créer une "contrainte de compacité inverse", dispersant trop le manifold et nuisant à la cohérence.
+
+
+--------------------------------------------------------------------------------
+
+
+7. Synthèse et Perspectives du Module 3
+
+L'émergence de la sémantique est une fonction directe de la contrainte exercée sur l'espace latent.
+
+Tableau Comparatif des Architectures
+
+Critère	Autoencodeur (AE)	Variational Autoencoder (VAE)	VQ-VAE
+Espace Latent	Déterministe (Point)	Probabiliste (Distribution)	Discret (Codebook)
+Régularisation	Bottleneck seul	Divergence KL	Commitment Loss (Compactness)
+Indicateur de Qualité	Erreur de reconstruction	CV-NND bas / DLC élevé	Utilisation du codebook
+Risque Principal	Trous sémantiques / Fragmentation	Posterior Collapse	Codebook Collapse / Inverse Compactness
+
+Leçon Finale : Qu'elle soit probabiliste ou discrète, la régularisation transforme le signal brut en une structure géométrique compacte. C'est cette compacité qui permet au modèle de naviguer dans le "monde phénoménal" des données, jetant les bases des modèles de fondation capables de transférer des connaissances entre domaines complexes.

@@ -1,0 +1,59 @@
+Module 4 : L'Ère de la Génération — Modélisation des Distributions de Données
+
+1. Introduction à l'apprentissage génératif : Créer ex nihilo
+
+Le passage de l'apprentissage discriminatif à l'apprentissage génératif ne représente pas seulement une évolution technique, mais un saut conceptuel vers la maîtrise de la synthèse. Alors que les modèles discriminatifs se limitent à partitionner l'espace des données pour classifier une étiquette y à partir d'une observation x, l'apprentissage génératif ambitionne de modéliser la distribution de probabilité sous-jacente P_0 (et sa densité p_0). Ce défi constitue l'ultime frontière de l'IA moderne : il s'agit de capturer l'essence structurelle du réel pour le reconstruire.
+
+Dans le cadre de l'estimation non-paramétrique, nous distinguons deux philosophies majeures. L'approche explicite tente d'estimer directement la densité p_0 (via des estimateurs à noyaux, KDE), mais s'effondre face à la « malédiction de la dimensionnalité ». À l'inverse, l'approche implicite, formalisée par les travaux récents de Kwon et al. (2026), privilégie l'estimation de la « fonction de score » définie par l'application x \mapsto \nabla \log p_0(x). Cette méthode ne construit pas de représentation directe de p_0 mais permet un échantillonnage efficace via des dynamiques de Langevin. Cette transition vers l'implicite a trouvé sa première rupture majeure dans les réseaux antagonistes génératifs (GANs), introduisant le concept de duel algorithmique.
+
+2. La Mécanique des Réseaux Antagonistes Génératifs (GANs)
+
+Introduits par Goodfellow et al. (2014), les GANs ont reformulé la génération d'images comme un problème de théorie des jeux. Cette architecture repose sur une compétition asymétrique visant un Équilibre de Nash, où le progrès de l'un dépend de la sophistication de l'autre.
+
+* Le Générateur (le « faussaire ») : Son objectif est de transformer un bruit blanc en une structure complexe capable de tromper l'expert.
+* Le Discriminateur (l' « expert ») : Son rôle est de distinguer les données réelles des données synthétiques, agissant comme un estimateur de la divergence entre les distributions.
+
+En pratique, la convergence vers cet équilibre est notoirement instable. Cette fragilité provient de la difficulté à synchroniser l'apprentissage de deux réseaux profonds dans un espace de paramètres non convexe. Pour stabiliser ce duel, l'introduction de « biais structurels » — notamment via les convolutions — est devenue impérative, permettant au réseau de capturer les corrélations spatiales locales plutôt que de se perdre dans la dimensionnalité brute.
+
+3. Architectures Avancées et Contrôle de la Synthèse
+
+L'évolution des GANs a permis de passer d'une génération stochastique aveugle à une synthèse dirigée. Ce progrès repose sur l'exploitation du partage de poids (weight-sharing), qui réduit la complexité du modèle tout en préservant l'invariance spatiale.
+
+Architecture	Innovation Clé	Impact sur le Résultat Final	Lien Théorique au Weight-Sharing
+DCGAN	Intégration de convolutions profondes.	Stabilité accrue et réduction des artefacts structurels.	Utilisation de noyaux convolutifs pour capturer les corrélations spatiales locales.
+StyleGAN	Découplage des attributs (styles) et du contenu.	Contrôle granulaire sur les textures et les formes à différentes échelles.	Hiérarchisation du partage de poids pour isoler les caractéristiques sémantiques.
+cGAN	Conditionnement par labels ou métadonnées.	Génération orientée par des contraintes externes (ex: espèce animale).	Injection de priorités dans les couches de partage de poids pour guider la synthèse.
+
+Malgré ces succès, les GANs restent limités par l'effondrement de mode (mode collapse), une pathologie où le générateur ne couvre qu'une fraction infime de la diversité de P_0. Cette limite a imposé un changement de paradigme vers les modèles de diffusion.
+
+4. DDPM (Denoising Diffusion Probabilistic Models) : Un Changement de Paradigme
+
+Contrairement aux GANs, les modèles de diffusion (Sohl-Dickstein et al., 2015 ; Ho et al., 2020) déplacent la charge générative de la compétition adverse vers la reconstruction thermodynamique. Inspirée par la physique statistique, cette approche vise à inverser un processus de dégradation de l'information.
+
+1. Le Processus Forward (Direct) : Il détruit itérativement la structure de X_0 en ajoutant un bruit gaussien. Mathématiquement, cela est modélisé par une équation différentielle stochastique (SDE) de type Ornstein–Uhlenbeck (OU) temporellement inhomogène : dX_t = -\alpha_t X_t dt + \sqrt{2\alpha_t} dB_t. Le noyau de transition P_t(\cdot | x_0) est gaussien, menant X_t vers un bruit pur à T.
+2. Le Processus Reverse (Inverse) : Le modèle apprend à inverser cette destruction en estimant le score de la densité marginale p_t. En remontant de X_T vers X_0, le réseau effectue un débruitage probabiliste itératif, reconstruisant ainsi la distribution cible P_0.
+
+Ce paradigme offre une couverture totale de la distribution et une stabilité mathématique supérieure, s'affranchissant des instabilités chroniques du duel de Nash.
+
+5. Analyse Théorique : Pourquoi la Diffusion surpasse les méthodes classiques
+
+Le succès fulgurant des modèles de diffusion s'explique par leur capacité à exploiter les structures de basse dimension inhérentes aux données réelles. Selon les résultats récents de Kwon et al. (2026), la supériorité de la diffusion repose sur deux piliers :
+
+* Densités Factorisables et Structure de Graphe : Les données comme les images sont souvent des densités factorisables (liées aux champs aléatoires de Markov). Les pixels adjacents sont fortement corrélés tandis que les distants sont indépendants. Cette structure permet de réduire la dimension effective d par rapport à la dimension ambiante D.
+* Optimalité Minimax et Entropie Métrique : L'utilisation d'architectures de type Sparse Weight-Sharing (CNNs, U-Net) agit comme un régulateur de l'entropie métrique du modèle. En limitant la complexité via le partage de paramètres, ces réseaux permettent d'atteindre un taux de convergence minimax optimal de l'ordre de n^{-\beta/(2\beta+d)} par rapport à la Distance de Variation Totale.
+
+Le constat est sans appel : là où les estimateurs classiques (KDE) voient leur performance s'effondrer avec l'augmentation de D (la dimension totale), les modèles de diffusion s'adaptent à la dimension effective d, prouvant leur efficacité radicale sur les données haute dimension.
+
+6. Conclusion et Perspectives sur la Haute Dimension
+
+La trajectoire technologique de ce module illustre une transition fondamentale : du duel stratégique des GANs à la reconstruction rigoureuse des DDPM. Si les modèles de diffusion dominent aujourd'hui la synthèse d'images, le défi se déplace vers la vidéo et l'audio.
+
+La génération vidéo, en particulier, impose une contrainte de cohérence temporelle absolue. Pour réussir, ces modèles ne doivent plus seulement maîtriser la structure spatiale, mais encoder une véritable « connaissance du monde » (world knowledge) pour garantir la continuité des mouvements et des interactions. La gestion de cette dimension temporelle reste la frontière active de notre discipline.
+
+Points Clés à Retenir :
+
+* Goodfellow (2014) : Introduction du cadre de la théorie des jeux pour la synthèse (GANs).
+* Ho et Song (2020/2021) : Standardisation des DDPM via le débruitage et les SDE.
+* Kwon et al. (2026) : Preuve de l'optimalité minimax de la diffusion pour les densités factorisables par rapport à la distance de variation totale.
+* Mécanisme : Passage de l'estimation de densité explicite à l'échantillonnage par fonction de score \nabla \log p_0(x).
+* Architecture : Le Sparse Weight-Sharing (U-Net) comme outil de réduction de l'entropie métrique et de la complexité.
