@@ -2,20 +2,30 @@
 
 La divergence KL mesure à quel point deux courbes de probabilité diffèrent l'une de l'autre — dans le VAE, c'est le thermomètre qui indique si les nuages gaussiens appris restent proches du nuage de référence centré à l'origine.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Pour comprendre comment le VAE préserve la continuité de son espace latent, une dérivation rigoureuse de la **Divergence de Kullback-Leibler** (D~KL~) entre deux distributions gaussiennes est indispensable. Cette forme fermée est la clé qui rend le VAE entraînable efficacement [@munoz_nd].
+:::
 
 ### Définition et Problème
 
 Cette étape consiste à formaliser mathématiquement l'écart entre la distribution latente apprise par l'encodeur et la distribution normale standard choisie comme référence.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails mathématiques
 On cherche à quantifier l'écart entre la distribution postérieure apprise $q_\phi(\mathbf{z}|\mathbf{x}) \sim \mathcal{N}(\boldsymbol{\mu}_1, \boldsymbol{\Sigma}_1)$ et la distribution *a priori* $p(\mathbf{z}) \sim \mathcal{N}(\boldsymbol{\mu}_2, \boldsymbol{\Sigma}_2)$, avec typiquement $p(\mathbf{z}) = \mathcal{N}(\mathbf{0}, \mathbf{I})$. La définition générale est :
 
 $$D_{\text{KL}}(P \| Q) = \int p(\mathbf{x}) \log \frac{p(\mathbf{x})}{q(\mathbf{x})} \, d\mathbf{x}$$
 
 En substituant les densités gaussiennes et en développant le logarithme, l'intégrale se décompose en trois termes analytiques $H_1$, $H_2$ et $H_3$ [@munoz_nd].
+:::
 
 ### Décomposition en Trois Termes
 
+L'intégrale se sépare en trois morceaux distincts : un qui compare les volumes, un autre qui mesure l'écart des centres, et un terme constant lié à la taille de l'espace.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails mathématiques
 **Terme $H_1$ — Log-Déterminant :**
 
 Ce terme mesure le rapport de volume entre les deux ellipsoïdes de confiance :
@@ -35,9 +45,14 @@ Ce terme pénalise à la fois l'éloignement des moyennes et la divergence des �
 Provenant de l'espérance du terme de normalisation de $P$ en dimension $k$ :
 
 $$H_3 = \frac{k}{2}$$
+:::
 
 ### Forme Fermée Finale
 
+En assemblant ces trois morceaux, on obtient l'équation générale qui donne la distance exacte entre nos deux distributions.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails mathématiques
 La sommation $D_{\text{KL}} = H_1 + H_2 - H_3$ donne la **formule standard** [@munoz_nd] ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma}_2^{-1} \boldsymbol{\Sigma}_1) + (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1)^T \boldsymbol{\Sigma}_2^{-1} (\boldsymbol{\mu}_2 - \boldsymbol{\mu}_1) - k + \log\frac{|\boldsymbol{\Sigma}_2|}{|\boldsymbol{\Sigma}_1|} \right)}$$
@@ -47,11 +62,14 @@ $$\boxed{D_{\text{KL}}(P \| Q) = \frac{1}{2} \left( \text{tr}(\boldsymbol{\Sigma
 * **$(\cdot)^T$ (Transposition)** : convertit un vecteur colonne en vecteur ligne pour permettre le produit matriciel (calcul de forme quadratique).
 * **$|\boldsymbol{\Sigma}|$ (Déterminant)** : valeur scalaire mesurant la dilatation des volumes induite par la matrice de covariance.
 * **$k$** : dimension de l'espace latent (nombre de variables aléatoires gaussiennes).
+:::
 
 ### Gaussiennes Diagonales du VAE
 
 Dans la pratique, puisqu'on ne considère que des gaussiennes sans corrélations entre dimensions, la formule complexe se réduit à une simple somme sur chaque dimension latente — facile à calculer et à différencier.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails mathématiques
 Dans l'implémentation standard du VAE, les covariances sont **diagonales** : $\boldsymbol{\Sigma}_1 = \text{diag}(\sigma_1^2, \ldots, \sigma_k^2)$ et $\boldsymbol{\Sigma}_2 = \mathbf{I}$ (l'*a priori* standard). La formule se simplifie considérablement ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations)) :
 
 $$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \mathcal{N}(\mathbf{0}, \mathbf{I})\right) = \frac{1}{2} \sum_{j=1}^{k} \left(\sigma_j^2 + \mu_j^2 - 1 - \log \sigma_j^2\right)$$
@@ -62,11 +80,14 @@ $$D_{\text{KL}}\!\left(\mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2) \| \
 * **$\mu_j$** : la moyenne de la $j$-ème composante.
 
 Cette forme est remarquablement simple à calculer et à différencier. Son gradient est disponible analytiquement, sans nécessiter d'échantillonnage.
+:::
 
 ### Interprétation Géométrique
 
 Chaque terme de la formule KL joue un rôle de gardien : l'un évite que les nuages s'éloignent trop de l'origine, l'autre empêche qu'ils s'effondrent en points ou explose à l'infini.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Chaque terme joue un rôle géométrique précis dans la régularisation de l'espace latent :
 
 | Terme              | Mécanisme                           | Effet sur l'espace latent                          |
@@ -77,6 +98,7 @@ Chaque terme joue un rôle géométrique précis dans la régularisation de l'es
 | $-1$               | Terme de normalisation              | Référence : $\sigma = 1$ (aucune pénalité)         |
 
 La trace et le log-déterminant agissent conjointement comme un **garde-fou contre l'effondrement représentationnel** : si $\sigma_j \to 0$, le terme $-\log \sigma_j^2 \to +\infty$ force le gradient à résister à cet effondrement. C'est le mécanisme fondamental par lequel la divergence KL maintient la continuité de l'espace latent.
+:::
 
 ::: {.card .card-window .mb-4}
 

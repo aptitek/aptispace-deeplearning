@@ -7,6 +7,44 @@ L'attention permet à chaque mot de demander : "quels autres mots m'aident à co
 Le **bloc d'attention** est l'unité de calcul fondamentale du Transformer. Contrairement aux convolutions qui capturent les corrélations locales, l'attention permet à chaque token d'interagir directement avec tous les autres tokens de la séquence — quel que soit leur éloignement. C'est ce mécanisme de **connectivité globale** qui distingue fondamentalement les Transformers des RNNs et CNNs [@June2023; @KamarainenND].
 :::
 
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🧱 Architecture Globale d'un Bloc Transformer (Encodeur)
+::::
+
+:::: {.card-body}
+::::: {#plot-transformer-block .plot-wrapper}
+:::::
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { initTransformerBlock } from "../../assets/js/simulations/attention.js"
+_block_flow = initTransformerBlock("#plot-transformer-block", invalidation)
+```
+
+::: {.card .card-window .mb-4}
+
+:::: {.card-header}
+🕸️ Flux de Calcul de l'Attention (Q, K, V)
+::::
+
+:::: {.card-body}
+::::: {#plot-attention-flow .plot-wrapper}
+:::::
+::::
+
+:::
+
+```{ojs}
+//| echo: false
+import { initAttentionFlow } from "../../assets/js/simulations/attention.js"
+_attn_flow = initAttentionFlow("#plot-attention-flow", invalidation)
+```
+
 ### La Triade Q, K, V
 
 Q, K et V ressemblent à un système de recherche : la Query pose une question, la Key indique ce que chaque token peut offrir, et la Value contient l'information à récupérer.

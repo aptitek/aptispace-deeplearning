@@ -1,7 +1,7 @@
 // =====================================================================
 // regularization.js — Regularization simulation using Plotly
 // =====================================================================
-import { resolveCssValue, parseTableData, renderTemplate } from "../core/core.js";
+import { resolveCssValue, parseTableData, renderTemplate, utils } from "../core/core.js";
 import { createSimulatorPlot } from "../core/plots.js";
 
 let _variables = null;
@@ -13,7 +13,7 @@ export function loadVariables(selector = "#reg-variables table") {
     id: r.id,
     name: r.name,
     w0: parseFloat(r.w0),
-    color: r.color,
+    color: r.color.replace(/\u2013/g, "--"),
     desc: r.desc,
     lassoThreshold: parseFloat(r.lassoThreshold),
     elasticThreshold: parseFloat(r.elasticThreshold)
@@ -33,7 +33,7 @@ export function loadDetails(selector = "#reg-details-data table") {
     if (!_details[type]) _details[type] = [];
     _details[type].push({
       maxLambda: parseInt(r.max_lambda),
-      color: r.color,
+      color: r.color.replace(/\u2013/g, "--"),
       title: r.title,
       body: r.body
     });
@@ -141,7 +141,6 @@ function renderVars(varsEl, currentCoeffs) {
 
     const item = document.createElement("div");
     item.className = "list-group-item bg-transparent d-flex justify-content-between align-items-center py-2 px-3 border-0 border-bottom";
-    item.style.setProperty("color", resolveCssValue("var(--sol-base03)"), "important");
 
     const labelCol = document.createElement("div");
     labelCol.className = "d-flex flex-column";
@@ -162,28 +161,30 @@ function renderVars(varsEl, currentCoeffs) {
 
     const valueSpan = document.createElement("span");
     valueSpan.className = "font-monospace fw-bold";
-    valueSpan.style.setProperty("color", resolveCssValue("var(--sol-base03)"), "important");
+    valueSpan.style.setProperty("color", resolveCssValue(c.color), "important");
     valueSpan.textContent = `${c.w >= 0 ? "+" : ""}${c.w.toFixed(2)}`;
 
     const progressContainer = document.createElement("div");
     progressContainer.className = "progress my-0";
-    progressContainer.style.setProperty("width", "60px", "important");
-    progressContainer.style.setProperty("flex", "0 0 60px", "important");
-    progressContainer.style.setProperty("margin", "0", "important");
 
     const bar = document.createElement("div");
     bar.className = "progress-bar";
-    bar.style.setProperty("width", `${pct}%`);
-    
-    const barColor = c.w < 0 ? "var(--sol-red)" : "var(--sol-cyan)";
-    bar.style.setProperty("background-color", resolveCssValue(barColor), "important");
+    bar.style.width = `${pct}%`;
+    bar.style.setProperty("background-color", resolveCssValue(c.color), "important");
     
     progressContainer.appendChild(bar);
 
     const badge = document.createElement("span");
-    badge.className = isActive
-      ? "badge bg-success-subtle text-success border border-success-subtle"
-      : "badge bg-danger-subtle text-danger border border-danger-subtle";
+    if (isActive) {
+      badge.className = "badge border";
+      badge.style.setProperty("color", resolveCssValue(c.color), "important");
+      badge.style.setProperty("border-color", resolveCssValue(c.color), "important");
+      badge.style.setProperty("background-color", utils.rgba(resolveCssValue(c.color), 0.1), "important");
+    } else {
+      badge.className = "badge border text-muted";
+      badge.style.setProperty("border-color", "var(--sol-base2)", "important");
+      badge.style.setProperty("background-color", "transparent", "important");
+    }
     badge.textContent = isActive ? "Actif" : "Éliminé";
 
     valueCol.append(valueSpan, progressContainer, badge);

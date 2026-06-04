@@ -2,7 +2,10 @@
 
 Pluttôt qu'un nuage de points continus, le VQ-VAE contraint l'espace latent à un **dictionnaire fini** de mots : chaque image est décrite par un index pointant vers le mot le plus proche du dictionnaire, comme choisir le meilleur équivalent dans un lexique de 256 entrées.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Le VQ-VAE (*Vector Quantized Variational Autoencoder*) propose une alternative radicale au continuum gaussien du VAE : un espace latent **discret**, constitué d'un dictionnaire fini de vecteurs. Cette approche est particulièrement adaptée aux données dont la sémantique est naturellement hiérarchique et discrète — paroles, images haute résolution, partitions musicales [@shrivastava_2024].
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -129,6 +132,8 @@ renderVqVaeMetrics({ codebook: vq_codebook, x: vq_x, y: vq_y })
 
 L'encodeur produit un vecteur continu, puis on cherche dans le dictionnaire le mot le plus proche et on l'utilise à la place — comme arrondir un nombre décimal au nombre entier le plus proche.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 La pièce maîtresse du VQ-VAE est le **codebook** (dictionnaire) $\mathcal{E} = \{\mathbf{e}_k\}_{k=1}^{K}$, un ensemble de $K$ vecteurs apprenables de dimension $d_z$. L'encodeur ne produit plus une distribution gaussienne mais un vecteur continu $\mathbf{z}_e(\mathbf{x})$, qui est ensuite **quantifié** par remplacement par le vecteur du codebook le plus proche :
 
 $$\mathbf{z}_q(\mathbf{x}) = \mathbf{e}_{k^*}, \qquad k^* = \arg\min_k \|\mathbf{z}_e(\mathbf{x}) - \mathbf{e}_k\|^2$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -140,9 +145,14 @@ $$\mathbf{z}_q(\mathbf{x}) = \mathbf{e}_{k^*}, \qquad k^* = \arg\min_k \|\mathbf
 * **$\|\cdot\|^2$** : la norme Euclidienne au carré, mesurant la distance géométrique dans l'espace latent.
 
 Le décodeur reçoit $\mathbf{z}_q$ et non $\mathbf{z}_e$. La représentation latente finale est donc un **index discret** $k^* \in \{1, \ldots, K\}$ plutôt qu'un vecteur continu.
+:::
 
 ### Les Deux Chemins de l'Objectif
 
+L'apprentissage de cet alphabet nécessite de faire coopérer l'encodeur et le dictionnaire : chacun doit faire un pas vers l'autre pour stabiliser le code.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails mathématiques
 L'entraînement combine trois termes correspondant à deux dynamiques simultanées [@shrivastava_2024] :
 
 $$\mathcal{L}_{\text{VQ-VAE}} = \underbrace{\|\mathbf{x} - g_\phi(\mathbf{z}_q)\|^2}_{\text{Reconstruction}} + \underbrace{\|\text{sg}[\mathbf{z}_e] - \mathbf{z}_q\|^2}_{\text{Codebook}} + \underbrace{\beta \|\mathbf{z}_e - \text{sg}[\mathbf{z}_q]\|^2}_{\text{Commitment}}$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -154,11 +164,14 @@ $$\mathcal{L}_{\text{VQ-VAE}} = \underbrace{\|\mathbf{x} - g_\phi(\mathbf{z}_q)\
 * **Chemin A — Codebook Loss** : Rapproche les vecteurs du codebook $\mathbf{e}_k$ vers les encodages $\mathbf{z}_e$ qui leur sont affectés. Entraîne le dictionnaire.
 
 * **Chemin B — Commitment Loss** : Rapproche les encodages $\mathbf{z}_e$ vers les vecteurs du codebook qui leur sont assignés. Force l'encodeur à "s'engager" vers les vecteurs du dictionnaire plutôt que de dériver arbitrairement. Le coefficient $\beta$ contrôle la force de cet engagement.
+:::
 
 ### Le Problème du Gradient à la Quantification
 
 La sélection du mot le plus proche dans le dictionnaire est une opération non-différentiable. La solution : faire semblant qu'elle n'existe pas en backward et copier directement le gradient comme si l'entrée et la sortie de quantification étaient identiques.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 L'opération $\arg\min$ est non-différentiable : le gradient ne peut pas traverser la sélection de $k^*$. La solution est le **straight-through estimator** : en *forward*, on utilise $\mathbf{z}_q$, mais en *backward*, on copie directement le gradient de $g_\phi$ vers $\mathbf{z}_e$ comme si la quantification n'existait pas :
 
 $$\frac{\partial \mathcal{L}}{\partial \mathbf{z}_e} \approx \frac{\partial \mathcal{L}}{\partial \mathbf{z}_q}$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -167,9 +180,14 @@ $$\frac{\partial \mathcal{L}}{\partial \mathbf{z}_e} \approx \frac{\partial \mat
 * **$\approx$** : le symbole d'approximation du gradient (copie de gradient du Straight-Through Estimator).
 
 Cette approximation est grossière mais fonctionne empiriquement car elle oriente l'encodeur dans la bonne direction.
+:::
 
 ### Mise à Jour par EMA
 
+Pour éviter que notre dictionnaire ne change trop brusquement à chaque étape, on met à jour ses mots par petites touches progressives (moyenne mobile), sans utiliser directement les gradients.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Pour stabiliser l'entraînement du codebook, une alternative au gradient standard est la mise à jour par **Exponential Moving Average** (EMA). Chaque vecteur $\mathbf{e}_k$ est mis à jour comme une moyenne pondérée des encodages qui lui sont affectés :
 
 $$\mathbf{e}_k \leftarrow (1 - \gamma) \mathbf{e}_k + \gamma \cdot \frac{\sum_i \mathbf{z}_e^{(i)} \cdot \mathbb{1}[k^{(i)} = k]}{\sum_i \mathbb{1}[k^{(i)} = k]}$$ ([voir le Glossaire](../../glossaire.qmd#symboles-mathématiques-notations))
@@ -179,14 +197,18 @@ $$\mathbf{e}_k \leftarrow (1 - \gamma) \mathbf{e}_k + \gamma \cdot \frac{\sum_i 
 * **$\mathbb{1}[\text{cond}]$** : la fonction indicatrice (vaut 1 si la condition est vraie, 0 sinon).
 
 Cette approche est plus stable que l'optimisation directe par descente de gradient et évite que le codebook oscille entre les mises à jour [@shrivastava_2024].
+:::
 
 ### Risque de Codebook Collapse
 
 Si l'encodeur prend l'habitude d'utiliser toujours les mêmes 5 entrées sur 256, les 251 autres deviennent inutiles — la capacité du dictionnaire est gaspillée et la qualité de génération s'effondre.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 La pathologie principale du VQ-VAE est le **Codebook Collapse** : une fraction des $K$ vecteurs du dictionnaire capture toute la variance des données, laissant les autres vecteurs inutilisés. L'encodeur apprend à ignorer une large partie du codebook, réduisant effectivement la capacité de représentation à quelques codes actifs.
 
 Les solutions incluent : la réinitialisation périodique des vecteurs inactifs, l'augmentation du coefficient $\beta$ du commitment loss, ou des techniques de *codebook dropout* forçant l'encodeur à utiliser des codes alternatifs.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 📚 L'Alphabet de Compression
@@ -198,4 +220,7 @@ Imaginez construire un alphabet de $K$ symboles pour encoder les phonèmes d'une
 
 VQ-VAE-2 empile deux niveaux de dictionnaires : un pour les détails fins (textures, bords) et un autre pour la structure globale (composition, forme) — comme un roman qui a à la fois un plan de chapitre et un plan de paragraphe.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 L'extension naturelle, VQ-VAE-2, empile plusieurs niveaux de codebooks pour capturer des structures à différentes échelles : un codebook "fin" pour les détails locaux (textures, bords) et un codebook "grossier" pour la structure globale (forme, composition). La génération utilise ensuite un modèle autoregressif (PixelCNN) opérant dans l'espace des codes discrets, produisant des images de qualité remarquable en évitant les compromis probabilistes du VAE.
+:::

@@ -2,10 +2,17 @@
 
 Trois approches, un même principe : plus on contraint l'espace latent, plus le modèle est forcé à apprendre des représentations compactes et généralisables. AE serre légèrement, VAE serre avec des garde-fous probabilistes, VQ-VAE impose un alphabet fini.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 L'exploration des trois architectures d'espace latent révèle une **leçon unificatrice** : la sémantique émergente est une fonction directe de la contrainte exercée sur l'espace latent. Plus la contrainte est rigoureuse et structurée, plus le modèle est forcé à distiller l'essence informative des données [@fournier_2021; @shrivastava_2024].
+:::
 
 ### Tableau Comparatif des Architectures
 
+Voici comment se comparent les trois architectures sur leurs principes de base, leurs manières de générer, et leurs problèmes typiques.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 | Critère                       | Autoencodeur (AE)        | VAE                         | VQ-VAE                           |
 | :---------------------------- | :----------------------- | :-------------------------- | :------------------------------- |
 | **Nature de l'espace latent** | Déterministe (point)     | Probabiliste (distribution) | Discret (codebook)               |
@@ -14,9 +21,14 @@ L'exploration des trois architectures d'espace latent révèle une **leçon unif
 | **Indicateur de qualité**     | Erreur de reconstruction | CV-NND bas / DLC élevé      | Utilisation uniforme du codebook |
 | **Pathologie principale**     | Trous sémantiques        | Posterior collapse          | Codebook collapse                |
 | **Applications typiques**     | Débruitage, anomalies    | Génération, disentanglement | Image/audio haute qualité        |
+:::
 
 ### La Hiérarchie des Contraintes
 
+Du simple goulot d'étranglement à l'alphabet discret, chaque modèle resserre un peu plus le corset sur l'espace latent.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Les trois architectures forment une hiérarchie de contraintes croissantes :
 
 1. **AE** : Contrainte *douce* par réduction de dimension. L'espace latent est structuré uniquement par la pression de reconstruction — pas de garantie sur sa géométrie.
@@ -26,14 +38,18 @@ Les trois architectures forment une hiérarchie de contraintes croissantes :
 3. **VQ-VAE** : Contrainte *discrète* via le commitment loss. L'espace est réduit à un ensemble fini de prototypes, imposant la compacité la plus extrême.
 
 Paradoxalement, c'est l'architecture la plus contrainte (VQ-VAE) qui produit souvent les meilleures représentations pour les données haute dimension, car elle force le modèle à apprendre des abstractions véritablement discrètes et compositionnelles.
+:::
 
 ### Connexion avec les Modèles de Fondation
 
 Les VAE ne sont pas seulement un exercice académique : Stable Diffusion, l'un des modèles génératifs les plus populaires du monde, utilise un VAE pour comprimer les images en espace latent avant d'y appliquer la diffusion.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Les autoencodeurs variationnels constituent une **fondation théorique essentielle** pour les architectures modernes. Les modèles de diffusion latente (Latent Diffusion Models, dont Stable Diffusion) s'appuient explicitement sur un VAE pour comprimer les images en un espace latent, dans lequel le processus de diffusion opère. Cette séparation des préoccupations — compression sémantique (VAE) et modélisation générative (diffusion) — permet de combiner les avantages des deux paradigmes.
 
 Plus généralement, la notion d'**espace latent contraint** est le fil conducteur reliant les autoencodeurs, les modèles de diffusion, et les grands modèles de language (LLM) qui, eux aussi, opèrent sur des représentations compressées internes. La maîtrise de l'espace latent n'est pas une technique parmi d'autres : c'est le paradigme central du deep learning moderne.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🔑 Points Clés à Retenir

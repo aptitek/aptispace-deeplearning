@@ -2,7 +2,10 @@
 
 Le problème : on ne peut pas différencier un tirage aléatoire. L'astuce : on externalise le hasard dans une variable fixe $\epsilon$, puis on applique une transformation déterministe — le gradient peut désormais traverser.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 L'élégance du VAE repose sur un verrou algorithmique crucial : comment entraîner par rétropropagation un réseau qui **échantillonne** ? L'opération $\mathbf{z} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\sigma}^2)$ est stochastique et non-différentiable — le gradient ne peut pas traverser un nœud d'échantillonnage.
+:::
 
 ::: {.card .card-window .mb-4}
 
@@ -30,11 +33,16 @@ _reparam = {
 
 ### Le Reparameterization Trick
 
+L'astuce consiste à sortir la pièce aléatoire du réseau : le réseau génère la moyenne et l'écart-type de manière déterministe, et on y ajoute le hasard produit à l'extérieur.
+
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 La solution, introduite par le VAE original, déplace la stochasticité vers une variable externe $\boldsymbol{\epsilon}$ indépendante des paramètres [@leclaire_nd] :
 
 $$\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$$
 
 La transformation $\mathbf{z} = \boldsymbol{\mu} + \boldsymbol{\sigma} \odot \boldsymbol{\epsilon}$ est **déterministe** par rapport aux paramètres $(\boldsymbol{\mu}, \boldsymbol{\sigma})$ — seul $\boldsymbol{\epsilon}$ est aléatoire, et il est tiré indépendamment. Le gradient peut désormais s'écouler librement à travers $\boldsymbol{\mu}$ et $\boldsymbol{\sigma}$ jusqu'à l'encodeur.
+:::
 
 ::: {.callout-note appearance="simple" icon="false"}
 ## 🎲 Dé Pipé vs Dé Standard
@@ -46,6 +54,8 @@ Imaginez que vous deviez optimiser la mise d'un pari sur un dé pipé. Il est im
 
 La question de fond : est-ce le hasard du VAE qui crée de bonnes représentations, ou simplement la contrainte géométrique imposée par la KL ? Des résultats récents suggèrent que c'est la contrainte qui fait tout le travail.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Une perspective récente propose une réinterprétation profonde du rôle de la reparamétrisation [@shi_nd]. La question posée est : la stochasticité est-elle véritablement le mécanisme générateur de représentations utiles, ou n'est-elle qu'un vecteur pour imposer une **régularisation géométrique** ?
 
 Des expériences montrent qu'il est possible d'obtenir des espaces latents de qualité comparable au VAE via des méthodes de **Compactness Regularization déterministes** [@shi_nd] :
@@ -54,11 +64,14 @@ Des expériences montrent qu'il est possible d'obtenir des espaces latents de qu
 * **Symmetric Stabilization** : Régularise symétriquement les variances autour de 1, maintenant la géométrie sans recourir à l'échantillonnage.
 
 Ce résultat suggère que la divergence KL est avant tout un **bouclier géométrique contre l'effondrement représentationnel**, pas un mécanisme probabiliste en soi. C'est la contrainte de compacité qui génère la sémantique, quelle que soit la forme qu'elle prend.
+:::
 
 ### Métriques de Qualité du Latent
 
 Deux indicateurs permettent de diagnostiquer la santé d'un espace latent : l'uniformité des distances entre voisins (est-ce que tout est bien réparti ?) et la couverture globale de l'espace de référence (est-ce qu'il reste des zones vides ?).
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Pour évaluer objectivement la qualité d'un espace latent, deux métriques sont particulièrement informatives [@shi_nd; @shrivastava_2024] :
 
 **CV-NND (Coefficient of Variation of Nearest-Neighbor Distances) :**
@@ -77,9 +90,13 @@ Un CV-NND **bas** indique une distribution géométriquement uniforme et bien di
 | :------- | :----------- | :--------- | :--------------------------------------------- |
 | CV-NND   | Faible       | Élevé      | Fragmentation du manifold                      |
 | DLC      | Élevé        | Faible     | Effondrement postérieur (*posterior collapse*) |
+:::
 
 ### Le Posterior Collapse
 
 Le *posterior collapse* est l'extrême opposé : l'encodeur cesse complètement de travailler et renvoie toujours la même gaussienne de référence, quel que soit l'input — comme un employé qui remplit toujours le même formulaire sans lire le dossier.
 
+::: {.callout-note collapse="true"}
+## 🔍 Détails techniques
 Le *posterior collapse* est la pathologie opposée à la fragmentation : l'encodeur "ignore" l'entrée et renvoie toujours la distribution *a priori* $q_\phi(\mathbf{z}|\mathbf{x}) \approx p(\mathbf{z})$. Le terme KL est alors nul, le terme de reconstruction aussi (le décodeur apprend à ignorer $\mathbf{z}$ et génère depuis un modèle marginal). Cette pathologie survient quand le décodeur est trop puissant et apprend à modéliser $p_\theta(\mathbf{x})$ sans utiliser le code latent — le canal d'information entre encodeur et décodeur se ferme. La solution passe par un contrôle du $\beta$ ou des techniques d'annelage (KL *annealing*).
+:::

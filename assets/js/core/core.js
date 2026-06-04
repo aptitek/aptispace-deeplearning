@@ -34,7 +34,7 @@ export const theme = {
 export const getThemeColor = (varName, fallback) => {
   if (typeof window !== "undefined") {
     const el = document.body || document.documentElement;
-    const value = getComputedStyle(el).getPropertyValue(varName).trim();
+    const value = getComputedStyle(el).getPropertyValue(varName.replace(/\u2013/g, "--")).trim();
     if (value) return resolveCssValue(value);
   }
   return fallback;
@@ -43,14 +43,14 @@ export const getThemeColor = (varName, fallback) => {
 // Recursively resolves up to 3 levels of var(--name) so Canvas 2D contexts can consume them.
 export function resolveCssValue(value) {
   if (!value) return "";
-  let resolved = value;
+  let resolved = value.replace(/\u2013/g, "--");
   const varRegex = /var\((--[^,)]+)(?:,\s*([^)]+))?\)/g;
   for (let i = 0; i < 3; i++) {
     if (!resolved.includes("var(")) break;
     resolved = resolved.replace(varRegex, (_match, varName, fallback) => {
       const el = document.body || document.documentElement;
-      const computed = getComputedStyle(el).getPropertyValue(varName.trim()).trim();
-      return computed || (fallback ? fallback.trim() : "");
+      const computed = getComputedStyle(el).getPropertyValue(varName.trim().replace(/\u2013/g, "--")).trim();
+      return computed || (fallback ? fallback.trim().replace(/\u2013/g, "--") : "");
     });
   }
   return resolved;
